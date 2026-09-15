@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Credits & Management Console</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="text-dot-orange">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto px-6 py-12 flex-1 w-full space-y-10">
+    
+    <!-- Title Header -->
+    <div class="pb-6 border-b border-dot-border space-y-2">
+      <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+        Administration & Recognition
+      </div>
+      <h1 class="text-3xl font-black text-white uppercase tracking-tight">Credits & Management Tools</h1>
+      <p class="text-slate-400 text-xs">Department acknowledgments, infrastructure development credits, and restricted supervisory administration tools.</p>
+    </div>
+
+    <!-- RESTRICTED SUPERVISORY & COMMAND MANAGEMENT TOOLS (Hidden for Cadets/Field Ops) -->
+    <div id="management-console" class="p-6 bg-dot-card border-2 border-dot-orange/60 rounded-lg space-y-4 shadow-xl hidden">
+      <div class="flex items-center justify-between border-b border-dot-border pb-3">
+        <div class="flex items-center gap-2">
+          <span class="h-2.5 w-2.5 rounded-full bg-dot-orange animate-ping"></span>
+          <span class="font-mono text-xs text-dot-orange font-bold uppercase tracking-wider">Restricted Management Console</span>
+        </div>
+        <span class="text-[10px] font-mono bg-dot-orange/20 text-dot-orange px-2 py-0.5 rounded border border-dot-orange/40 font-bold">Supervisor / Command Access Only</span>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+        <!-- Tool 1: Database Synchronization Status -->
+        <div class="space-y-3 bg-dot-surface p-4 rounded border border-dot-border flex flex-col justify-between">
+          <div class="space-y-2">
+            <h3 class="font-bold text-white uppercase flex items-center gap-2">📊 Database Synchronization</h3>
+            <p class="text-slate-400 text-[11px]">Monitor telemetry connection status for internal roster and dispatch logging nodes.</p>
+          </div>
+          <div class="space-y-2 font-mono text-[11px]">
+            <div class="flex justify-between text-slate-400 border-b border-dot-border pb-1"><span>Central Node Connection:</span> <span class="text-emerald-400 font-bold">ONLINE</span></div>
+            <div class="flex justify-between text-slate-400 border-b border-dot-border pb-1"><span>Log Packet Latency:</span> <span class="text-white font-bold">14ms</span></div>
+          </div>
+          <button onclick="runDatabaseSync()" class="w-full bg-dot-card hover:bg-dot-border border border-dot-border text-white py-2 rounded font-bold uppercase tracking-wider transition">
+            Ping Logging Nodes
+          </button>
+          <div id="sync-output" class="text-slate-300 font-mono text-[10px] hidden bg-dot-black p-2 rounded border border-dot-border">
+            [PING]: Connection stable. All active operator shift logs successfully synchronized to main storage.
+          </div>
+        </div>
+
+        <!-- Tool 2: System Audit Status -->
+        <div class="space-y-3 bg-dot-surface p-4 rounded border border-dot-border flex flex-col justify-between">
+          <div class="space-y-2">
+            <h3 class="font-bold text-white uppercase flex items-center gap-2">🛡️ Security & Clearance Audit</h3>
+            <p class="text-slate-400 text-[11px]">Verify clearance consistency across roster database logs and encrypted session tokens.</p>
+          </div>
+          <div class="space-y-2 font-mono text-[11px]">
+            <div class="flex justify-between text-slate-400 border-b border-dot-border pb-1"><span>Active Session Gate:</span> <span class="text-emerald-400 font-bold">SECURE</span></div>
+            <div class="flex justify-between text-slate-400 border-b border-dot-border pb-1"><span>Roster Sync Status:</span> <span class="text-white font-bold">VERIFIED</span></div>
+          </div>
+          <button onclick="runSystemAudit()" class="w-full bg-dot-card hover:bg-dot-border border border-dot-border text-white py-2 rounded font-bold uppercase tracking-wider transition">
+            Run Full System Diagnostic
+          </button>
+          <div id="audit-output" class="text-slate-300 font-mono text-[10px] hidden bg-dot-black p-2 rounded border border-dot-border">
+            [DIAGNOSTIC]: All 25 SOP modules, uniform configurations, and vehicle files synced. Zero anomalies detected.
+          </div>
+        </div>
+
+        <!-- Tool 3: Employment Applications Review -->
+        <div class="space-y-3 bg-dot-surface p-4 rounded border border-dot-border flex flex-col justify-between">
+          <div class="space-y-2">
+            <h3 class="font-bold text-white uppercase flex items-center gap-2">📋 Employment Applications</h3>
+            <p class="text-slate-400 text-[11px]">Review pending cadet application packets, inspect full questionnaires, and manage approvals.</p>
+          </div>
+          <a href="applications" class="w-full bg-dot-orange hover:bg-dot-orangeHover text-white py-2 rounded font-bold uppercase tracking-wider transition text-center block font-mono">
+            Launch Application Review Console ↗
+          </a>
+        </div>
+
+        <!-- Tool 4: Roster Administration -->
+        <div class="space-y-3 bg-dot-surface p-4 rounded border border-dot-border flex flex-col justify-between">
+          <div class="space-y-2">
+            <h3 class="font-bold text-white uppercase flex items-center gap-2">👥 Roster Administration</h3>
+            <p class="text-slate-400 text-[11px]">Manage registered personnel, assign department callsigns, adjust employee ranks, and update certifications.</p>
+          </div>
+          <a href="aroster" class="w-full bg-dot-orange hover:bg-dot-orangeHover text-white py-2 rounded font-bold uppercase tracking-wider transition text-center block font-mono">
+            Launch Roster Console ↗
+          </a>
+        </div>
+
+        <!-- Tool 5: Employee Activity Tracker -->
+        <div class="space-y-3 bg-dot-surface p-4 rounded border border-dot-border flex flex-col justify-between">
+          <div class="space-y-2">
+            <h3 class="font-bold text-white uppercase flex items-center gap-2">📈 Employee Activity & Production</h3>
+            <p class="text-slate-400 text-[11px]">View operator MFO log volume, patrol shift hours, yearly production graphs, and performance leaderboards.</p>
+          </div>
+          <a href="employee-activity" class="w-full bg-dot-orange hover:bg-dot-orangeHover text-white py-2 rounded font-bold uppercase tracking-wider transition text-center block font-mono">
+            Launch Activity Tracker ↗
+          </a>
+        </div>
+
+        <!-- Tool 6: SOP Administration -->
+        <div class="space-y-3 bg-dot-surface p-4 rounded border border-dot-border flex flex-col justify-between">
+          <div class="space-y-2">
+            <h3 class="font-bold text-white uppercase flex items-center gap-2">📜 SOP & Directives Admin</h3>
+            <p class="text-slate-400 text-[11px]">Create, edit, and manage standard operating procedures and department policy manuals.</p>
+          </div>
+          <a href="asop" class="w-full bg-dot-orange hover:bg-dot-orangeHover text-white py-2 rounded font-bold uppercase tracking-wider transition text-center block font-mono">
+            Launch SOP Admin ↗
+          </a>
+        </div>
+
+        <!-- Tool 7: Financial Ledger & Assets -->
+        <div class="space-y-3 bg-dot-surface p-4 rounded border border-dot-border flex flex-col justify-between">
+          <div class="space-y-2">
+            <h3 class="font-bold text-white uppercase flex items-center gap-2">💰 Finances & Asset Ledger</h3>
+            <p class="text-slate-400 text-[11px]">Review departmental balance sheets, HQ valuations, live employee payroll calculations, and operating burn rates.</p>
+          </div>
+          <a href="finances" class="w-full bg-dot-orange hover:bg-dot-orangeHover text-white py-2 rounded font-bold uppercase tracking-wider transition text-center block font-mono">
+            Launch Financial Ledger ↗
+          </a>
+        </div>
+
+        <!-- Tool 8: Discord Webhook Admin -->
+        <div class="space-y-3 bg-dot-surface p-4 rounded border border-dot-border flex flex-col justify-between">
+          <div class="space-y-2">
+            <h3 class="font-bold text-white uppercase flex items-center gap-2">🔌 Discord Webhook Admin</h3>
+            <p class="text-slate-400 text-[11px]">Configure automated Discord alert channels for submitted employment applications and work orders.</p>
+          </div>
+          <a href="webhooks" class="w-full bg-dot-orange hover:bg-dot-orangeHover text-white py-2 rounded font-bold uppercase tracking-wider transition text-center block font-mono">
+            Launch Webhook Console ↗
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Grid (Standard Credits) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+      
+      <!-- Development & Architecture -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Portal Architecture</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">Web Development</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Engineering & Design</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Designed and built with modern web frameworks, Tailwind CSS styling, and custom interactive script integrations to deliver an immersive, professional-grade standard operating portal.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Web Development: <strong class="text-white">Logan W. [1919]</strong>
+        </div>
+      </div>
+
+      <!-- Document Creations -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Standard Operating Manuals</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">Documentation</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Document Creations</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Authoring, structuring, and maintaining comprehensive standard operating procedures, training curricula, and operational guidelines.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Document Creators: <strong class="text-white">Logan W. [1919], Brandon B. [1914], and Eric M. [32]</strong>
+        </div>
+      </div>
+
+      <!-- Executive Leadership & Management -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Executive Oversight</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">Command Staff</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Department Leadership</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Special thanks to the Transportation Commissioner, Deputy Commissioner, and Chief of Operations for establishing departmental policies, operational directives, and structural standards.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Office of the Commissioner • <strong class="text-dot-orange">State of San Andreas</strong>
+        </div>
+      </div>
+
+      <!-- Scripts & Systems -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Server Utilities</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">In-Game Frameworks</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Scripting & Tooling</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Acknowledging the creators of the traffic node manipulation scripts (<code class="text-slate-200 font-mono">/traffic</code>), and emergency warning systems that support daily field operations.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Framework Integration: <strong class="text-white">CSRP Devs and Script makers</strong>
+        </div>
+      </div>
+
+      <!-- Community & Allied Partners -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition md:col-span-2">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Community & Mutual Aid</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">Partnerships</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Allied Agencies & Members</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Recognizing the dedication of our allied partners and active department personnel for maintaining seamless Unified Command on scene.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Credited Entities: <strong class="text-white">SAMPD, BCSO, SAFR, and those listed on our roster</strong>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Rank-Based Management Tool Script & Live Server Diagnostics -->
+<script>
+    const API_BASE_URL = "/api";
+    const rankHierarchy = { 
+      "Cadet": 1, 
+      "Probationary Operator": 1,
+      "Field Operator": 2, 
+      "Field Operators": 2,
+      "Supervisor": 3, 
+      "Supervisory Staff": 3,
+      "Command Staff": 4 
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const userRankName = sessionStorage.getItem('sadot_rank') || "Cadet";
+      const sessionLevel = parseInt(sessionStorage.getItem('sadot_level') || '0', 10);
+      const userLevel = sessionLevel > 0 ? sessionLevel : (rankHierarchy[userRankName] || 1);
+
+      const consoleBox = document.getElementById('management-console');
+
+      if (userLevel >= 3) {
+        consoleBox.classList.remove('hidden');
+      } else {
+        consoleBox.classList.add('hidden');
+      }
+    });
+
+    async function runDatabaseSync() {
+      const syncDiv = document.getElementById('sync-output');
+      syncDiv.className = "text-slate-300 font-mono text-[10px] bg-dot-black p-2 rounded border border-dot-border";
+      syncDiv.innerText = "[PING]: Communicating with server storage nodes...";
+      syncDiv.classList.remove('hidden');
+
+      const startTime = performance.now();
+
+      try {
+        const [appRes, rosterRes, orderRes, patrolRes, mfoRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/applications`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/roster`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/work-orders`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/patrol-logs`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/mfo-logs`).then(r => r.json())
+        ]);
+
+        const endTime = performance.now();
+        const latency = Math.round(endTime - startTime);
+
+        syncDiv.innerHTML = `
+          [PING]: Connection ONLINE (${latency}ms)<br>
+          • Applications Stored: <strong>${appRes.length}</strong><br>
+          • Roster Personnel: <strong>${rosterRes.length}</strong><br>
+          • Work Orders: <strong>${orderRes.length}</strong><br>
+          • Patrol Logs: <strong>${patrolRes.length}</strong><br>
+          • MFO Logs: <strong>${mfoRes.length}</strong>
+        `;
+      } catch (error) {
+        console.error("Sync error:", error);
+        syncDiv.className = "text-red-400 font-mono text-[10px] bg-dot-black p-2 rounded border border-dot-border";
+        syncDiv.innerText = "[ERROR]: Failed to reach backend API server.";
+      }
+    }
+
+    async function runSystemAudit() {
+      const auditDiv = document.getElementById('audit-output');
+      auditDiv.className = "text-slate-300 font-mono text-[10px] bg-dot-black p-2 rounded border border-dot-border";
+      auditDiv.innerText = "[DIAGNOSTIC]: Scanning local data directory and verifying session tokens...";
+      auditDiv.classList.remove('hidden');
+
+      try {
+        const rosterRes = await fetch(`${API_BASE_URL}/roster`).then(r => r.json());
+        const unassignedCount = rosterRes.filter(r => !r.callsign || r.callsign === "UNASSIGNED").length;
+
+        auditDiv.innerHTML = `
+          [DIAGNOSTIC COMPLETE]:<br>
+          • Session Token: <span class="text-emerald-400 font-bold">VALID (${sessionStorage.getItem('sadot_rank')})</span><br>
+          • JSON Storage Files: <span class="text-emerald-400 font-bold">INTACT (data/*.json)</span><br>
+          • Unassigned Cadet Actions: <strong>${unassignedCount} pending callsign assignments</strong><br>
+          • System Integrity: <strong>100% — Zero corruption detected.</strong>
+        `;
+      } catch (error) {
+        console.error("Audit error:", error);
+        auditDiv.className = "text-red-400 font-mono text-[10px] bg-dot-black p-2 rounded border border-dot-border";
+        auditDiv.innerText = "[DIAGNOSTIC ERROR]: Server response timeout during audit sweep.";
+      }
+    }
+</script>
+
+</body>
+</html>

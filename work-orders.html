@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Service & Work Orders</title>
+
+  <!-- Browser Tab Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00"
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Official Department Portal
+  </div>
+
+  <!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="index" class="hover:text-dot-orange transition">Home</a>
+        <a href="sop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="faq" class="hover:text-dot-orange transition">FAQ</a>
+        <a href="work-orders" class="text-dot-orange">Work Orders</a>
+        <a href="roster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="portal" class="hover:text-dot-orange transition">Employee Portal</a>
+        <a href="credits" class="hover:text-dot-orange transition">Credits</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="apply" target="_blank" class="bg-dot-orange hover:bg-dot-orangeHover text-white px-3.5 py-1.5 rounded transition text-xs font-bold uppercase tracking-wider shadow-md">
+          Join SADOT ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-12 flex-1">
+    <div class="mb-10 text-center">
+      <span class="text-dot-orange font-mono text-xs uppercase font-bold tracking-widest">Public & Agency Transmissions</span>
+      <h1 class="text-3xl font-black text-white uppercase mt-1 tracking-wide">Work Order & Incident Request</h1>
+      <p class="text-slate-400 text-xs md:text-sm mt-2 max-w-xl mx-auto">
+        Select the appropriate submission form below. Work order requests trigger priority notifications to active highway safety operators.
+      </p>
+    </div>
+
+    <!-- Balanced 2-Column Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Detailed Work Order Form Link -->
+      <a href="work-order" class="p-8 bg-dot-card border border-dot-border rounded hover:border-dot-orange transition group flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-dot-orange/10 border border-dot-orange text-dot-orange text-[10px] font-mono font-bold uppercase rounded">Dispatch Ticket</span>
+            <span class="text-xs text-dot-orange font-bold uppercase group-hover:translate-x-1 transition-transform">Open Form →</span>
+          </div>
+          <h2 class="text-xl font-bold text-white uppercase tracking-wide group-hover:text-dot-orange transition">File Incident / Hazard Work Order</h2>
+          <p class="text-slate-400 text-xs mt-3 leading-relaxed">
+            For downed trees, fallen power lines, roadway potholes, debris blocking travel lanes, or LEO scene clearance requests.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-dot-border text-[11px] text-slate-500 font-mono">
+          Sends direct automated data packets to database
+        </div>
+      </a>
+
+      <!-- Application Form -->
+      <a href="apply" target="_blank" class="p-8 bg-dot-card border border-dot-border rounded hover:border-dot-orange transition group flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-2.5 py-1 bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-mono font-bold uppercase rounded">Recruitment</span>
+            <span class="text-xs text-dot-orange font-bold uppercase group-hover:translate-x-1 transition-transform">Launch Form ↗</span>
+          </div>
+          <h2 class="text-xl font-bold text-white uppercase tracking-wide group-hover:text-dot-orange transition">Employment Application</h2>
+          <p class="text-slate-400 text-xs mt-3 leading-relaxed">
+            Interested in joining the San Andreas Department of Transportation? Submit your application for Probationary Highway Operator or Fleet Mechanic positions.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-dot-border text-[11px] text-slate-500 font-mono">
+          Submitted directly to command staff review
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+</body>
+</html>

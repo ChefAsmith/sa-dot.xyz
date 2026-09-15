@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Uniform Guidelines</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    // Redirect back to login if session storage token is missing
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="text-dot-orange">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full space-y-12">
+    
+    <!-- Title Header -->
+    <div class="pb-6 border-b border-dot-border flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+          Personal Appearance Standards
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Uniform Guidelines</h1>
+        <p class="text-slate-400 text-xs max-w-2xl">Mandatory component configurations, texture indices, and component slots authorized for your security clearance tier.</p>
+      </div>
+      <!-- Note about Required Options -->
+      <div class="p-3 bg-dot-card border border-dot-orange/40 rounded text-[11px] text-slate-300 flex items-center gap-2">
+        <span class="h-2 w-2 rounded-full bg-dot-orange shrink-0"></span>
+        <span>Items marked with an asterisk (<span class="text-dot-orange font-bold">*</span>) and highlighted in orange are <strong class="text-white">required</strong> component options.</span>
+      </div>
+    </div>
+
+    <!-- CATEGORY 1: CADET -->
+    <section class="uniform-section space-y-6 hidden" data-rank="cadet">
+      <div class="flex items-center gap-3 border-b border-dot-border pb-3">
+        <span class="h-2.5 w-2.5 rounded-full bg-dot-orange"></span>
+        <h2 class="text-xl font-black text-white uppercase tracking-wide">Cadet Uniforms</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Cadet Normal -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/cadet_normal.png" alt="Cadet Normal" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Normal
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Cadet — Normal</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>135 | 3</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>615 | 4</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cadet Jacket -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/cadet_jacket.png" alt="Cadet Jacket" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Jacket
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Cadet — Jacket</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>307 | 4</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>623 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cadet Rain -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/cadet_rain.png" alt="Cadet Rain" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Rain
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Cadet — Rain</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>618 | 6</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cadet Winter -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/cadet_winter.png" alt="Cadet Winter" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Winter
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Cadet — Winter</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>622 | 4</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CATEGORY 2: FIELD OPERATIONS -->
+    <section class="uniform-section space-y-6 pt-6 border-t border-dot-border hidden" data-rank="field">
+      <div class="flex items-center gap-3 border-b border-dot-border pb-3">
+        <span class="h-2.5 w-2.5 rounded-full bg-dot-orange"></span>
+        <h2 class="text-xl font-black text-white uppercase tracking-wide">Field Operations Uniforms</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Field Ops Normal -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/field_normal.png" alt="Field Normal" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Normal
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Field Ops — Normal</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>135 | 3</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>615 | 1</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field Ops Jacket -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/field_jacket.png" alt="Field Jacket" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Jacket
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Field Ops — Jacket</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>307 | 1</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>623 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field Ops Rain -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/field_rain.png" alt="Field Rain" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Rain
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Field Ops — Rain</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>618 | 3</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field Ops Winter -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/field_winter.png" alt="Field Winter" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Winter
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Field Ops — Winter</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>622 | 1</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CATEGORY 3: SUPERVISORY STAFF -->
+    <section class="uniform-section space-y-6 pt-6 border-t border-dot-border hidden" data-rank="supervisor">
+      <div class="flex items-center gap-3 border-b border-dot-border pb-3">
+        <span class="h-2.5 w-2.5 rounded-full bg-dot-orange"></span>
+        <h2 class="text-xl font-black text-white uppercase tracking-wide">Supervisory Staff Uniforms</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Supervisor Normal -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/sup_normal.png" alt="Supervisor Normal" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Normal
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Supervisor — Normal</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>135 | 3</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>615 | 4</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supervisor Jacket -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/sup_jacket.png" alt="Supervisor Jacket" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Jacket
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Supervisor — Jacket</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>307 | 5</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>623 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supervisor Rain -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/sup_rain.png" alt="Supervisor Rain" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Rain
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Supervisor — Rain</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>618 | 7</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supervisor Winter -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/sup_winter.png" alt="Supervisor Winter" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Winter
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Supervisor — Winter</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>622 | 5</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CATEGORY 4: COMMAND STAFF -->
+    <section class="uniform-section space-y-6 pt-6 border-t border-dot-border hidden" data-rank="command">
+      <div class="flex items-center gap-3 border-b border-dot-border pb-3">
+        <span class="h-2.5 w-2.5 rounded-full bg-dot-orange"></span>
+        <h2 class="text-xl font-black text-white uppercase tracking-wide">Command Staff Uniforms</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Command Normal -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/command_normal.png" alt="Command Normal" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Normal
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Command — Normal</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>135 | 3</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>615 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Command Jacket -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/command_jacket.png" alt="Command Jacket" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Jacket
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Command — Jacket</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>307 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>623 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Command Rain -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/command_rain.png" alt="Command Rain" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Rain
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Command — Rain</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>618 | 5</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Command Winter -->
+        <div class="bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition">
+          <div class="space-y-3">
+            <div class="h-64 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/uniforms/command_winter.png" alt="Command Winter" style="width: 195px; height: 260px;" class="object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">
+                Winter
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white uppercase">Command — Winter</h3>
+            </div>
+
+            <div class="space-y-1.5 pt-2 border-t border-dot-border font-mono text-[11px]">
+              <div class="flex justify-between text-slate-400"><span>Mask:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Upper Body:</span> <span class="text-slate-200">214 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Lower Body:</span> <span>216 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Bags & Parachutes:</span> <span>0</span></div>
+              <div class="flex justify-between text-slate-400"><span>Shoes:</span> <span class="text-slate-200">71</span></div>
+              <div class="flex justify-between text-slate-400"><span>Scarfs & Chains:</span> <span class="text-slate-200">0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Accessory:</span> <span>15</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Body Armor:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Badges & Logos:</span> <span>0</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Shirt & Jackets:</span> <span>622 | 2</span></div>
+              <div class="flex justify-between text-dot-orange font-semibold"><span>* Hats & Helmets:</span> <span>256</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Rank Filtering Script -->
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const userRank = sessionStorage.getItem('sadot_rank');
+      
+      const rankMap = {
+        "Cadet": "cadet",
+        "Probationary Operator": "cadet",
+        "Field Operator": "field",
+        "Field Operators": "field",
+        "Supervisor": "supervisor",
+        "Supervisory Staff": "supervisor",
+        "Command Staff": "command"
+      };
+
+      const currentTier = rankMap[userRank] || "cadet";
+
+      const sections = document.querySelectorAll('.uniform-section');
+      sections.forEach(sec => {
+        const secRank = sec.getAttribute('data-rank');
+        if (secRank === currentTier) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
+      });
+    });
+</script>
+
+</body>
+</html>

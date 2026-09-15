@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Service & Work Orders</title>
+
+  <!-- Browser Tab Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="text-dot-orange">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-12 flex-1 space-y-12">
+    
+    <!-- Title Header -->
+    <div class="text-center">
+      <span class="text-dot-orange font-mono text-xs uppercase font-bold tracking-widest">Public & Agency Transmissions</span>
+      <h1 class="text-3xl font-black text-white uppercase mt-1 tracking-wide">Work Order & Incident Requests</h1>
+      <p class="text-slate-400 text-xs md:text-sm mt-2 max-w-xl mx-auto">
+        Review incoming dispatch logs below, attach your unit, or update operational status. Resolved and cancelled orders are automatically archived.
+      </p>
+    </div>
+
+    <!-- TABS: Live Feed vs Archive -->
+    <div class="flex border-b border-dot-border font-mono text-xs">
+      <button onclick="switchTab('live')" id="tab-live" class="px-6 py-3 font-bold uppercase border-b-2 border-dot-orange text-dot-orange transition">
+        🚨 Live Dispatch Feed
+      </button>
+      <button onclick="switchTab('archive')" id="tab-archive" class="px-6 py-3 font-bold uppercase border-b-2 border-transparent text-slate-400 hover:text-white transition">
+        📂 Archived Work Orders
+      </button>
+    </div>
+
+    <!-- Live Dispatch Feed Section -->
+    <div id="section-live" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-dot-border pb-3">
+        <div class="flex items-center gap-3">
+          <span class="h-2.5 w-2.5 rounded-full bg-dot-orange animate-ping"></span>
+          <h2 class="text-lg font-black text-white uppercase tracking-wide">Active Central Dispatch Feed</h2>
+        </div>
+        <button onclick="loadWorkOrders()" class="text-xs font-mono text-dot-orange hover:underline">🔄 Refresh Feed</button>
+      </div>
+
+      <div id="dispatch-feed-container" class="space-y-4">
+        <div class="p-6 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+          Synchronizing live work orders from central database...
+        </div>
+      </div>
+    </div>
+
+    <!-- Archived Work Orders Section -->
+    <div id="section-archive" class="space-y-6 hidden">
+      <div class="flex items-center justify-between border-b border-dot-border pb-3">
+        <div class="flex items-center gap-3">
+          <span class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
+          <h2 class="text-lg font-black text-white uppercase tracking-wide">Resolved & Cancelled Archive</h2>
+        </div>
+        <button onclick="loadArchiveOrders()" class="text-xs font-mono text-dot-orange hover:underline">🔄 Refresh Archive</button>
+      </div>
+
+      <div id="archive-feed-container" class="space-y-4">
+        <div class="p-6 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+          Synchronizing archive logs...
+        </div>
+      </div>
+    </div>
+
+    <!-- Submissions Form Grid -->
+    <div class="space-y-6 pt-6 border-t border-dot-border">
+      <h2 class="text-lg font-black text-white uppercase tracking-wide">Submission Portals</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="work-order" class="p-8 bg-dot-card border border-dot-border rounded hover:border-dot-orange transition group flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 bg-dot-orange/10 border border-dot-orange text-dot-orange text-[10px] font-mono font-bold uppercase rounded">Dispatch Ticket</span>
+              <span class="text-xs text-dot-orange font-bold uppercase group-hover:translate-x-1 transition-transform">Launch Form ↗</span>
+            </div>
+            <h2 class="text-xl font-bold text-white uppercase tracking-wide group-hover:text-dot-orange transition">File Detailed Work Order</h2>
+            <p class="text-slate-400 text-xs mt-3 leading-relaxed">Submit structured hazard reports with agency tags, priority tiers, and category selections.</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-dot-border text-[11px] text-slate-500 font-mono">Sends direct automated data packets</div>
+        </a>
+
+        <a href="patrol-log" class="p-8 bg-dot-card border border-dot-border rounded hover:border-dot-orange transition group flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-mono font-bold uppercase rounded">Internal Staff</span>
+              <span class="text-xs text-dot-orange font-bold uppercase group-hover:translate-x-1 transition-transform">Launch Form ↗</span>
+            </div>
+            <h2 class="text-xl font-bold text-white uppercase tracking-wide group-hover:text-dot-orange transition">Operator Patrol Shift Log</h2>
+            <p class="text-slate-400 text-xs mt-3 leading-relaxed">Active highway personnel shift log for clocking hours, recording tow tickets, and clearing debris.</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-dot-border text-[11px] text-slate-500 font-mono">Required for all active duty personnel</div>
+        </a>
+
+        <a href="mfo-log" class="p-8 bg-dot-card border border-dot-border rounded hover:border-dot-orange transition group flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 bg-dot-orange/10 border border-dot-orange text-dot-orange text-[10px] font-mono font-bold uppercase rounded">Field Ops</span>
+              <span class="text-xs text-dot-orange font-bold uppercase group-hover:translate-x-1 transition-transform">Launch Form ↗</span>
+            </div>
+            <h2 class="text-xl font-bold text-white uppercase tracking-wide group-hover:text-dot-orange transition">Master Field Operations Log</h2>
+            <p class="text-slate-400 text-xs mt-3 leading-relaxed">Consolidated state infrastructure staging, mechanical recovery, tactical lane closures, and roadside service logs.</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-dot-border text-[11px] text-slate-500 font-mono">Active field telemetry tracking</div>
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Script with Archive Tab Switching & Archiving Logic -->
+  <script>
+    const API_BASE_URL = "/api";
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadWorkOrders();
+    });
+
+    function switchTab(tab) {
+      const liveSec = document.getElementById('section-live');
+      const archiveSec = document.getElementById('section-archive');
+      const tabLive = document.getElementById('tab-live');
+      const tabArchive = document.getElementById('tab-archive');
+
+      if (tab === 'live') {
+        liveSec.classList.remove('hidden');
+        archiveSec.classList.add('hidden');
+        tabLive.className = "px-6 py-3 font-bold uppercase border-b-2 border-dot-orange text-dot-orange transition";
+        tabArchive.className = "px-6 py-3 font-bold uppercase border-b-2 border-transparent text-slate-400 hover:text-white transition";
+        loadWorkOrders();
+      } else {
+        liveSec.classList.add('hidden');
+        archiveSec.classList.remove('hidden');
+        tabArchive.className = "px-6 py-3 font-bold uppercase border-b-2 border-dot-orange text-dot-orange transition";
+        tabLive.className = "px-6 py-3 font-bold uppercase border-b-2 border-transparent text-slate-400 hover:text-white transition";
+        loadArchiveOrders();
+      }
+    }
+
+    async function loadWorkOrders() {
+      const container = document.getElementById('dispatch-feed-container');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/work-orders`);
+        const orders = await response.json();
+        
+        container.innerHTML = "";
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML = `
+            <div class="p-5 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+              No active work orders currently logged in dispatch.
+            </div>
+          `;
+          return;
+        }
+
+        orders.forEach((order, index) => {
+          const { id, timestamp, submitter, agency = "SADOT", category = "General", priority = "Routine", location, equipment = "Standard Unit", description, status = "Pending", operator } = order;
+
+          let priorityBadgeColor = "bg-slate-800 text-slate-300 border-slate-700";
+          if (priority.includes("High")) priorityBadgeColor = "bg-orange-950/60 text-orange-400 border-orange-800/60";
+          if (priority.includes("Emergency")) priorityBadgeColor = "bg-red-950/80 text-red-400 border-red-800 animate-pulse";
+
+          const card = document.createElement('div');
+          card.className = "p-6 bg-dot-card border border-dot-border rounded-lg space-y-4 text-xs shadow-lg";
+          card.innerHTML = `
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-dot-border pb-3">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 bg-dot-orange/10 border border-dot-orange text-dot-orange font-mono font-bold uppercase rounded text-[10px]">${category}</span>
+                <span class="px-2 py-0.5 border font-mono font-bold uppercase rounded text-[10px] ${priorityBadgeColor}">${priority}</span>
+                <span class="px-2 py-0.5 bg-dot-surface border border-dot-border text-slate-300 font-mono font-bold uppercase rounded text-[10px]">Agency: ${agency}</span>
+              </div>
+              <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">📍 ${location}</span>
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-sm font-bold text-white uppercase">Incident Report #${index + 1} ${operator ? `<span class="text-dot-orange font-mono text-[11px]">[Attached Unit: ${operator}]</span>` : ''}</h3>
+              <p class="text-slate-300 leading-relaxed">${description}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-dot-border text-[11px] font-mono text-slate-400">
+              <div><strong class="text-slate-200">Equipment:</strong> ${equipment}</div>
+              <div>Logged By: <strong class="text-white">${submitter}</strong> <span class="text-dot-orange ml-2">${timestamp}</span></div>
+            </div>
+
+            <!-- OPERATOR DISPATCH CONTROL PANEL (Aligned via Flex Grid) -->
+            <div class="bg-dot-surface p-4 rounded border border-dot-border flex flex-col md:flex-row items-end justify-between gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-auto flex-1">
+                <div class="flex flex-col justify-between">
+                  <label class="text-[10px] font-mono text-slate-400 uppercase mb-1">Update Status (Resolved/Cancelled = Archive)</label>
+                  <select id="status-${index}" class="bg-dot-black border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange font-mono">
+                    <option value="Pending" ${status.includes('Pending') ? 'selected' : ''}>Pending</option>
+                    <option value="En Route" ${status.includes('En Route') ? 'selected' : ''}>En Route (10-76)</option>
+                    <option value="On Scene" ${status.includes('On Scene') ? 'selected' : ''}>On Scene (10-23)</option>
+                    <option value="Resolved" ${status.includes('Resolved') ? 'selected' : ''}>Resolved (10-33) [Archive]</option>
+                    <option value="Cancelled" ${status.includes('Cancelled') ? 'selected' : ''}>Cancelled [Archive]</option>
+                  </select>
+                </div>
+                <div class="flex flex-col justify-between">
+                  <label class="text-[10px] font-mono text-slate-400 uppercase mb-1">Operator Callsign / Name</label>
+                  <input type="text" id="operator-${index}" value="${operator || ''}" placeholder="e.g., DOT-005 [John D.]" class="bg-dot-black border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange font-mono" />
+                </div>
+              </div>
+              <button onclick="updateOrderStatus('${id}', ${index})" id="btn-${index}" class="w-full md:w-auto bg-dot-orange hover:bg-dot-orangeHover text-white px-5 py-2 rounded font-bold uppercase transition font-mono whitespace-nowrap">
+                Attach & Update Status
+              </button>
+            </div>
+            <div id="msg-${index}" class="font-mono text-[11px] hidden"></div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error loading work orders:", error);
+        container.innerHTML = `
+          <div class="p-5 bg-red-950/30 border border-red-900/50 rounded text-red-400 text-xs font-mono">
+            ⚠️ Failed to synchronize live work orders from central dispatch server.
+          </div>
+        `;
+      }
+    }
+
+    async function loadArchiveOrders() {
+      const container = document.getElementById('archive-feed-container');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/work-orders-archive`);
+        const orders = await response.json();
+        
+        container.innerHTML = "";
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML = `
+            <div class="p-5 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+              No archived work orders found.
+            </div>
+          `;
+          return;
+        }
+
+        orders.forEach((order, index) => {
+          const { timestamp, submitter, agency = "SADOT", category = "General", priority = "Routine", location, equipment = "Standard Unit", description, status = "Resolved", operator = "N/A", archivedAt } = order;
+
+          const card = document.createElement('div');
+          card.className = "p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 text-xs shadow-lg opacity-80";
+          card.innerHTML = `
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-dot-border pb-3">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 bg-emerald-950/60 border border-emerald-800 text-emerald-400 font-mono font-bold uppercase rounded text-[10px]">${status}</span>
+                <span class="px-2 py-0.5 bg-dot-orange/10 border border-dot-orange text-dot-orange font-mono font-bold uppercase rounded text-[10px]">${category}</span>
+                <span class="px-2 py-0.5 bg-dot-surface border border-dot-border text-slate-300 font-mono font-bold uppercase rounded text-[10px]">Agency: ${agency}</span>
+              </div>
+              <span class="font-mono text-[10px] text-slate-400 uppercase">Archived: ${archivedAt || 'N/A'}</span>
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-sm font-bold text-white uppercase">Archived Ticket #${index + 1} <span class="text-dot-orange font-mono text-[11px]">[Unit: ${operator}]</span></h3>
+              <p class="text-slate-300 leading-relaxed">${description}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-dot-border text-[11px] font-mono text-slate-400">
+              <div><strong class="text-slate-200">Location:</strong> ${location} | <strong class="text-slate-200">Equipment:</strong> ${equipment}</div>
+              <div>Logged By: <strong class="text-white">${submitter}</strong></div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error loading archive:", error);
+        container.innerHTML = `
+          <div class="p-5 bg-red-950/30 border border-red-900/50 rounded text-red-400 text-xs font-mono">
+            ⚠️ Failed to load work order archives.
+          </div>
+        `;
+      }
+    }
+
+    async function updateOrderStatus(id, index) {
+      const statusSelect = document.getElementById(`status-${index}`);
+      const operatorInput = document.getElementById(`operator-${index}`);
+      const msgBox = document.getElementById(`msg-${index}`);
+      const btn = document.getElementById(`btn-${index}`);
+
+      const newStatus = statusSelect.value;
+      const operator = operatorInput.value.trim();
+
+      if (!operator) {
+        msgBox.className = "text-red-400 font-mono text-[11px]";
+        msgBox.innerText = "⚠️ Please enter your operator callsign or name before attaching.";
+        msgBox.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = "Updating & Archiving...";
+      msgBox.classList.add('hidden');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/work-orders/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: newStatus,
+            operator: operator
+          })
+        });
+
+        if (!response.ok) throw new Error('Server update failed');
+
+        msgBox.className = "text-emerald-400 font-mono text-[11px]";
+        msgBox.innerText = newStatus === 'Resolved' || newStatus === 'Cancelled' ? "✓ Ticket successfully resolved and moved to archive!" : "✓ Status updated!";
+        msgBox.classList.remove('hidden');
+        
+        setTimeout(() => { loadWorkOrders(); }, 1500);
+      } catch (error) {
+        console.error("Update error:", error);
+        msgBox.className = "text-red-400 font-mono text-[11px]";
+        msgBox.innerText = "⚠️ Failed to update status. Check server connection.";
+        msgBox.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerText = "Attach & Update Status";
+      }
+    }
+  </script>
+
+</body>
+</html>

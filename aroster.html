@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Roster Administration Console</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+  if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+    window.location.href = 'portal';
+  }
+
+  const userLevel = parseInt(sessionStorage.getItem('sadot_level') || '1', 10);
+
+  if (userLevel < 3) {
+    alert("Access Denied: Supervisory or Command clearance required.");
+    window.location.href = 'employee-portal';
+  }
+</script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="text-dot-orange">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-6 py-12 flex-1 w-full space-y-8">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-dot-border pb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest mb-1">
+          Personnel Management Console
+        </div>
+        <h1 class="text-2xl font-black text-white uppercase tracking-tight">Roster Administration</h1>
+        <p class="text-slate-400 text-xs mt-1">Assign callsigns, adjust employee ranks, and update operational certifications.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <input 
+          type="text" 
+          id="rosterSearch" 
+          placeholder="Filter callsign, name, or rank..." 
+          class="bg-dot-card border border-dot-border rounded px-4 py-2 text-xs text-white focus:outline-none focus:border-dot-orange w-full md:w-72"
+        />
+        <button onclick="loadRosterAdmin()" class="bg-dot-card hover:bg-dot-border border border-dot-border text-dot-orange font-mono text-xs px-4 py-2 rounded font-bold uppercase transition whitespace-nowrap">
+          🔄 Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Personnel Records Organized by Tier -->
+    <div id="admin-roster-container" class="space-y-12">
+      <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+        Synchronizing personnel directory...
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Edit Personnel Modal -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-dot-card border border-dot-border rounded-xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="p-6 bg-dot-surface border-b border-dot-border flex items-center justify-between">
+        <div>
+          <span class="px-2.5 py-0.5 rounded font-mono text-[10px] uppercase font-bold bg-dot-orange/20 text-dot-orange border border-dot-orange/40">Edit Assignment</span>
+          <h2 id="modal-title" class="text-xl font-black text-white uppercase tracking-wide mt-1"></h2>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm bg-dot-black px-3 py-1.5 rounded border border-dot-border">
+          ✕ Close [ESC]
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="edit-roster-form" onsubmit="savePersonnelChanges(event)" class="flex flex-col">
+        <div class="p-6 space-y-6 text-xs overflow-y-auto max-h-[70vh]">
+          <input type="hidden" id="edit-id" />
+
+          <!-- Callsign & Password Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Assigned Callsign: <span class="text-dot-orange">*</span></label>
+              <input type="text" id="edit-callsign" required placeholder="e.g., DOT-005" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono font-bold" />
+            </div>
+            <div>
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Portal Password: <span class="text-dot-orange">*</span></label>
+              <input type="text" id="edit-password" required class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-dot-orange focus:outline-none focus:border-dot-orange font-mono font-bold" />
+            </div>
+          </div>
+
+          <!-- Rank Selection Row -->
+          <div>
+            <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Assigned Rank: <span class="text-dot-orange">*</span></label>
+            <select id="edit-rank" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono">
+              <optgroup label="Command Staff">
+                <option value="Transportation Commissioner">Transportation Commissioner</option>
+                <option value="Deputy Transportation Commissioner">Deputy Transportation Commissioner</option>
+                <option value="Chief of Operations">Chief of Operations</option>
+              </optgroup>
+              <optgroup label="Supervisory Staff">
+                <option value="Manager">Manager</option>
+                <option value="Supervisor">Supervisor</option>
+              </optgroup>
+              <optgroup label="Field Operators">
+                <option value="Senior Operator">Senior Operator</option>
+                <option value="Operator II">Operator II</option>
+                <option value="Operator I">Operator I</option>
+              </optgroup>
+              <optgroup label="Probationary Operators">
+                <option value="Probationary Operator (Cadet)">Probationary Operator (Cadet)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- Certifications Section -->
+          <div>
+            <label class="block font-mono text-slate-400 uppercase tracking-wider mb-2">Operational Certifications:</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 font-mono text-[11px]" id="certifications-checkbox-container">
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+                <input type="checkbox" name="edit-cert" value="Probationary Certified" class="accent-[#ff6600]" /> Probationary Certified
+              </label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+                <input type="checkbox" name="edit-cert" value="CDL" class="accent-[#ff6600]" /> CDL
+              </label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+                <input type="checkbox" name="edit-cert" value="Flag Certified" class="accent-[#ff6600]" /> Flag Certified
+              </label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+                <input type="checkbox" name="edit-cert" value="Rollback Certified" class="accent-[#ff6600]" /> Rollback Certified
+              </label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+                <input type="checkbox" name="edit-cert" value="Boom Wrecker Certified" class="accent-[#ff6600]" /> Boom Wrecker Certified
+              </label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+                <input type="checkbox" name="edit-cert" value="Heavy Wrecker Certified" class="accent-[#ff6600]" /> Heavy Wrecker Certified
+              </label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+                <input type="checkbox" name="edit-cert" value="Heavy Transport Certified" class="accent-[#ff6600]" /> Heavy Transport Certified
+              </label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+                <input type="checkbox" name="edit-cert" value="Trailer Certified" class="accent-[#ff6600]" /> Trailer Certified
+              </label>
+            </div>
+          </div>
+          
+          <!-- Alert Message Box -->
+          <div id="modal-action-msg" class="font-mono text-xs hidden"></div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-end gap-3 p-6 bg-dot-surface border-t border-dot-border">
+          <button type="button" onclick="closeModal()" class="bg-dot-surface hover:bg-dot-card border border-dot-border px-5 py-2.5 rounded font-mono text-slate-300 uppercase">
+            Cancel
+          </button>
+          <button type="submit" id="save-btn" class="bg-dot-orange hover:bg-dot-orangeHover text-white px-6 py-2.5 rounded font-bold uppercase tracking-wider transition font-mono">
+            Save Personnel Updates
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Human Resources & Standards
+  </footer>
+
+  <!-- Administration Script -->
+  <script>
+    const API_BASE_URL = "/api";
+    let cachedRoster = [];
+
+    const tierStructure = [
+      { title: "Command Staff", color: "bg-dot-orange", ranks: ["Transportation Commissioner", "Deputy Transportation Commissioner", "Chief of Operations", "Command Staff"] },
+      { title: "Supervisory Staff", color: "bg-slate-400", ranks: ["Manager", "Supervisor", "Supervisory Staff"] },
+      { title: "Field Operators", color: "bg-emerald-500", ranks: ["Senior Operator", "Operator II", "Operator I"] },
+      { title: "Probationary Operators", color: "bg-dot-orangeMuted border border-dot-orange/40", ranks: ["Probationary Operator (Cadet)", "Cadet"] }
+    ];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadRosterAdmin();
+    });
+
+    async function loadRosterAdmin() {
+      const container = document.getElementById('admin-roster-container');
+      try {
+        const response = await fetch(`${API_BASE_URL}/roster`);
+        cachedRoster = await response.json();
+        container.innerHTML = "";
+
+        if (!cachedRoster || cachedRoster.length === 0) {
+          container.innerHTML = `<div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">No personnel records found.</div>`;
+          return;
+        }
+
+        tierStructure.forEach(tier => {
+          const tierMembers = cachedRoster.filter(m => tier.ranks.includes(m.rank || "Probationary Operator (Cadet)"));
+          if (tierMembers.length === 0) return;
+
+          const sectionDiv = document.createElement('div');
+          sectionDiv.className = "roster-section space-y-4";
+          sectionDiv.innerHTML = `
+            <div class="flex items-center gap-2 mb-4">
+              <div class="h-3 w-1.5 ${tier.color} rounded-sm"></div>
+              <h2 class="text-sm font-black text-white uppercase tracking-wider">${tier.title}</h2>
+            </div>
+          `;
+
+          const grid = document.createElement('div');
+          grid.className = "space-y-3";
+
+          tierMembers.forEach(member => {
+            const originalIndex = cachedRoster.findIndex(r => r.id === member.id);
+            const { icName, oocName, callsign, rank, portalPassword, certifications } = member;
+            const certString = Array.isArray(certifications) ? certifications.join(', ') : 'None';
+
+            const card = document.createElement('div');
+            card.className = "roster-card p-5 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-dot-orange transition shadow-md";
+            card.innerHTML = `
+              <div class="space-y-1 flex-1">
+                <div class="flex items-center gap-3">
+                  <span class="px-2.5 py-0.5 border rounded font-mono text-[10px] uppercase font-bold bg-dot-orange/10 border-dot-orange text-dot-orange">${callsign || 'UNASSIGNED'}</span>
+                  <span class="font-mono text-[11px] text-slate-400">OOC: ${oocName || 'N/A'}</span>
+                </div>
+                <h3 class="text-base font-bold text-white uppercase mt-1">${icName} <span class="text-xs text-dot-orange font-mono font-normal">(${rank})</span></h3>
+                
+                <!-- PASSWORD REVEAL SECTION -->
+                <p class="text-slate-400 text-[10px] font-mono mt-1">
+                  PORTAL PASS: <span class="bg-dot-black px-2 py-0.5 rounded text-dot-orange blur-[4px] hover:blur-none transition-all duration-300 cursor-help select-all mx-1 border border-dot-border" title="Hover to reveal password">${portalPassword || 'NOT_SET'}</span>
+                </p>
+
+                <p class="text-slate-500 text-[10px] font-mono">Certs: ${certString}</p>
+              </div>
+              <button onclick="openEditModal(${originalIndex})" class="w-full md:w-auto bg-dot-orange hover:bg-dot-orangeHover text-white px-5 py-2.5 rounded font-bold uppercase transition font-mono whitespace-nowrap">
+                Edit Assignments ↗
+              </button>
+            `;
+            grid.appendChild(card);
+          });
+
+          sectionDiv.appendChild(grid);
+          container.appendChild(sectionDiv);
+        });
+
+        setupSearch();
+      } catch (error) {
+        console.error("Error loading roster:", error);
+      }
+    }
+
+    function openEditModal(index) {
+      const member = cachedRoster[index];
+      if (!member) return;
+
+      document.getElementById('edit-id').value = member.id;
+      document.getElementById('edit-callsign').value = member.callsign || "";
+      document.getElementById('edit-rank').value = member.rank || "Probationary Operator (Cadet)";
+      document.getElementById('edit-password').value = member.portalPassword || "";
+      
+      const memberCerts = Array.isArray(member.certifications) 
+        ? member.certifications.map(c => c.trim()) 
+        : [];
+
+      document.querySelectorAll('input[name="edit-cert"]').forEach(cb => {
+        cb.checked = memberCerts.includes(cb.value);
+      });
+
+      document.getElementById('modal-title').innerText = `Editing — ${member.icName}`;
+      document.getElementById('modal-action-msg').classList.add('hidden');
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.add('hidden');
+    }
+
+    async function savePersonnelChanges(event) {
+      event.preventDefault();
+
+      const id = document.getElementById('edit-id').value;
+      const callsign = document.getElementById('edit-callsign').value.trim();
+      const rank = document.getElementById('edit-rank').value;
+      const portalPassword = document.getElementById('edit-password').value.trim();
+      const certifications = Array.from(document.querySelectorAll('input[name="edit-cert"]:checked')).map(cb => cb.value);
+
+      const msgBox = document.getElementById('modal-action-msg');
+      const saveBtn = document.getElementById('save-btn');
+
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Saving Changes...";
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/roster/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ callsign, rank, portalPassword, certifications })
+        });
+
+        if (!response.ok) throw new Error('Update failed');
+
+        msgBox.className = "font-mono text-xs text-emerald-400 p-2 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "✓ Personnel record successfully updated!";
+        msgBox.classList.remove('hidden');
+
+        setTimeout(() => {
+          closeModal();
+          loadRosterAdmin();
+          saveBtn.disabled = false;
+          saveBtn.innerText = "Save Personnel Updates";
+        }, 1200);
+      } catch (error) {
+        console.error("Save error:", error);
+        msgBox.className = "font-mono text-xs text-red-400 p-2 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "⚠️ Failed to update personnel record.";
+        msgBox.classList.remove('hidden');
+        saveBtn.disabled = false;
+        saveBtn.innerText = "Save Personnel Updates";
+      }
+    }
+
+    function setupSearch() {
+      const search = document.getElementById('rosterSearch');
+      search.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.roster-card');
+        cards.forEach(card => {
+          const content = card.innerText.toLowerCase();
+          card.style.display = content.includes(val) ? 'flex' : 'none';
+        });
+      });
+    }
+  </script>
+</body>
+</html>

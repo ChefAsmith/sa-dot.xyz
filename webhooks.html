@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Discord Webhook Administration</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+  if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+    window.location.href = 'portal';
+  }
+
+  const userLevel = parseInt(sessionStorage.getItem('sadot_level') || '1', 10);
+
+  if (userLevel < 3) {
+    alert("Access Denied: Supervisory or Command clearance required.");
+    window.location.href = 'employee-portal';
+  }
+</script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-6 py-12 flex-1 w-full space-y-8">
+    
+    <div class="border-b border-dot-border pb-6 space-y-1">
+      <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+        Integration & Telemetry
+      </div>
+      <h1 class="text-3xl font-black text-white uppercase tracking-tight">Discord Webhook Administration</h1>
+      <p class="text-slate-400 text-xs">Configure Discord channel webhooks to receive real-time automated alerts for applications, work orders, and field logs.</p>
+    </div>
+
+    <!-- Webhook Form -->
+    <form id="webhook-form" onsubmit="saveWebhooks(event)" class="bg-dot-card border border-dot-border rounded-lg p-8 space-y-6 shadow-xl text-xs">
+      
+      <!-- Webhook 1: Alerts -->
+      <div class="space-y-2">
+        <label class="block font-mono text-slate-300 uppercase tracking-wider font-bold">
+          🔔 Alerts Webhook (New Apps & Work Orders):
+        </label>
+        <div class="flex gap-2">
+          <input type="url" id="alertsWebhook" placeholder="https://discord.com/api/webhooks/..." class="flex-1 bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono" />
+          <button type="button" onclick="testWebhook('alertsWebhook')" class="bg-dot-surface hover:bg-dot-border border border-dot-border text-dot-orange px-4 py-2.5 rounded font-mono font-bold uppercase transition whitespace-nowrap">
+            Test Ping ⚡
+          </button>
+        </div>
+      </div>
+
+      <!-- Webhook 2: Applications -->
+      <div class="space-y-2 pt-4 border-t border-dot-border">
+        <label class="block font-mono text-slate-300 uppercase tracking-wider font-bold">
+          ✅ Application Status Webhook (Approvals/Denials):
+        </label>
+        <div class="flex gap-2">
+          <input type="url" id="applicationWebhook" placeholder="https://discord.com/api/webhooks/..." class="flex-1 bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono" />
+          <button type="button" onclick="testWebhook('applicationWebhook')" class="bg-dot-surface hover:bg-dot-border border border-dot-border text-dot-orange px-4 py-2.5 rounded font-mono font-bold uppercase transition whitespace-nowrap">
+            Test Ping ⚡
+          </button>
+        </div>
+      </div>
+
+      <div id="form-msg" class="font-mono text-xs hidden"></div>
+
+      <div class="flex items-center justify-end pt-4 border-t border-dot-border">
+        <button type="submit" id="save-btn" class="bg-dot-orange hover:bg-dot-orangeHover text-white px-6 py-3 rounded font-bold uppercase tracking-wider transition font-mono">
+          Save Webhook Configurations
+        </button>
+      </div>
+    </form>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Human Resources & Standards
+  </footer>
+
+  <!-- Webhook Script -->
+  <script>
+    const API_BASE_URL = "/api";
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadWebhooks();
+    });
+
+    async function loadWebhooks() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/settings/webhooks`);
+        const data = await res.json();
+
+        document.getElementById('alertsWebhook').value = data.alertsWebhook || '';
+        document.getElementById('applicationWebhook').value = data.applicationWebhook || '';
+      } catch (err) {
+        console.error("Error loading webhooks:", err);
+      }
+    }
+
+    async function testWebhook(fieldId) {
+      const url = document.getElementById(fieldId).value.trim();
+      const msgBox = document.getElementById('form-msg');
+      if (!url) {
+        alert("Please enter a valid webhook URL before testing.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/settings/test-webhook`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        if (!res.ok) throw new Error('Test failed');
+
+        msgBox.className = "font-mono text-xs text-emerald-400 p-3 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = `✓ Test ping successfully dispatched to Discord (${fieldId})!`;
+        msgBox.classList.remove('hidden');
+      } catch (err) {
+        msgBox.className = "font-mono text-xs text-red-400 p-3 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "⚠️ Failed to reach Discord webhook. Verify URL permissions.";
+        msgBox.classList.remove('hidden');
+      }
+    }
+
+    async function saveWebhooks(event) {
+      event.preventDefault();
+
+      const alertsWebhook = document.getElementById('alertsWebhook').value.trim();
+      const applicationWebhook = document.getElementById('applicationWebhook').value.trim();
+
+      const msgBox = document.getElementById('form-msg');
+      const saveBtn = document.getElementById('save-btn');
+
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Saving Configuration...";
+      msgBox.classList.add('hidden');
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/settings/webhooks`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ alertsWebhook, applicationWebhook })
+        });
+
+        if (!res.ok) throw new Error('Save failed');
+
+        msgBox.className = "font-mono text-xs text-emerald-400 p-3 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "✓ Webhook configurations successfully saved to server storage!";
+        msgBox.classList.remove('hidden');
+      } catch (err) {
+        msgBox.className = "font-mono text-xs text-red-400 p-3 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "⚠️ Failed to save webhook settings.";
+        msgBox.classList.remove('hidden');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "Save Webhook Configurations";
+      }
+    }
+  </script>
+
+</body>
+</html>

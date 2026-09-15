@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Employee Portal Gateway</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('sadot_authenticated') === 'true') {
+        document.getElementById('already-logged-in-banner').classList.remove('hidden');
+      }
+    });
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+  <!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Official Department Portal
+  </div>
+  
+  <!-- Universal Public Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="index" class="hover:text-dot-orange transition">Home</a>
+        <a href="sop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="faq" class="hover:text-dot-orange transition">FAQ</a>
+        <a href="work-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="roster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="portal" class="text-dot-orange">Employee Portal</a>
+        <a href="credits" class="hover:text-dot-orange transition">Credits</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="apply" target="_blank" class="bg-dot-orange hover:bg-dot-orangeHover text-white px-3.5 py-1.5 rounded transition text-xs font-bold uppercase tracking-wider shadow-md">
+          Join SADOT ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- PASSWORD GATE CONTAINER -->
+  <main class="max-w-md mx-auto px-6 py-16 flex-1 w-full flex flex-col items-center justify-center space-y-4">
+    
+    <!-- Active Session Notice -->
+    <div id="already-logged-in-banner" class="w-full bg-emerald-950/60 border border-emerald-800 rounded-lg p-4 text-center font-mono text-xs hidden space-y-2">
+      <p class="text-emerald-400 font-bold">✓ Active session detected for your browser.</p>
+      <a href="employee-portal" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-black px-4 py-2 rounded font-bold uppercase transition">
+        Enter Internal Dashboard ↗
+      </a>
+    </div>
+
+    <div class="bg-dot-card border border-dot-border rounded-lg p-8 w-full space-y-6 shadow-2xl">
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+          Rank Authentication
+        </div>
+        <h1 class="text-2xl font-black text-white uppercase tracking-tight">Employee Login</h1>
+        <p class="text-slate-400 text-xs">Enter your rank-specific department password to unlock authorized portal access.</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Rank Password</label>
+          <input 
+            type="password" 
+            id="password-input" 
+            placeholder="Enter rank password..." 
+            required
+            class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange shadow-inner font-mono"
+          />
+        </div>
+        <div id="error-msg" class="text-red-400 font-mono hidden">
+          ⚠️ Invalid password for any recognized rank. Try again.
+        </div>
+        <button type="submit" id="login-btn" class="w-full bg-dot-orange hover:bg-dot-orangeHover text-white py-3 rounded font-bold uppercase tracking-wider transition shadow-lg shadow-orange-950/40 font-mono">
+          Authenticate & Enter Portal
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+<script>
+    const API_BASE_URL = "/api";
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      const inputVal = document.getElementById('password-input').value.trim();
+      const errorMsg = document.getElementById('error-msg');
+      const loginBtn = document.getElementById('login-btn');
+
+      loginBtn.disabled = true;
+      loginBtn.innerText = "Verifying Credentials...";
+      errorMsg.classList.add('hidden');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: inputVal })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          sessionStorage.setItem('sadot_authenticated', 'true');
+          sessionStorage.setItem('sadot_rank', data.rank);
+          sessionStorage.setItem('sadot_level', data.level);
+          sessionStorage.setItem('sadot_certs', JSON.stringify(data.certifications || []));
+          
+          window.location.href = 'employee-portal';
+        } else {
+          errorMsg.classList.remove('hidden');
+          document.getElementById('password-input').value = "";
+        }
+      } catch (err) {
+        console.error("Login connection error:", err);
+        errorMsg.innerText = "⚠️ Server connection error. Verify backend status.";
+        errorMsg.classList.remove('hidden');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Authenticate & Enter Portal";
+      }
+    }
+  </script>
+
+</body>
+</html>

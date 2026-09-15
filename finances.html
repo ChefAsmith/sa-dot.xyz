@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Financial Ledger & Asset Management</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="text-dot-orange">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full space-y-12">
+    
+    <!-- Title Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between pb-6 border-b border-dot-border gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest mb-1">
+          State Treasury & Live Consumables Tracking
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Expenses, Profits & Asset Balance Sheet</h1>
+        <p class="text-slate-400 text-xs mt-1">Real-time valuation aggregated from live employee payroll, MFO item consumption, and fixed assets.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="loadFinancialData()" class="bg-dot-card hover:bg-dot-border border border-dot-border text-dot-orange font-mono text-xs px-4 py-2.5 rounded font-bold uppercase transition flex items-center gap-2">
+          🔄 Refresh Fiscal Telemetry
+        </button>
+      </div>
+    </div>
+
+    <!-- Executive Summary Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-dot-card border border-dot-border rounded-lg p-5 space-y-2 shadow-xl">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Total Department Assets</span>
+        <div class="text-2xl font-black text-white font-mono">$5,519,500.00</div>
+        <p class="text-[11px] text-emerald-400 font-mono">Real Estate & Fleet (Fleet Asset Price.csv)</p>
+      </div>
+      <div class="bg-dot-card border border-dot-border rounded-lg p-5 space-y-2 shadow-xl">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Total Liabilities & Debt</span>
+        <div class="text-2xl font-black text-red-400 font-mono">$2,315,500.00</div>
+        <p class="text-[11px] text-slate-400 font-mono">HQ Mortgages & Equipment Loans</p>
+      </div>
+      <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-2 shadow-xl">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Net Worth / Equity</span>
+        <div class="text-2xl font-black text-dot-orange font-mono">$3,204,000.00</div>
+        <p class="text-[11px] text-dot-orange font-mono">Assets Minus Liabilities</p>
+      </div>
+      <div class="bg-dot-card border border-dot-border rounded-lg p-5 space-y-2 shadow-xl">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Monthly Net Operating Profit</span>
+        <div class="text-2xl font-black text-emerald-400 font-mono" id="net-profit-val">Calculating...</div>
+        <p class="text-[11px] text-emerald-400 font-mono" id="profit-sub-val">Revenue vs Live Expenses</p>
+      </div>
+    </div>
+
+    <!-- SECTION 1: CONSUMABLES & INVENTORY TRACKING (GTA V SCALE) -->
+    <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-6 shadow-xl">
+      <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-dot-border pb-3 gap-2">
+        <div>
+          <h2 class="text-lg font-black text-white uppercase tracking-wide">📦 Field Consumables & Inventory Usage</h2>
+          <p class="text-slate-400 text-xs mt-0.5">Aggregated totals from all submitted MFO logs for tires, fuel, repairs, and safety gear.</p>
+        </div>
+        <span id="total-inventory-cost" class="font-mono text-xs text-dot-orange font-bold">Calculating item costs...</span>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 font-mono text-xs">
+        <div class="p-3 bg-dot-surface border border-dot-border rounded text-center space-y-1">
+          <span class="text-[10px] text-slate-400 block uppercase">Total Distance</span>
+          <span id="inv-dist" class="text-white font-bold text-base">0 mi</span>
+        </div>
+        <div class="p-3 bg-dot-surface border border-dot-border rounded text-center space-y-1">
+          <span class="text-[10px] text-slate-400 block uppercase">Fuel Burned</span>
+          <span id="inv-fuel" class="text-dot-orange font-bold text-base">0 gal</span>
+        </div>
+        <div class="p-3 bg-dot-surface border border-dot-border rounded text-center space-y-1">
+          <span class="text-[10px] text-slate-400 block uppercase">Repair Costs</span>
+          <span id="inv-repair" class="text-red-400 font-bold text-base">$0</span>
+        </div>
+        <div class="p-3 bg-dot-surface border border-dot-border rounded text-center space-y-1">
+          <span class="text-[10px] text-slate-400 block uppercase">Tires Used</span>
+          <span id="inv-tires" class="text-white font-bold text-base">0</span>
+        </div>
+        <div class="p-3 bg-dot-surface border border-dot-border rounded text-center space-y-1">
+          <span class="text-[10px] text-slate-400 block uppercase">Lockout Kits</span>
+          <span id="inv-lockout" class="text-white font-bold text-base">0</span>
+        </div>
+        <div class="p-3 bg-dot-surface border border-dot-border rounded text-center space-y-1">
+          <span class="text-[10px] text-slate-400 block uppercase">Plug Kits</span>
+          <span id="inv-plugs" class="text-white font-bold text-base">0</span>
+        </div>
+        <div class="p-3 bg-dot-surface border border-dot-border rounded text-center space-y-1">
+          <span class="text-[10px] text-slate-400 block uppercase">Flares/Cones</span>
+          <span id="inv-flares" class="text-white font-bold text-base">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: BALANCE SHEET (ASSETS & LIABILITIES) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Assets Table -->
+      <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-6 shadow-xl">
+        <div class="flex items-center justify-between border-b border-dot-border pb-3">
+          <h2 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
+            🏛️ Department Assets (Fixed & Current)
+          </h2>
+          <span class="font-mono text-xs text-dot-orange font-bold">$5,519,500.00 Total</span>
+        </div>
+
+        <div class="space-y-4 text-xs font-mono">
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded flex justify-between items-center">
+            <div>
+              <strong class="text-white uppercase block text-sm">Los Santos HQ (796 Popular Street)</strong>
+              <span class="text-slate-400 text-[11px]">Large industrial lot, underground employee parking/offices, aboveground storage, direct highway access.</span>
+            </div>
+            <span class="text-emerald-400 font-bold text-sm">$2,500,000.00</span>
+          </div>
+
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded flex justify-between items-center">
+            <div>
+              <strong class="text-white uppercase block text-sm">Blaine County HQ (228 Joshua Road)</strong>
+              <span class="text-slate-400 text-[11px]">Large desert compound, central Grand Senora Desert connectivity.</span>
+            </div>
+            <span class="text-emerald-400 font-bold text-sm">$1,200,000.00</span>
+          </div>
+
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded flex justify-between items-center">
+            <div>
+              <strong class="text-white uppercase block text-sm">Fleet & Heavy Equipment Inventory</strong>
+              <span class="text-slate-400 text-[11px]">20 active vehicles, trailers, and heavy plant units (Fleet Asset Price.csv).</span>
+            </div>
+            <span class="text-emerald-400 font-bold text-sm">$1,334,000.00</span>
+          </div>
+
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded flex justify-between items-center">
+            <div>
+              <strong class="text-white uppercase block text-sm">State Treasury Cash Reserve</strong>
+              <span class="text-slate-400 text-[11px]">Emergency operational grant funding and working capital.</span>
+            </div>
+            <span class="text-emerald-400 font-bold text-sm">$485,500.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liabilities Table -->
+      <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-6 shadow-xl">
+        <div class="flex items-center justify-between border-b border-dot-border pb-3">
+          <h2 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
+            📋 Liabilities & Outstanding Debt
+          </h2>
+          <span class="font-mono text-xs text-red-400 font-bold">$2,315,500.00 Total</span>
+        </div>
+
+        <div class="space-y-4 text-xs font-mono">
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded flex justify-between items-center">
+            <div>
+              <strong class="text-white uppercase block text-sm">Los Santos HQ Commercial Mortgage</strong>
+              <span class="text-slate-400 text-[11px]">State infrastructure development loan (60% amortized balance).</span>
+            </div>
+            <span class="text-red-400 font-bold text-sm">$1,500,000.00</span>
+          </div>
+
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded flex justify-between items-center">
+            <div>
+              <strong class="text-white uppercase block text-sm">Blaine County HQ Mortgage</strong>
+              <span class="text-slate-400 text-[11px]">Regional depot acquisition loan (50% amortized balance).</span>
+            </div>
+            <span class="text-red-400 font-bold text-sm">$600,000.00</span>
+          </div>
+
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded flex justify-between items-center">
+            <div>
+              <strong class="text-white uppercase block text-sm">Heavy Equipment Acquisition Loan</strong>
+              <span class="text-slate-400 text-[11px]">Financing for Kenworth wrecker and crawler dozer units.</span>
+            </div>
+            <span class="text-red-400 font-bold text-sm">$150,000.00</span>
+          </div>
+
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded flex justify-between items-center">
+            <div>
+              <strong class="text-white uppercase block text-sm">Accounts Payable (Vendor Credit Lines)</strong>
+              <span class="text-slate-400 text-[11px]">Open revolving accounts with fuel and replacement part suppliers.</span>
+            </div>
+            <span class="text-red-400 font-bold text-sm">$65,500.00</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECTION 3: LIVE EMPLOYEE WAGES & PAYROLL SUMMARY -->
+    <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-6 shadow-xl">
+      <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-dot-border pb-3 gap-2">
+        <div>
+          <h2 class="text-lg font-black text-white uppercase tracking-wide">👷 Live Employee Wages & Monthly Payroll</h2>
+          <p class="text-slate-400 text-xs mt-0.5">Calculated from registered roster hours and realistic DOT civil service wage tiers.</p>
+        </div>
+        <span id="live-payroll-header" class="font-mono text-xs text-dot-orange font-bold">Calculating live payroll...</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left font-mono text-xs">
+          <thead>
+            <tr class="border-b border-dot-border text-slate-400 uppercase text-[10px]">
+              <th class="py-3 px-4">Operator Name</th>
+              <th class="py-3 px-4">Callsign</th>
+              <th class="py-3 px-4">Rank Tier</th>
+              <th class="py-3 px-4 text-right">Hourly Wage</th>
+              <th class="py-3 px-4 text-right">Month Hours</th>
+              <th class="py-3 px-4 text-right">Est. Monthly Payout</th>
+            </tr>
+          </thead>
+          <tbody id="live-payroll-tbody" class="divide-y divide-dot-border text-slate-300">
+            <tr><td colspan="6" class="py-4 text-center text-slate-500">Synchronizing employee hours from patrol logs...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION 4: OPERATING EXPENSES & BURN RATE -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Expenses Table -->
+      <div class="lg:col-span-2 bg-dot-card border border-dot-border rounded-lg p-6 space-y-6 shadow-xl">
+        <div class="flex items-center justify-between border-b border-dot-border pb-3">
+          <h2 class="text-lg font-black text-white uppercase tracking-wide">⚙️ Operating Expenses & Burn Rate</h2>
+          <span id="total-burn-rate" class="font-mono text-xs text-dot-orange font-bold">Calculating burn rate...</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-mono text-xs">
+            <thead>
+              <tr class="border-b border-dot-border text-slate-400 uppercase text-[10px]">
+                <th class="py-3 px-4">Expense Category</th>
+                <th class="py-3 px-4">Description / Consumables</th>
+                <th class="py-3 px-4 text-right">Monthly Cost</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-dot-border text-slate-300">
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Live Payroll & Benefits</td>
+                <td class="py-3 px-4 text-slate-400">Calculated dynamically from active patrol shift hours</td>
+                <td class="py-3 px-4 text-right text-dot-orange font-bold" id="expense-payroll-cell">$0.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Fleet Fuel & Lubricants</td>
+                <td class="py-3 px-4 text-slate-400">Aggregated fuel consumed from MFO log telemetry ($3.50/gal)</td>
+                <td class="py-3 px-4 text-right" id="expense-fuel-cell">$14,500.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Direct Repair Costs</td>
+                <td class="py-3 px-4 text-slate-400">Aggregated mechanical repairs & parts logged on MFO forms</td>
+                <td class="py-3 px-4 text-right" id="expense-repair-cell">$3,800.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Commercial Fleet Insurance</td>
+                <td class="py-3 px-4 text-slate-400">State liability and property damage coverage for fleet & HQs</td>
+                <td class="py-3 px-4 text-right">$8,500.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Facility Utilities & Maintenance</td>
+                <td class="py-3 px-4 text-slate-400">Industrial power, water, and HVAC for LS HQ & Blaine County Depot</td>
+                <td class="py-3 px-4 text-right">$6,500.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Heavy Tires & Tread Replacements</td>
+                <td class="py-3 px-4 text-slate-400">Commercial tires logged on MFO forms ($250/tire avg) + stock</td>
+                <td class="py-3 px-4 text-right" id="expense-tires-cell">$4,200.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Winter Salt & Brine Inventory</td>
+                <td class="py-3 px-4 text-slate-400">Granular salt and liquid anti-icing brine stock (Seasonal amortized)</td>
+                <td class="py-3 px-4 text-right">$3,000.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Safety Gear & Consumables</td>
+                <td class="py-3 px-4 text-slate-400">Flares, lockout kits, plug kits, and high-vis gear logged on MFO</td>
+                <td class="py-3 px-4 text-right" id="expense-safety-cell">$2,500.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Plow Blades & Cutting Edges</td>
+                <td class="py-3 px-4 text-slate-400">Steel carbide cutting edges for snowplows and rubble dump trucks</td>
+                <td class="py-3 px-4 text-right">$2,100.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">Facility Security & Monitoring</td>
+                <td class="py-3 px-4 text-slate-400">CCTV surveillance, gate automated access control, and alarm monitoring</td>
+                <td class="py-3 px-4 text-right">$1,800.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-white">CAD & Software Licensing</td>
+                <td class="py-3 px-4 text-slate-400">LoJack GPS tracking telemetry, radio dispatch channels, and CAD server</td>
+                <td class="py-3 px-4 text-right">$1,500.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Visualizations -->
+      <div class="space-y-6">
+        <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-4 shadow-xl">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">📊 Monthly Expense Distribution</h3>
+          <div class="h-64 w-full flex items-center justify-center">
+            <canvas id="expensePieChart"></canvas>
+          </div>
+        </div>
+
+        <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-4 shadow-xl">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">💵 Revenue vs. Expenses</h3>
+          <div class="h-56 w-full flex items-center justify-center">
+            <canvas id="revenueBarChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Live Financial & Chart Script -->
+  <script>
+    const API_BASE_URL = "/api";
+    let expensePieInstance = null;
+    let revenueBarInstance = null;
+
+    const wageMapping = {
+      "cadet": 22.0,
+      "probationary operator (cadet)": 22.0,
+      "operator i": 26.5,
+      "operator ii": 31.0,
+      "senior operator": 36.5,
+      "supervisor": 44.0,
+      "manager": 48.0,
+      "chief of operations": 55.0,
+      "deputy transportation commissioner": 60.0,
+      "transportation commissioner": 65.0
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadFinancialData();
+    });
+
+    function parseHoursFromTotalTime(totalTimeStr) {
+      if (!totalTimeStr) return 0;
+      const match = totalTimeStr.match(/(\d+)\s*hours?/i);
+      const minMatch = totalTimeStr.match(/(\d+)\s*minutes?/i);
+      const hrs = match ? parseFloat(match[1]) : 0;
+      const mins = minMatch ? parseFloat(minMatch[1]) / 60 : 0;
+      return hrs + mins;
+    }
+
+    async function loadFinancialData() {
+      try {
+        const [rosterRes, patrolRes, mfoRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/roster`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/patrol-logs`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/mfo-logs`).then(r => r.json())
+        ]);
+
+        processFinancials(rosterRes || [], patrolRes || [], mfoRes || []);
+      } catch (error) {
+        console.error("Error loading financial telemetry:", error);
+        document.getElementById('live-payroll-tbody').innerHTML = `
+          <tr><td colspan="6" class="py-4 text-center text-red-400">⚠️ Failed to reach backend server. Ensure server.js is online.</td></tr>
+        `;
+      }
+    }
+
+    function processFinancials(roster, patrolLogs, mfoLogs) {
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear().toString();
+
+      // Payroll calculation
+      const employeeMap = {};
+      roster.forEach(emp => {
+        const nameKey = (emp.icName || emp.oocName || "").toLowerCase();
+        if (!nameKey) return;
+        const rankKey = (emp.rank || "Cadet").toLowerCase();
+        const hourlyRate = wageMapping[rankKey] || 25.0;
+
+        employeeMap[nameKey] = {
+          name: emp.icName || emp.oocName,
+          callsign: emp.callsign || "UNASSIGNED",
+          rank: emp.rank || "Cadet",
+          hourlyRate: hourlyRate,
+          monthHours: 0
+        };
+      });
+
+      patrolLogs.forEach(log => {
+        const opName = (log.name || "").toLowerCase();
+        let matchedKey = Object.keys(employeeMap).find(k => k === opName || opName.includes(k));
+
+        if (!matchedKey && log.name) {
+          matchedKey = opName;
+          const rankKey = (log.rank || "Cadet").toLowerCase();
+          const hourlyRate = wageMapping[rankKey] || 25.0;
+
+          employeeMap[matchedKey] = {
+            name: log.name,
+            callsign: log.callsign || "UNASSIGNED",
+            rank: log.rank || "Operator",
+            hourlyRate: hourlyRate,
+            monthHours: 0
+          };
+        }
+
+        if (matchedKey) {
+          const shiftDate = new Date(log.shiftDate || log.timestamp);
+          const hours = parseHoursFromTotalTime(log.totalTime);
+          if (shiftDate.getFullYear().toString() === currentYear && shiftDate.getMonth() === currentMonth) {
+            employeeMap[matchedKey].monthHours += hours;
+          }
+        }
+      });
+
+      const employees = Object.values(employeeMap);
+      let totalPayroll = 0;
+
+      const tbody = document.getElementById('live-payroll-tbody');
+      if (employees.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-500">No active roster personnel found.</td></tr>`;
+      } else {
+        tbody.innerHTML = employees.map(emp => {
+          const payout = emp.monthHours * emp.hourlyRate;
+          totalPayroll += payout;
+          return `
+            <tr class="hover:bg-dot-surface transition">
+              <td class="py-3 px-4 font-bold text-white uppercase">${emp.name}</td>
+              <td class="py-3 px-4 text-dot-orange font-bold">${emp.callsign}</td>
+              <td class="py-3 px-4 text-slate-300">${emp.rank}</td>
+              <td class="py-3 px-4 text-right">$${emp.hourlyRate.toFixed(2)} / hr</td>
+              <td class="py-3 px-4 text-right">${emp.monthHours.toFixed(1)} hrs</td>
+              <td class="py-3 px-4 text-right text-emerald-400 font-bold">$${payout.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('live-payroll-header').innerText = `$${totalPayroll.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} Total Monthly Payout`;
+      document.getElementById('expense-payroll-cell').innerText = `$${totalPayroll.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+      // Consumables & MFO Aggregation (GTA V scale fuel ($3.50/gal), tires ($250/ea), repairs, lockout kits, etc.)
+      let totalDist = 0;
+      let totalFuelGal = 0;
+      let totalRepairCost = 0;
+      let totalTiresUsed = 0;
+      let totalLockout = 0;
+      let totalPlugs = 0;
+      let totalFlares = 0;
+
+      mfoLogs.forEach(log => {
+        const d = new Date(log.logDate || log.timestamp);
+        if (d.getFullYear().toString() === currentYear && d.getMonth() === currentMonth) {
+          totalDist += log.distanceTraveled || 0;
+          totalFuelGal += log.fuelConsumedGallons || 0;
+          totalRepairCost += log.repairCost || 0;
+          totalTiresUsed += log.tiresUsed || 0;
+          totalLockout += log.lockoutKitsUsed || 0;
+          totalPlugs += log.plugKitsUsed || 0;
+          totalFlares += log.flaresConesUsed || 0;
+        }
+      });
+
+      // Calculate dynamic costs from consumables ($3.50 per gallon of fuel, $250 per tire)
+      const dynamicFuelCost = (totalFuelGal > 0 ? totalFuelGal : 4142) * 3.50; // fallback base if 0
+      const dynamicRepairCost = totalRepairCost > 0 ? totalRepairCost : 3800;
+      const dynamicTireCost = (totalTiresUsed > 0 ? totalTiresUsed * 250 : 4200);
+      const dynamicSafetyCost = (totalLockout + totalPlugs + totalFlares > 0 ? (totalLockout*50 + totalPlugs*30 + totalFlares*15) : 2500);
+
+      document.getElementById('inv-dist').innerText = `${totalDist.toFixed(1)} mi`;
+      document.getElementById('inv-fuel').innerText = `${totalFuelGal.toFixed(1)} gal`;
+      document.getElementById('inv-repair').innerText = `$${totalRepairCost.toLocaleString()}`;
+      document.getElementById('inv-tires').innerText = totalTiresUsed;
+      document.getElementById('inv-lockout').innerText = totalLockout;
+      document.getElementById('inv-plugs').innerText = totalPlugs;
+      document.getElementById('inv-flares').innerText = totalFlares;
+
+      const totalInventoryVal = dynamicFuelCost + dynamicRepairCost + dynamicTireCost + dynamicSafetyCost;
+      document.getElementById('total-inventory-cost').innerText = `$${totalInventoryVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} Item Outlays`;
+
+      document.getElementById('expense-fuel-cell').innerText = `$${dynamicFuelCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('expense-repair-cell').innerText = `$${dynamicRepairCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('expense-tires-cell').innerText = `$${dynamicTireCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('expense-safety-cell').innerText = `$${dynamicSafetyCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+      // Total Burn Rate & Net Profit
+      const fixedOther = 8500 + 6500 + 3000 + 2100 + 1800 + 1500; // Insurance, Utilities, Salt, Plow blades, Security, CAD
+      const totalBurnRate = totalPayroll + dynamicFuelCost + dynamicRepairCost + dynamicTireCost + dynamicSafetyCost + fixedOther;
+
+      document.getElementById('total-burn-rate').innerText = `$${totalBurnRate.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} / Month Burn Rate`;
+
+      const baseSubsidy = 65000;
+      const mfoCountMonth = mfoLogs.filter(log => {
+        const d = new Date(log.logDate || log.timestamp);
+        return d.getFullYear().toString() === currentYear && d.getMonth() === currentMonth;
+      }).length;
+      const totalRevenue = baseSubsidy + (mfoCountMonth * 350);
+
+      const netProfit = totalRevenue - totalBurnRate;
+      const profitEl = document.getElementById('net-profit-val');
+      profitEl.innerText = `${netProfit >= 0 ? '+' : ''}$${netProfit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      profitEl.className = `text-2xl font-black font-mono ${netProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}`;
+
+      document.getElementById('profit-sub-val').innerText = `Revenue ($${totalRevenue.toLocaleString()}) vs Exp ($${totalBurnRate.toLocaleString()})`;
+
+      renderCharts(totalPayroll, dynamicFuelCost, dynamicRepairCost, dynamicTireCost, dynamicSafetyCost, fixedOther, totalRevenue, totalBurnRate);
+    }
+
+    function renderCharts(payroll, fuel, repair, tires, safety, other, revenue, expenses) {
+      const ctxPie = document.getElementById('expensePieChart').getContext('2d');
+      if (expensePieInstance) expensePieInstance.destroy();
+
+      expensePieInstance = new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+          labels: ['Payroll', 'Fuel', 'Repairs', 'Tires', 'Safety Gear', 'Insurance & Util', 'Other Admin'],
+          datasets: [{
+            data: [payroll, fuel, repair, tires, safety, 15000, other],
+            backgroundColor: ['#ff6600', '#232a3b', '#ef4444', '#f59e0b', '#8b5cf6', '#3b82f6', '#10b981'],
+            borderColor: '#181d2a',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { family: 'monospace', size: 10 } } }
+          }
+        }
+      });
+
+      const ctxBar = document.getElementById('revenueBarChart').getContext('2d');
+      if (revenueBarInstance) revenueBarInstance.destroy();
+
+      revenueBarInstance = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: ['Monthly Budget'],
+          datasets: [
+            { label: 'Total Revenue', data: [revenue], backgroundColor: '#10b981', borderRadius: 4 },
+            { label: 'Total Expenses', data: [expenses], backgroundColor: '#ef4444', borderRadius: 4 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#cbd5e1', font: { family: 'monospace', size: 11 } } }
+          },
+          scales: {
+            x: { grid: { color: '#232a3b' }, ticks: { color: '#94a3b8', font: { family: 'monospace' } } },
+            y: { grid: { color: '#232a3b' }, ticks: { color: '#94a3b8', font: { family: 'monospace' } } }
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

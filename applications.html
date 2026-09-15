@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Application Review Console</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+  <!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-6 py-12 flex-1 w-full space-y-8">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dot-border pb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+          Command Review Console
+        </div>
+        <h1 class="text-2xl font-black text-white uppercase tracking-tight mt-1">Employment Applications</h1>
+        <p class="text-slate-400 text-xs">Review incoming cadet packets, inspect full candidate responses, and update applicant statuses.</p>
+      </div>
+      <button onclick="loadApplications()" class="bg-dot-card hover:bg-dot-border border border-dot-border text-dot-orange font-mono text-xs px-4 py-2.5 rounded font-bold uppercase transition flex items-center gap-2">
+        🔄 Refresh Applications Feed
+      </button>
+    </div>
+
+    <!-- Applications Feed Container -->
+    <div id="applications-container" class="space-y-4">
+      <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+        Synchronizing applications database...
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Full Screen Application Modal -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-dot-card border border-dot-border rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="p-6 bg-dot-surface border-b border-dot-border flex items-center justify-between">
+        <div>
+          <span id="modal-status-badge" class="px-2.5 py-0.5 rounded font-mono text-[10px] uppercase font-bold"></span>
+          <h2 id="modal-title" class="text-xl font-black text-white uppercase tracking-wide mt-1"></h2>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm bg-dot-black px-3 py-1.5 rounded border border-dot-border">
+          ✕ Close [ESC]
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div id="modal-content" class="p-6 overflow-y-auto space-y-6 text-xs flex-1">
+        <!-- Dynamically injected full application questionnaire responses -->
+      </div>
+
+      <!-- Modal Footer (Approval Controls) -->
+      <div class="p-6 bg-dot-surface border-t border-dot-border flex flex-col md:flex-row items-center justify-between gap-4">
+        <div id="modal-action-msg" class="font-mono text-xs hidden"></div>
+        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+          <button id="btn-deny" onclick="" class="flex-1 md:flex-initial bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 px-6 py-2.5 rounded font-bold uppercase tracking-wider transition font-mono">
+            Deny Application
+          </button>
+          <button id="btn-approve" onclick="" class="flex-1 md:flex-initial bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 px-6 py-2.5 rounded font-bold uppercase tracking-wider transition font-mono">
+            Approve Application
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Custom Denial With Discord Preview -->
+  <div id="denial-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-dot-card border border-dot-border rounded-xl w-full max-w-4xl flex flex-col shadow-2xl overflow-hidden max-h-[95vh]">
+        
+        <div class="p-6 border-b border-dot-border bg-dot-surface flex justify-between items-center">
+            <h2 class="text-xl font-black text-white uppercase tracking-wide">Finalize Application Denial</h2>
+            <button onclick="closeDenialModal()" class="text-slate-400 hover:text-white font-mono text-xs bg-dot-black px-2 py-1 rounded border border-dot-border">✕ Cancel</button>
+        </div>
+
+        <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8 overflow-y-auto">
+            <!-- Left Side: Input -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-mono text-dot-orange text-[10px] uppercase font-bold mb-2">Reason for Denial</label>
+                    <textarea id="denial-input" rows="8" 
+                        class="w-full bg-dot-surface border border-dot-border rounded p-4 text-white text-xs focus:outline-none focus:border-dot-orange font-mono leading-relaxed"
+                        placeholder="Detail why the application was rejected..."></textarea>
+                </div>
+                <p class="text-slate-500 text-[10px] italic">Note: This message will be publicly visible in the Discord applications-log channel.</p>
+            </div>
+
+            <!-- Right Side: Discord Preview -->
+            <div class="space-y-4">
+                <label class="block font-mono text-slate-400 text-[10px] uppercase font-bold mb-2">Discord Live Preview</label>
+                
+                <!-- Discord UI Mockup -->
+                <div class="bg-[#313338] rounded p-4 font-sans text-sm">
+                    <div class="flex items-start gap-4">
+                        <img src="assets/logo.png" class="h-10 w-10 rounded-full bg-dot-surface border border-dot-border" alt="Bot">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-white">SADOT Dispatch</span>
+                                <span class="bg-[#5865f2] text-white text-[10px] px-1 rounded font-bold uppercase">Bot</span>
+                                <span class="text-[#949ba4] text-xs">Today at 1:42 PM</span>
+                            </div>
+                            
+                            <!-- The Embed -->
+                            <div class="border-l-4 border-[#ed4245] bg-[#2b2d31] rounded-r p-3 mt-1 space-y-2">
+                                <div class="font-bold text-white text-base">❌ Employment Application Denied</div>
+                                <div class="text-[#dbdee1] text-xs space-y-1 font-mono">
+                                    <p>Applicant: <span id="preview-icname" class="text-white">Name</span></p>
+                                    <p>Community ID: <span id="preview-cid" class="text-white">0000</span></p>
+                                    <p>Status: <span class="text-[#ed4245] font-bold">Denied</span></p>
+                                </div>
+                                <div class="pt-2 border-t border-[#3f4147]">
+                                    <span class="text-[#b5bac1] text-[10px] font-bold uppercase">Note from Reviewer:</span>
+                                    <p id="preview-text" class="text-[#dbdee1] text-xs mt-1 whitespace-pre-wrap italic">Application denied due to...</p>
+                                </div>
+                                <div class="text-[#949ba4] text-[10px] pt-1">
+                                    San Andreas Department of Transportation • Dispatch CAD
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 bg-dot-surface border-t border-dot-border flex justify-end">
+            <button id="confirm-deny-btn" class="bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded font-black uppercase tracking-widest text-xs transition shadow-lg shadow-red-950/40">
+                Confirm Denial
+            </button>
+        </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Human Resources & Standards
+  </footer>
+
+  <!-- Script for Loading & Reviewing Applications -->
+  <script>
+    const API_BASE_URL = "/api";
+    let cachedApplications = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadApplications();
+    });
+
+    async function loadApplications() {
+      const container = document.getElementById('applications-container');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/applications`);
+        cachedApplications = await response.json();
+        
+        container.innerHTML = "";
+
+        if (!cachedApplications || cachedApplications.length === 0) {
+          container.innerHTML = `
+            <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+              No employment applications currently submitted.
+            </div>
+          `;
+          return;
+        }
+
+        cachedApplication = cachedApplications;
+
+        cachedApplications.forEach((app, index) => {
+          const { id, timestamp, oocName, icName, communityId, discord, status = "Pending Review" } = app;
+
+          let statusBadgeColor = "bg-dot-orange/10 border-dot-orange text-dot-orange";
+          if (status.includes("Approved")) statusBadgeColor = "bg-emerald-950/60 border-emerald-800 text-emerald-400";
+          if (status.includes("Denied")) statusBadgeColor = "bg-red-950/60 border-red-800 text-red-400";
+
+          const card = document.createElement('div');
+          card.className = "p-6 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-dot-orange transition shadow-md";
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="flex items-center gap-3">
+                <span class="px-2.5 py-0.5 border rounded font-mono text-[10px] uppercase font-bold ${statusBadgeColor}">${status}</span>
+                <span class="font-mono text-[11px] text-slate-400">Submitted: ${timestamp}</span>
+              </div>
+              <h3 class="text-base font-bold text-white uppercase mt-1">${icName} <span class="text-xs text-dot-orange font-mono font-normal">(${oocName} [${communityId}])</span></h3>
+              <p class="text-slate-400 text-xs font-mono">Discord: ${discord}</p>
+            </div>
+            <button onclick="openApplicationModal(${index})" class="w-full md:w-auto bg-dot-orange hover:bg-dot-orangeHover text-white px-5 py-2.5 rounded font-bold uppercase transition font-mono whitespace-nowrap">
+              Full Screen Review ↗
+            </button>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error loading applications:", error);
+        container.innerHTML = `
+          <div class="p-6 bg-red-950/30 border border-red-900/50 rounded text-red-400 text-xs font-mono">
+            ⚠️ Failed to synchronize applications feed from server.
+          </div>
+        `;
+      }
+    }
+
+    function openApplicationModal(index) {
+      const app = cachedApplications[index];
+      if (!app) return;
+
+      const modal = document.getElementById('modal-backdrop');
+      const title = document.getElementById('modal-title');
+      const statusBadge = document.getElementById('modal-status-badge');
+      const content = document.getElementById('modal-content');
+      const btnApprove = document.getElementById('btn-approve');
+      const btnDeny = document.getElementById('btn-deny');
+      const msgBox = document.getElementById('modal-action-msg');
+
+      msgBox.classList.add('hidden');
+      title.innerText = `${app.icName} — Application Review`;
+      
+      const status = app.status || "Pending Review";
+      statusBadge.innerText = status;
+      statusBadge.className = `px-2.5 py-0.5 rounded font-mono text-[10px] uppercase font-bold border ` + 
+        (status.includes("Approved") ? "bg-emerald-950/60 border-emerald-800 text-emerald-400" :
+         status.includes("Denied") ? "bg-red-950/60 border-red-800 text-red-400" : "bg-dot-orange/10 border-dot-orange text-dot-orange");
+
+      btnApprove.onclick = () => updateApplicationStatus(app.id, "Approved");
+      btnDeny.onclick = () => updateApplicationStatus(app.id, "Denied");
+
+      // Populate full questionnaire answers directly from JSON properties
+      content.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-dot-surface p-4 rounded border border-dot-border font-mono text-[11px]">
+          <div><strong>Timestamp:</strong> ${app.timestamp || ''}</div>
+          <div><strong>OOC Name:</strong> ${app.oocName || ''}</div>
+          <div><strong>Community ID:</strong> ${app.communityId || ''}</div>
+          <div><strong>IC Legal Name:</strong> ${app.icName || ''}</div>
+          <div><strong>Phone Number:</strong> ${app.phone || ''}</div>
+          <div><strong>Discord User ID:</strong> ${app.discord || ''}</div>
+          <div><strong>Character 21+:</strong> ${app.age21 || ''}</div>
+          <div><strong>Disciplinary Actions (30d):</strong> ${app.disciplinary || ''}</div>
+          <div><strong>Possess CDL:</strong> ${app.cdl || ''}</div>
+          <div><strong>Clean Driving Record:</strong> ${app.cleanDriving || ''}</div>
+          <div><strong>Infractions / Collisions:</strong> ${app.infractions || ''}</div>
+        </div>
+
+        <div class="space-y-4 pt-2">
+          <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1">
+            <span class="text-dot-orange font-mono uppercase text-[10px] font-bold">Subdivisions of Interest:</span>
+            <p class="text-white font-mono">${app.subdivisions || ''}</p>
+          </div>
+          <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1">
+            <span class="text-dot-orange font-mono uppercase text-[10px] font-bold">Prior Technical Experience:</span>
+            <p class="text-white font-mono">${app.experience || ''}</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-[11px]">
+            <div class="bg-dot-surface p-3 rounded border border-dot-border"><strong>Los Santos Geography:</strong> ${app.lsGeography || ''} / 5</div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border"><strong>Blaine County Geography:</strong> ${app.blaineGeography || ''} / 5</div>
+          </div>
+          <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1">
+            <span class="text-dot-orange font-mono uppercase text-[10px] font-bold">Mechanical Knowledge:</span>
+            <p class="text-white">${app.mechanicalKnowledge || ''}</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-[11px]">
+            <div class="bg-dot-surface p-3 rounded border border-dot-border"><strong>LE Authority:</strong> ${app.leAuthority || ''}</div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border"><strong>Scene Command:</strong> ${app.sceneCommand || ''}</div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border"><strong>SADOT Motto:</strong> ${app.motto || ''}</div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-[11px]">
+            <div class="bg-dot-surface p-3 rounded border border-dot-border"><strong>Availability:</strong> ${app.availability || ''}</div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border"><strong>Activity Ack:</strong> ${app.activityAck || ''}</div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border"><strong>Physical Ack:</strong> ${app.physicalAck || ''}</div>
+          </div>
+          <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1">
+            <span class="text-dot-orange font-mono uppercase text-[10px] font-bold">Statement of Interest:</span>
+            <p class="text-white">${app.statement || ''}</p>
+          </div>
+
+          <div class="border-t border-dot-border pt-4 space-y-3 font-normal">
+            <h4 class="text-white uppercase font-bold font-mono text-xs text-dot-orange">Practical Field Scenarios</h4>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1"><strong>Scenario 1 (High-Speed Staging):</strong><p class="text-slate-300 mt-1">${app.scenario1 || ''}</p></div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1"><strong>Scenario 2 (Inter-Agency Coordination):</strong><p class="text-slate-300 mt-1">${app.scenario2 || ''}</p></div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1"><strong>Scenario 3 (Work Zone & Detour):</strong><p class="text-slate-300 mt-1">${app.scenario3 || ''}</p></div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1"><strong>Scenario 4 (Civil Property / Tow Dispute):</strong><p class="text-slate-300 mt-1">${app.scenario4 || ''}</p></div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1"><strong>Scenario 5 (Mechanical Safety & Red-Tagging):</strong><p class="text-slate-300 mt-1">${app.scenario5 || ''}</p></div>
+            <div class="bg-dot-surface p-3 rounded border border-dot-border space-y-1"><strong>Scenario 6 (Hostile Scene & Disengagement):</strong><p class="text-slate-300 mt-1">${app.scenario6 || ''}</p></div>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.add('hidden');
+    }
+
+    async function updateApplicationStatus(id, newStatus) {
+      if (newStatus === 'Denied') {
+        openDenialModal(id);
+        return; 
+      }
+      executeStatusUpdate(id, 'Approved', "");
+    }
+
+    // Custom Denial Modal Logic
+    function openDenialModal(id) {
+      const app = cachedApplications.find(a => a.id === id);
+      const discordId = app.discord || "";
+      const inputArea = document.getElementById('denial-input');
+      const previewArea = document.getElementById('preview-text');
+
+      inputArea.value = "Application does not meet current departmental standards.";
+      previewArea.innerText = generateDenialTemplate(discordId, inputArea.value);
+
+      document.getElementById('denial-modal').classList.remove('hidden');
+      
+      inputArea.oninput = (e) => {
+        previewArea.innerText = generateDenialTemplate(discordId, e.target.value);
+      };
+
+      document.getElementById('confirm-deny-btn').onclick = () => {
+        executeStatusUpdate(id, 'Denied', inputArea.value);
+      };
+    }
+
+    function closeDenialModal() {
+      document.getElementById('denial-modal').classList.add('hidden');
+    }
+
+    let currentDenyId = null;
+
+    function generateDenialTemplate(discordId, reviewMsg) {
+      const ping = discordId ? `<@${discordId}>` : "@UnknownUser";
+      return `**APPLICATION DENIED**
+To: ${ping}
+From: Department of Transportation Human Resources
+
+Thank you for submitting your application to the San Andreas Department of Transportation (SADOT). 
+
+After careful review by our human resources and management team, we regret to inform you that your application has not been accepted at this time. 
+
+**Reason / Reviewer Notes:**
+> ${reviewMsg}
+
+We appreciate the time and effort you put into your application packet. You are welcome to reapply after reviewing our departmental guidelines and standards.
+
+Kind regards,
+Division of Human Resources & Standards
+San Andreas Department of Transportation`;
+    }
+
+
+    async function executeStatusUpdate(id, newStatus, reviewMessage) {
+      const msgBox = document.getElementById('modal-action-msg');
+      const btnApprove = document.getElementById('btn-approve');
+      const btnDeny = document.getElementById('btn-deny');
+
+      if (btnApprove) btnApprove.disabled = true;
+      if (btnDeny) btnDeny.disabled = true;
+      
+      msgBox.className = "font-mono text-xs text-slate-400";
+      msgBox.innerText = `Transmitting ${newStatus} packet...`;
+      msgBox.classList.remove('hidden');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus, reviewMessage: reviewMessage })
+        });
+
+        if (!response.ok) throw new Error('Update failed');
+
+        msgBox.className = "font-mono text-xs text-emerald-400";
+        msgBox.innerText = `✓ Application ${newStatus} and user notified!`;
+
+        setTimeout(() => {
+          closeDenialModal();
+          closeModal();
+          loadApplications();
+        }, 1500);
+      } catch (error) {
+        console.error("Status update error:", error);
+        msgBox.className = "font-mono text-xs text-red-400";
+        msgBox.innerText = "⚠️ Failed to update application status.";
+        if (btnApprove) btnApprove.disabled = false;
+        if (btnDeny) btnDeny.disabled = false;
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Frequently Asked Questions</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Official Department Portal
+  </div>
+  
+  <!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="index" class="hover:text-dot-orange transition">Home</a>
+        <a href="sop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="faq" class="text-dot-orange">FAQ</a>
+        <a href="work-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="roster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="portal" class="hover:text-dot-orange transition">Employee Portal</a>
+        <a href="credits" class="hover:text-dot-orange transition">Credits</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="apply" target="_blank" class="bg-dot-orange hover:bg-dot-orangeHover text-white px-3.5 py-1.5 rounded transition text-xs font-bold uppercase tracking-wider shadow-md">
+          Join SADOT ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto px-6 py-12 flex-1 w-full space-y-8">
+    
+    <!-- Title Header -->
+    <div class="pb-6 border-b border-dot-border space-y-2">
+      <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+        Information Guide
+      </div>
+      <h1 class="text-3xl font-black text-white uppercase tracking-tight">Frequently Asked Questions</h1>
+      <p class="text-slate-400 text-xs">Common questions regarding recruitment, departmental operations, field protocols, and dispatch procedures.</p>
+    </div>
+
+    <!-- FAQ Accordions / Cards Grid -->
+    <div class="space-y-4 text-xs">
+      
+      <!-- Q1 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q1:</span> How do I join the San Andreas Department of Transportation?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Applicants must hold a valid driver's license, clear a background check, maintain an active rank of Probationary Civilian or higher in the community network, and submit an application via our official recruitment form linked in the navigation bar.
+        </p>
+      </div>
+
+      <!-- Q2 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q2:</span> What are our official headquarters and maintenance facility locations?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          SADOT operates two primary regional hubs across the state: our urban facility in Los Santos located at <strong class="text-white">796 Popular Street</strong>, and our northern county depot located at <strong class="text-white">228 Joshua Road</strong> in Blaine County.
+        </p>
+      </div>
+
+      <!-- Q3 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q3:</span> How do citizens or allied departments request SADOT assistance in-game?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          To contact SADOT while in-game, please use the <strong class="text-white">/services</strong> chat and/or join the primary <strong class="text-white">SADOT radio frequency</strong>. Callers must provide an in-depth description of the call type and the exact location.
+        </p>
+      </div>
+
+      <!-- Q4 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q4:</span> Do SADOT operators have law enforcement or police powers?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          No. SADOT is strictly a civilian public works and infrastructure agency. Operators possess zero peace officer authority, cannot conduct traffic stops or vehicle pursuits, and cannot perform arrests or criminal investigations.
+        </p>
+      </div>
+
+      <!-- Q5 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q5:</span> What is the monthly activity requirement for rostered personnel?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          All active roster personnel must log a minimum of three (3) operational hours per month directly recorded within the departmental patrol logs to maintain active employment standing and vehicle privileges.
+        </p>
+      </div>
+
+      <!-- Q6 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q6:</span> How long does the Probationary Operator (Cadet) period last?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          The standard probationary period spans seven (7) to fourteen (14) continuous calendar days. During this time, cadets must complete all four practical evaluations under the direct supervision of a senior operator or supervisor.
+        </p>
+      </div>
+
+      <!-- Q7 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q7:</span> Do I need special qualifications to operate heavy wreckers or bulldozers?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Yes. Operating heavy machinery (such as commercial lowboys, heavy wreckers, and bulldozers) is strictly restricted to personnel holding a verified Heavy Duty (HVY) Certification or Supervisory rank.
+        </p>
+      </div>
+
+      <!-- Q8 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q8:</span> How does SADOT coordinate with police and fire departments during major incidents?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          SADOT units operate under Unified Command on major scenes. Arriving operators must stage defensively, establish contact with the on-scene LEO or Fire/EMS Scene Commander, and follow their directives until roadway control is transferred.
+        </p>
+      </div>
+
+      <!-- Q9 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q9:</span> What radio communication standards are expected on duty?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Operators must maintain professional plain-language communication discipline or standard operational code syntax. Transmissions must always include your unique agency callsign (e.g., DOT-100 series) and clear status updates.
+        </p>
+      </div>
+
+      <!-- Q10 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q10:</span> How can citizens submit compliments or feedback regarding field operations?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Citizens or allied agency members can submit official feedback, commendations, or administrative inquiries through our community Discord channels or by reaching out to the Executive Command Staff via the department portal.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+</body>
+</html>

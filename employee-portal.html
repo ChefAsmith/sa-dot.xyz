@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Internal Employee Portal</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+  <!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+  <!-- Internal Employee Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="text-dot-orange">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="handleLogout()" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Internal Portal Content -->
+  <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full space-y-8">
+    
+    <div class="pb-6 border-b border-dot-border flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+          Cleared Rank: <span id="display-rank" class="uppercase font-bold text-white"></span>
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Internal Employee Portal</h1>
+        <p class="text-slate-400 text-xs">Welcome, operator. Below are the resources, guides, and tools authorized for your security clearance tier.</p>
+      </div>
+      <button onclick="handleLogout()" class="bg-dot-surface hover:bg-dot-card border border-dot-border text-slate-300 hover:text-white px-4 py-2 rounded text-xs uppercase font-bold tracking-wider transition">
+        Lock Session 🔒
+      </button>
+    </div>
+
+    <!-- Internal Resources Grid -->
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <a href="eroster" class="portal-card p-6 bg-dot-card border border-dot-border rounded-lg space-y-2 hover:border-dot-orange transition group">
+        <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Personnel</span>
+        <h3 class="text-base font-bold text-white uppercase group-hover:text-dot-orange transition">Roster & Directory</h3>
+        <p class="text-slate-400 leading-relaxed">View active operators, callsign assignments, and current staffing levels.</p>
+      </a>
+
+      <a href="efaqs" class="portal-card p-6 bg-dot-card border border-dot-border rounded-lg space-y-2 hover:border-dot-orange transition group">
+        <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Support</span>
+        <h3 class="text-base font-bold text-white uppercase group-hover:text-dot-orange transition">Internal FAQ</h3>
+        <p class="text-slate-400 leading-relaxed">Staff guidelines, onboarding steps, and common operational answers.</p>
+      </a>
+
+      <a href="esop" class="portal-card p-6 bg-dot-card border border-dot-border rounded-lg space-y-2 hover:border-dot-orange transition group">
+        <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Administration</span>
+        <h3 class="text-base font-bold text-white uppercase group-hover:text-dot-orange transition">SOP Manual</h3>
+        <p class="text-slate-400 leading-relaxed">Quick access to the full 25-section standard operating procedures guide.</p>
+      </a>
+
+      <a href="vehicles" class="portal-card p-6 bg-dot-card border border-dot-border rounded-lg space-y-2 hover:border-dot-orange transition group">
+        <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Fleet Standards</span>
+        <h3 class="text-base font-bold text-white uppercase group-hover:text-dot-orange transition">Vehicle Guidelines</h3>
+        <p class="text-slate-400 leading-relaxed">Authorized vehicle spawn codes, rank prerequisites, and extra configurations.</p>
+      </a>
+
+      <a href="uniforms" class="portal-card p-6 bg-dot-card border border-dot-border rounded-lg space-y-2 hover:border-dot-orange transition group">
+        <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Appearance</span>
+        <h3 class="text-base font-bold text-white uppercase group-hover:text-dot-orange transition">Uniform Guidelines</h3>
+        <p class="text-slate-400 leading-relaxed">Mandatory component indices and personal appearance standards.</p>
+      </a>
+
+      <a href="ework-orders" data-min-rank="field" class="portal-card p-6 bg-dot-card border border-dot-border rounded-lg space-y-2 hover:border-dot-orange transition group hidden">
+        <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Operations</span>
+        <h3 class="text-base font-bold text-white uppercase group-hover:text-dot-orange transition">Work Orders Dashboard</h3>
+        <p class="text-slate-400 leading-relaxed">Review pending citizen work requests, hazard reports, and service tickets.</p>
+      </a>
+
+      <a href="management" data-min-rank="supervisor" class="portal-card p-6 bg-dot-card border border-dot-border rounded-lg space-y-2 hover:border-dot-orange transition group hidden">
+        <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Management</span>
+        <h3 class="text-base font-bold text-white uppercase group-hover:text-dot-orange transition">Supervisory Credits & Tools</h3>
+        <p class="text-slate-400 leading-relaxed">Internal administrative logs, credits, and leadership tools.</p>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <script>
+    const RANK_HIERARCHY = { "cadet": 1, "field": 2, "supervisor": 3, "command": 4 };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedRank = sessionStorage.getItem('sadot_rank');
+      const userLevel = parseInt(sessionStorage.getItem('sadot_level') || '1', 10);
+      
+      if (savedRank) {
+        document.getElementById('display-rank').innerText = savedRank;
+
+        const cards = document.querySelectorAll('.portal-card');
+        cards.forEach(card => {
+          const minRankReq = card.getAttribute('data-min-rank');
+          const maxRankReq = card.getAttribute('data-max-rank');
+
+          let visible = true;
+          if (minRankReq && userLevel < (RANK_HIERARCHY[minRankReq] || 99)) visible = false;
+          if (maxRankReq && userLevel > (RANK_HIERARCHY[maxRankReq] || 99)) visible = false;
+
+          if (visible) card.classList.remove('hidden');
+          else card.classList.add('hidden');
+        });
+      } else {
+        window.location.href = 'portal';
+      }
+    });
+
+    function handleLogout() {
+      sessionStorage.clear();
+      window.location.href = 'portal';
+    }
+  </script>
+
+</body>
+</html>

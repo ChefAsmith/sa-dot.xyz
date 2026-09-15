@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Internal Employee FAQ</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto px-6 py-12 flex-1 w-full space-y-8">
+    
+    <!-- Title Header -->
+    <div class="pb-6 border-b border-dot-border space-y-2">
+      <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+        Internal Personnel Guide
+      </div>
+      <h1 class="text-3xl font-black text-white uppercase tracking-tight">Staff Frequently Asked Questions</h1>
+      <p class="text-slate-400 text-xs">Internal guidelines regarding operational scaling, administrative compliance, equipment red-tagging, and field protocols.</p>
+    </div>
+
+    <!-- FAQ Accordions / Cards Grid -->
+    <div class="space-y-4 text-xs">
+      
+      <!-- Q1 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q1:</span> What is the strict protocol for escalating internal grievances or administrative questions?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Personnel must strictly scale issues vertically through the Chain of Command (Step 1: On-duty Supervisor &rarr; Step 2: Manager &rarr; Step 3: Executive Command). Bypassing tiers ("chain-skipping") introduces administrative friction and can accumulate toward formal disciplinary strike logs.
+        </p>
+      </div>
+
+      <!-- Q2 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q2:</span> When is an operator authorized to execute an emergency tactical override?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          An operator may break vertical CoC communication scaling <strong class="text-white">only</strong> during unmitigated life-safety threats: active secondary collision risks inside a closed corridor, imminent structural hazards threatening ground emergency teams, or sudden criminal scene escalations when no supervisor is present.
+        </p>
+      </div>
+
+      <!-- Q3 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q3:</span> What actions trigger immediate roster removal or disciplinary review?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Failing to clear all four practical cadet evaluations within the 14-day hard window, conducting unauthorized traffic stops or detainments (violating the jurisdiction matrix), carrying unauthorized weapons on duty, or operating state assets off-duty for personal recreation results in instant termination.
+        </p>
+      </div>
+
+      <!-- Q4 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q4:</span> How are equipment red-tags and mechanical vehicle defects handled?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Supervisory staff hold exclusive authority to red-tag faulty fleet equipment or heavy machinery. Operators discovering mechanical failures must immediately log the defect in the internal maintenance database, secure the asset, and swap to a fully verified secondary unit.
+        </p>
+      </div>
+
+      <!-- Q5 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q5:</span> What are the mandatory logging and activity quotas for active operators?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          All active roster personnel must log a minimum of three (3) active operational hours per month directly recorded within the state database to maintain vehicle spawn permissions, good standing, and active employment status.
+        </p>
+      </div>
+
+      <!-- Q6 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q6:</span> How do I verify my clearance for heavy equipment and specialized trailers?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Operators can check their authorized fleet access dynamically by visiting the internal <strong class="text-white">Vehicle Guidelines</strong> page and filtering by their verified certifications (CDL, RB, WK, HVY, Trailer, or Flag).
+        </p>
+      </div>
+
+      <!-- Q7 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q7:</span> What are the strict appearance mandates regarding uniform components and textures?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          Operators must strictly match the component and texture index numbers listed on the internal <strong class="text-white">Uniform Guidelines</strong> page for their specific rank tier (Cadet, Field Ops, Supervisor, or Command). In addition, possessing pets or animals on shift is strictly prohibited.
+        </p>
+      </div>
+
+      <!-- Q8 -->
+      <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-2">
+        <h3 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+          <span class="text-dot-orange font-mono">Q8:</span> How is command structure established when arriving at a multi-agency scene?
+        </h3>
+        <p class="text-slate-400 leading-relaxed pl-5 border-l-2 border-dot-border">
+          On any scene featuring active emergency responders, law enforcement holds absolute Scene Commander authority. SADOT units must remain near their vehicles and await explicit instructions until the scene is officially cleared and command of traffic management is formally transferred to our senior on-site unit.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+</body>
+</html>

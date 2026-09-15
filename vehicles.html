@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Fleet & Equipment Guidelines</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    // Redirect back to login if session storage token is missing
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="text-dot-orange">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full space-y-10">
+    
+    <!-- Title Header -->
+    <div class="pb-6 border-b border-dot-border flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+          Technical Fleet Standards
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Vehicle & Equipment Guidelines</h1>
+        <p class="text-slate-400 text-xs max-w-2xl">Authorized vehicle configurations, spawn codes, rank prerequisites, and certification requirements.</p>
+      </div>
+    </div>
+
+    <!-- CERTIFICATION FILTER BAR -->
+    <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="font-mono text-xs text-dot-orange font-bold uppercase tracking-wider">Filter By Your Certifications</span>
+        <button onclick="resetFilters()" class="text-[11px] font-mono text-slate-400 hover:text-white underline transition">Reset Filters</button>
+      </div>
+      <p class="text-slate-400 text-xs">Check your active certifications below to instantly filter out equipment you are not yet qualified to operate:</p>
+      <div class="flex flex-wrap gap-4 pt-2 text-xs font-mono">
+        <label class="flex items-center gap-2 cursor-pointer bg-dot-surface px-3 py-1.5 rounded border border-dot-border hover:border-dot-orange transition">
+          <input type="checkbox" value="CDL" class="cert-checkbox accent-[#ff6600]" onchange="filterVehicles()" /> CDL (Commercial)
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer bg-dot-surface px-3 py-1.5 rounded border border-dot-border hover:border-dot-orange transition">
+          <input type="checkbox" value="Flag" class="cert-checkbox accent-[#ff6600]" onchange="filterVehicles()" /> Flag (Flagging)
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer bg-dot-surface px-3 py-1.5 rounded border border-dot-border hover:border-dot-orange transition">
+          <input type="checkbox" value="RB" class="cert-checkbox accent-[#ff6600]" onchange="filterVehicles()" /> RB (Rollback)
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer bg-dot-surface px-3 py-1.5 rounded border border-dot-border hover:border-dot-orange transition">
+          <input type="checkbox" value="WK" class="cert-checkbox accent-[#ff6600]" onchange="filterVehicles()" /> WK (Wrecker)
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer bg-dot-surface px-3 py-1.5 rounded border border-dot-border hover:border-dot-orange transition">
+          <input type="checkbox" value="HVY" class="cert-checkbox accent-[#ff6600]" onchange="filterVehicles()" /> HVY (Heavy Equipment)
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer bg-dot-surface px-3 py-1.5 rounded border border-dot-border hover:border-dot-orange transition">
+          <input type="checkbox" value="Trailer" class="cert-checkbox accent-[#ff6600]" onchange="filterVehicles()" /> Trailer (Towing)
+        </label>
+      </div>
+    </div>
+
+    <!-- CATEGORY 1: MAIN FLEET -->
+    <section class="vehicle-category space-y-6">
+      <div class="flex items-center gap-3 border-b border-dot-border pb-3">
+        <span class="h-2.5 w-2.5 rounded-full bg-dot-orange"></span>
+        <h2 class="text-xl font-black text-white uppercase tracking-wide">Main Fleet</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Chevy Tahoe -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="cadet" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/civtahoe.png" alt="Chevy Tahoe" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">civtahoe</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Chevy Tahoe</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Cadet+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Lightbar</li>
+                  <li><span class="text-dot-orange">Extra 2:</span> Running Board Lights</li>
+                  <li><span class="text-dot-orange">Extra 3:</span> Grill Lights</li>
+                  <li><span class="text-dot-orange">Extra 4:</span> Rear Bumper Lights</li>
+                  <li><span class="text-dot-orange">Extra 6:</span> Rear Visor Lights</li>
+                  <li><span class="text-dot-orange">Extra 7:</span> In Cab Laptop</li>
+                  <li><span class="text-dot-orange">Extra 8:</span> Trunk M.O.B</li>
+                  <li><span class="text-dot-orange">Extra 11:</span> Tow Hitch</li>
+                  <li><span class="text-dot-orange">Extra 12:</span> Mud Flaps</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dodge Ram 3500 HD -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/civramdot1.png" alt="Dodge Ram 3500 HD" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">civramdot1</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Dodge Ram 3500 HD</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Operator I+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras & Mods:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 10:</span> Push Bar</li>
+                  <li><span class="text-dot-orange">Extra 11:</span> Roof Antenna</li>
+                  <li><span class="text-dot-orange">Extra 12:</span> Bed Tools</li>
+                  <li><span class="text-dot-orange">Mod 2:</span> Right Wing</li>
+                  <li><span class="text-dot-orange">Mod 3:</span> Trunk</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ford F150 -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/civf150.png" alt="Ford F150" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">civf150</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Ford F150</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Operator II+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras & Mods:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Back Rack</li>
+                  <li><span class="text-dot-orange">Extra 2:</span> Lightbar</li>
+                  <li><span class="text-dot-orange">Mod 2:</span> Grill</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ford F550 Arrow Board Utility -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="Flag">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/civf550dot.png" alt="Ford F550 Arrow Board Utility" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">civf550dot</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Ford F550 Arrow Board</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Op+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">Flag</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 2:</span> Arrow Board Sign</li>
+                  <li><span class="text-dot-orange">Extra 7:</span> Vehicle Amber Lights</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dodge Ram 5500 HD Arrow Board Utility -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="Flag">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/civramdot2.png" alt="Dodge Ram 5500 HD Arrow Board" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">civramdot2</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Dodge Ram 5500 Arrow</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Op+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">Flag</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 2:</span> Arrow Board Sign</li>
+                  <li><span class="text-dot-orange">Extra 7:</span> Vehicle Amber Lights</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dodge Durango -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="supervisor" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/civdurango.png" alt="Dodge Durango" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">civdurango</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Dodge Durango</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Supervisor+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Lightbar</li>
+                  <li><span class="text-dot-orange">Extra 6:</span> Push Bar</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CATEGORY 2: OPERATIONS -->
+    <section class="vehicle-category space-y-6 pt-6 border-t border-dot-border">
+      <div class="flex items-center gap-3 border-b border-dot-border pb-3">
+        <span class="h-2.5 w-2.5 rounded-full bg-dot-orange"></span>
+        <h2 class="text-xl font-black text-white uppercase tracking-wide">Operations & Recovery Fleet</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Ford F550 Rollback Cab 1.5 -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="CDL,RB">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/f550rollback1.png" alt="Ford F550 Rollback" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">f550rollback1</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Ford F550 Rollback (1.5)</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Operator I+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">CDL, RB</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Lightbar</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dodge Ram 5500 HD Rollback -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="CDL,RB">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/ramrollback.png" alt="Dodge Ram 5500 Rollback" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">ramrollback</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Dodge Ram 5500 Rollback</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Operator II+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">CDL, RB</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 5:</span> Roof Antenna</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ford F550 Rollback -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="CDL,RB">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/f550rollback2.png" alt="Ford F550 Rollback" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">f550rollback2</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Ford F550 Rollback</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Op+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">CDL, RB</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Lightbar</li>
+                  <li><span class="text-dot-orange">Extra 4:</span> Push Bar &amp; Winch</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- International Navistar Rollback -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="supervisor" data-certs="CDL,RB,HVY">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/navistarrollback.png" alt="Navistar Rollback" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">navistarrollback</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Navistar Rollback</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Sr. Sup+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">CDL, RB, HVY</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <p class="text-slate-500 italic text-[11px]">No mandatory extra modifications configured.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kenworth Wrecker -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="supervisor" data-certs="CDL,WK,HVY">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/kenworthwrecker.png" alt="Kenworth Wrecker" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">kenworthwrecker</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Kenworth Wrecker</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Sr. Sup+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">CDL, WK, HVY</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 3:</span> Push Bar</li>
+                  <li><span class="text-dot-orange">Extra 5:</span> Out Riggers</li>
+                  <li><span class="text-dot-orange">Extra 10:</span> Stinger</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kenworth W900 Heavy Semi-Tractor -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="supervisor" data-certs="CDL,HVY,Trailer">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/w900.png" alt="Kenworth W900" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">w900</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Kenworth W900 Heavy Semi</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Sr. Sup+</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">CDL, HVY, Trailer</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Mirrors</li>
+                  <li><span class="text-dot-orange">Extra 5:</span> Lightbars</li>
+                  <li><span class="text-dot-orange">Extra 8:</span> Oversized Load</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CATEGORY 3: TRAILERS -->
+    <section class="vehicle-category space-y-6 pt-6 border-t border-dot-border">
+      <div class="flex items-center gap-3 border-b border-dot-border pb-3">
+        <span class="h-2.5 w-2.5 rounded-full bg-dot-orange"></span>
+        <h2 class="text-xl font-black text-white uppercase tracking-wide">Trailers</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Enclosed Car Trailer -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="Trailer">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/cartrailer1.png" alt="Enclosed Car Trailer" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">cartrailer1</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Enclosed Car Trailer</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Staff</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">Trailer</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Toolboxes</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tritoon Boat Trailer -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="Trailer">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/ptrailer.png" alt="Tritoon Boat Trailer" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">ptrailer</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Tritoon Boat Trailer</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Staff</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">Trailer</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <p class="text-slate-500 italic text-[11px]">No mandatory extra modifications configured.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lowboy Heavy Transport Trailer -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="supervisor" data-certs="Trailer,HVY">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/trlowboy.png" alt="Lowboy Heavy Trailer" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">trlowboy</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Lowboy Heavy Trailer</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Staff</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-dot-orange font-semibold">Trailer, HVY</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Removable Gooseneck</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CATEGORY 4: CONSTRUCTION -->
+    <section class="vehicle-category space-y-6 pt-6 border-t border-dot-border">
+      <div class="flex items-center gap-3 border-b border-dot-border pb-3">
+        <span class="h-2.5 w-2.5 rounded-full bg-dot-orange"></span>
+        <h2 class="text-xl font-black text-white uppercase tracking-wide">Construction & Industrial Assets</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Forklift -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/fork.png" alt="Forklift" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">fork</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Industrial Forklift</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Staff</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <p class="text-slate-500 italic text-[11px]">No mandatory extra modifications configured.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipper -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/tiptruck2.png" alt="Tipper" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">tiptruck2</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Tipper Dump Truck</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Staff</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Dump Body</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rubble -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/rubble.png" alt="Rubble" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">rubble</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Rubble Dump Truck</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Staff</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Dump Body</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dozer -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/dozer.png" alt="Dozer" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">dozer</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Tracked Bulldozer</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Staff</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <p class="text-slate-500 italic text-[11px]">No mandatory extra modifications configured.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mixer -->
+        <div class="vehicle-card bg-dot-card border border-dot-border rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-dot-orange transition" data-min-rank="field" data-certs="NA">
+          <div class="space-y-3">
+            <div class="h-36 bg-dot-surface border border-dot-border rounded flex items-center justify-center overflow-hidden relative group p-2">
+              <img src="assets/vehicles/mixer2.png" alt="Mixer" class="w-full h-full object-contain opacity-90 group-hover:scale-105 transition" onerror="this.onerror=null; this.src='assets/logo.png'; this.className='h-16 w-16 object-contain opacity-20 filter grayscale';" />
+              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-dot-black/80 border border-dot-border rounded font-mono text-[10px] text-dot-orange font-bold">mixer2</div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white uppercase">Concrete Mixer Truck</h3>
+                <span class="text-[10px] font-mono bg-dot-orangeMuted text-dot-orange px-2 py-0.5 rounded border border-dot-orange/30 font-bold">Senior Staff</span>
+              </div>
+              <p class="text-slate-400 text-xs mt-1">Certifications: <span class="text-slate-200">N/A</span></p>
+            </div>
+            <div class="space-y-2 pt-2 border-t border-dot-border text-xs">
+              <div>
+                <strong class="text-dot-orange font-mono text-[10px] uppercase block mb-1">Mandatory Extras:</strong>
+                <ul class="text-slate-300 text-[11px] space-y-0.5 font-mono">
+                  <li><span class="text-dot-orange">Extra 1:</span> Mixer</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Rank Filtering Script -->
+<script>
+    const rankHierarchy = { 
+      "Cadet": 1, 
+      "Probationary Operator": 1,
+      "Field Operator": 2, 
+      "Field Operators": 2,
+      "Supervisor": 3, 
+      "Supervisory Staff": 3,
+      "Command Staff": 4 
+    };
+    const minRankMap = { "cadet": 1, "field": 2, "supervisor": 3, "command": 4 };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedCerts = JSON.parse(sessionStorage.getItem('sadot_certs') || '[]');
+      
+      savedCerts.forEach(certStr => {
+        const lower = certStr.toLowerCase();
+        if (lower.includes('cdl')) {
+          const cb = document.querySelector('.cert-checkbox[value="CDL"]');
+          if (cb) cb.checked = true;
+        }
+        if (lower.includes('flag')) {
+          const cb = document.querySelector('.cert-checkbox[value="Flag"]');
+          if (cb) cb.checked = true;
+        }
+        if (lower.includes('rollback')) {
+          const cb = document.querySelector('.cert-checkbox[value="RB"]');
+          if (cb) cb.checked = true;
+        }
+        if (lower.includes('wrecker')) {
+          const cb = document.querySelector('.cert-checkbox[value="WK"]');
+          if (cb) cb.checked = true;
+        }
+        if (lower.includes('heavy') || lower.includes('transport')) {
+          const cb = document.querySelector('.cert-checkbox[value="HVY"]');
+          if (cb) cb.checked = true;
+        }
+        if (lower.includes('trailer')) {
+          const cb = document.querySelector('.cert-checkbox[value="Trailer"]');
+          if (cb) cb.checked = true;
+        }
+      });
+
+      filterVehicles();
+    });
+
+    function filterVehicles() {
+      const userRankName = sessionStorage.getItem('sadot_rank') || "Cadet";
+      const userRankLevel = rankHierarchy[userRankName] || 1;
+
+      const checkedCerts = Array.from(document.querySelectorAll('.cert-checkbox:checked')).map(cb => cb.value);
+      const cards = document.querySelectorAll('.vehicle-card');
+
+      cards.forEach(card => {
+        const minRankReq = card.getAttribute('data-min-rank');
+        const requiredLevel = minRankMap[minRankReq] || 1;
+
+        const vehicleCertsAttr = card.getAttribute('data-certs');
+        const vehicleCerts = vehicleCertsAttr === "NA" ? [] : vehicleCertsAttr.split(',');
+
+        const passesRank = userRankLevel >= requiredLevel;
+
+        let passesCerts = true;
+        if (checkedCerts.length > 0) {
+          if (vehicleCerts.length === 0) {
+            passesCerts = false; 
+          } else {
+            passesCerts = checkedCerts.some(cert => vehicleCerts.includes(cert));
+          }
+        }
+
+        let shouldDisplay = false;
+        if (checkedCerts.length > 0) {
+          shouldDisplay = passesRank || passesCerts;
+        } else {
+          shouldDisplay = passesRank;
+        }
+
+        if (shouldDisplay) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      const categories = document.querySelectorAll('.vehicle-category');
+      categories.forEach(cat => {
+        const visibleCards = cat.querySelectorAll('.vehicle-card[style*="display: flex"], .vehicle-card:not([style*="display: none"])');
+        if (visibleCards.length === 0) {
+          cat.style.display = "none";
+        } else {
+          cat.style.display = "block";
+        }
+      });
+    }
+
+    function resetFilters() {
+      document.querySelectorAll('.cert-checkbox').forEach(cb => cb.checked = false);
+      filterVehicles();
+    }
+</script>
+
+</body>
+</html>

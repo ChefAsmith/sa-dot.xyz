@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | SOP Administration Console</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+  if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+    window.location.href = 'portal';
+  }
+
+  const userLevel = parseInt(sessionStorage.getItem('sadot_level') || '1', 10);
+
+  if (userLevel < 3) {
+    alert("Access Denied: Supervisory or Command clearance required.");
+    window.location.href = 'employee-portal';
+  }
+</script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-6 py-12 flex-1 w-full space-y-8">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-dot-border pb-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest mb-1">
+          Directive Management Console
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">SOP & Directives Administration</h1>
+        <p class="text-slate-400 text-xs mt-1">Create new standard operating procedures, embed images, edit existing department directives, or remove outdated policies.</p>
+      </div>
+
+      <div class="flex items-center gap-3 flex-wrap">
+        <input 
+          type="text" 
+          id="sopSearch" 
+          placeholder="Search SOP title or category..." 
+          class="bg-dot-card border border-dot-border rounded px-4 py-2 text-xs text-white focus:outline-none focus:border-dot-orange w-full md:w-60 font-mono"
+        />
+        <button onclick="openCreateModal()" class="bg-dot-orange hover:bg-dot-orangeHover text-white font-mono text-xs px-4 py-2 rounded font-bold uppercase transition whitespace-nowrap shadow-lg">
+          ＋ New Directive
+        </button>
+      </div>
+    </div>
+
+    <!-- SOP Records Container -->
+    <div id="admin-sop-container" class="space-y-4">
+      <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+        Synchronizing SOP database...
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Edit / Create SOP Modal -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-dot-card border border-dot-border rounded-xl w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden max-h-[90vh]">
+      
+      <!-- Modal Header -->
+      <div class="p-6 bg-dot-surface border-b border-dot-border flex items-center justify-between">
+        <div>
+          <span id="modal-badge" class="px-2.5 py-0.5 rounded font-mono text-[10px] uppercase font-bold bg-dot-orange/20 text-dot-orange border border-dot-orange/40">Directive Editor</span>
+          <h2 id="modal-title" class="text-xl font-black text-white uppercase tracking-wide mt-1"></h2>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm bg-dot-black px-3 py-1.5 rounded border border-dot-border">
+          ✕ Close [ESC]
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="edit-sop-form" onsubmit="saveSOPChanges(event)" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+        <input type="hidden" id="edit-id" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Directive Title: <span class="text-dot-orange">*</span></label>
+            <input type="text" id="edit-title" required placeholder="e.g., Section 10.3 — Emergency Staging Protocol" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono font-bold" />
+          </div>
+          <div>
+            <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Category / Section: <span class="text-dot-orange">*</span></label>
+            <select id="edit-category" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono">
+              <option value="General Conduct & Chain of Command">General Conduct & Chain of Command</option>
+              <option value="Traffic Control & Flagging">Traffic Control & Flagging</option>
+              <option value="Towing & Mechanical Recovery">Towing & Mechanical Recovery</option>
+              <option value="Inter-Agency Protocol">Inter-Agency Protocol</option>
+              <option value="Equipment & Fleet Management">Equipment & Fleet Management</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-mono text-slate-400 uppercase tracking-wider">Directive Content & Procedures: <span class="text-dot-orange">*</span></label>
+            <button type="button" onclick="insertImageTag()" class="text-[10px] font-mono bg-dot-surface hover:bg-dot-card border border-dot-border text-dot-orange px-2 py-1 rounded uppercase transition">
+              🖼️ Insert Image Tag
+            </button>
+          </div>
+          <textarea id="edit-content" rows="10" required placeholder="Enter full SOP guidelines, rules, and procedures..." class="w-full bg-dot-surface border border-dot-border rounded px-4 py-3 text-white focus:outline-none focus:border-dot-orange font-mono text-[11px] leading-relaxed"></textarea>
+        </div>
+
+        <div id="modal-action-msg" class="font-mono text-xs hidden"></div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-dot-border">
+          <button type="button" id="delete-btn" onclick="deleteCurrentSOP()" class="bg-red-950/60 hover:bg-red-900 border border-red-800 text-red-300 px-4 py-2.5 rounded font-mono uppercase tracking-wider transition hidden">
+            Delete Directive
+          </button>
+          <div class="flex items-center gap-3 ml-auto">
+            <button type="button" onclick="closeModal()" class="bg-dot-surface hover:bg-dot-card border border-dot-border px-5 py-2.5 rounded font-mono text-slate-300 uppercase">
+              Cancel
+            </button>
+            <button type="submit" id="save-btn" class="bg-dot-orange hover:bg-dot-orangeHover text-white px-6 py-2.5 rounded font-bold uppercase tracking-wider transition font-mono">
+              Save Directive
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Human Resources & Standards
+  </footer>
+
+  <!-- Administration Script -->
+  <script>
+    const API_BASE_URL = "/api";
+    let cachedSops = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSopsAdmin();
+      setupSearch();
+    });
+
+    async function loadSopsAdmin() {
+      const container = document.getElementById('admin-sop-container');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/sops`);
+        cachedSops = await response.json();
+
+        container.innerHTML = "";
+
+        if (!cachedSops || cachedSops.length === 0) {
+          container.innerHTML = `
+            <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+              No SOP directives currently logged. Click "＋ New Directive" to get started.
+            </div>
+          `;
+          return;
+        }
+
+        const grid = document.createElement('div');
+        grid.className = "space-y-3";
+
+        cachedSops.forEach((sop, index) => {
+          const { id, title, category, timestamp, content } = sop;
+          const snippet = content.length > 120 ? content.substring(0, 120) + '...' : content;
+
+          const card = document.createElement('div');
+          card.className = "sop-card p-5 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-dot-orange transition shadow-md";
+          card.innerHTML = `
+            <div class="space-y-1 flex-1">
+              <div class="flex items-center gap-3">
+                <span class="px-2.5 py-0.5 border rounded font-mono text-[10px] uppercase font-bold bg-dot-orange/10 border-dot-orange text-dot-orange">${category}</span>
+                <span class="font-mono text-[11px] text-slate-400">Last Updated: ${timestamp}</span>
+              </div>
+              <h3 class="text-base font-bold text-white uppercase mt-1">${title}</h3>
+              <p class="text-slate-400 text-xs font-mono">${snippet}</p>
+            </div>
+            <button onclick="openEditModal(${index})" class="w-full md:w-auto bg-dot-orange hover:bg-dot-orangeHover text-white px-5 py-2.5 rounded font-bold uppercase transition font-mono whitespace-nowrap">
+              Edit Directive ↗
+            </button>
+          `;
+          grid.appendChild(card);
+        });
+
+        container.appendChild(grid);
+      } catch (error) {
+        console.error("Error loading SOPs:", error);
+        container.innerHTML = `
+          <div class="p-6 bg-red-950/30 border border-red-900/50 rounded text-red-400 text-xs font-mono">
+            ⚠️ Failed to synchronize SOP database from server.
+          </div>
+        `;
+      }
+    }
+
+    function insertImageTag() {
+      const url = prompt("Enter image asset path or URL (e.g., assets/sop-diagram.png):");
+      if (!url) return;
+      const textarea = document.getElementById('edit-content');
+      const imgTag = `\n<img src="${url}" alt="SOP Illustration" class="my-4 rounded border border-dot-border max-w-full" />\n`;
+      const startPos = textarea.selectionStart;
+      const endPos = textarea.selectionEnd;
+      textarea.value = textarea.value.substring(0, startPos) + imgTag + textarea.value.substring(endPos, textarea.value.length);
+      textarea.focus();
+    }
+
+    function openCreateModal() {
+      document.getElementById('edit-id').value = "";
+      document.getElementById('edit-title').value = "";
+      document.getElementById('edit-category').value = "General Conduct & Chain of Command";
+      document.getElementById('edit-content').value = "";
+      document.getElementById('delete-btn').classList.add('hidden');
+
+      document.getElementById('modal-title').innerText = "Create New SOP Directive";
+      document.getElementById('modal-action-msg').classList.add('hidden');
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+    }
+
+    function openEditModal(index) {
+      const sop = cachedSops[index];
+      if (!sop) return;
+
+      document.getElementById('edit-id').value = sop.id;
+      document.getElementById('edit-title').value = sop.title || "";
+      document.getElementById('edit-category').value = sop.category || "General";
+      document.getElementById('edit-content').value = sop.content || "";
+      document.getElementById('delete-btn').classList.remove('hidden');
+
+      document.getElementById('modal-title').innerText = `Editing — ${sop.title}`;
+      document.getElementById('modal-action-msg').classList.add('hidden');
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.add('hidden');
+    }
+
+    async function saveSOPChanges(event) {
+      event.preventDefault();
+
+      const id = document.getElementById('edit-id').value;
+      const title = document.getElementById('edit-title').value.trim();
+      const category = document.getElementById('edit-category').value;
+      const content = document.getElementById('edit-content').value.trim();
+
+      const msgBox = document.getElementById('modal-action-msg');
+      const saveBtn = document.getElementById('save-btn');
+
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Saving Directive...";
+      msgBox.classList.add('hidden');
+
+      const isEditing = !!id;
+      const url = isEditing ? `${API_BASE_URL}/sops/${id}` : `${API_BASE_URL}/sops`;
+      const method = isEditing ? 'PUT' : 'POST';
+
+      try {
+        const response = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, category, content })
+        });
+
+        if (!response.ok) throw new Error('Save failed');
+
+        msgBox.className = "font-mono text-xs text-emerald-400 p-2 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "✓ SOP directive successfully saved to server database!";
+        msgBox.classList.remove('hidden');
+
+        setTimeout(() => {
+          closeModal();
+          loadSopsAdmin();
+        }, 1200);
+      } catch (error) {
+        console.error("Save error:", error);
+        msgBox.className = "font-mono text-xs text-red-400 p-2 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "⚠️ Failed to save directive.";
+        msgBox.classList.remove('hidden');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "Save Directive";
+      }
+    }
+
+    async function deleteCurrentSOP() {
+      const id = document.getElementById('edit-id').value;
+      if (!id || !confirm("Are you sure you want to delete this SOP directive?")) return;
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/sops/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('Delete failed');
+
+        closeModal();
+        loadSopsAdmin();
+      } catch (error) {
+        console.error("Delete error:", error);
+        alert("⚠️ Failed to delete directive.");
+      }
+    }
+
+    function setupSearch() {
+      const search = document.getElementById('sopSearch');
+      search.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.sop-card');
+        cards.forEach(card => {
+          const content = card.innerText.toLowerCase();
+          card.style.display = content.includes(val) ? 'flex' : 'none';
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>
