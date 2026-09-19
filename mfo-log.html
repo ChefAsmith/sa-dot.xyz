@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Master Field Operations Log</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-6 py-12 flex-1 w-full flex items-center justify-center">
+    <div class="bg-dot-card border border-dot-border rounded-lg p-8 md:p-12 w-full space-y-8 shadow-2xl">
+      
+      <div class="space-y-2 text-center border-b border-dot-border pb-6">
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+          Official State Telemetry & Inventory Logging
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Master Field Operations Log</h1>
+        <p class="text-slate-400 text-xs max-w-xl mx-auto">Consolidated state infrastructure staging, mechanical recovery, roadside logistics, and item consumption database.</p>
+      </div>
+
+      <form id="mfo-form" onsubmit="submitMFOLog(event)" class="space-y-8 text-xs">
+        
+        <!-- SECTION 1: OPERATOR INFO & TIMESTAMPS -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold text-dot-orange uppercase tracking-wider border-b border-dot-border pb-2">1. Operator & Telemetry Identification</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Operator/Technician Name: <span class="text-dot-orange">*</span></label>
+              <input type="text" id="operatorName" required placeholder="e.g., Ramsay Wolfe" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Operator/Technician Callsign: <span class="text-dot-orange">*</span></label>
+              <input type="text" id="operatorCallsign" required placeholder="e.g., DOT-005" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Date: <span class="text-dot-orange">*</span></label>
+              <input type="date" id="logDate" required class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Time: <span class="text-dot-orange">*</span></label>
+              <input type="time" id="logTime" required class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: ACTIVE CERTIFICATION SELECTOR -->
+        <div class="space-y-4 pt-4 border-t border-dot-border">
+          <div>
+            <h3 class="text-sm font-bold text-dot-orange uppercase tracking-wider">2. Active Certification Selector</h3>
+            <p class="text-slate-400 text-[11px]">Select primary operational certificate utilized.</p>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 font-mono text-[11px]">
+            <label class="flex items-center gap-2 bg-dot-surface p-3 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+              <input type="radio" name="certification" value="Flag" required onchange="toggleCertSection('Flag')" class="accent-[#ff6600]" /> Flag / Traffic
+            </label>
+            <label class="flex items-center gap-2 bg-dot-surface p-3 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+              <input type="radio" name="certification" value="Rollback" onchange="toggleCertSection('Rollback')" class="accent-[#ff6600]" /> Rollback
+            </label>
+            <label class="flex items-center gap-2 bg-dot-surface p-3 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+              <input type="radio" name="certification" value="HVY" onchange="toggleCertSection('HVY')" class="accent-[#ff6600]" /> HVY (Heavy Duty)
+            </label>
+            <label class="flex items-center gap-2 bg-dot-surface p-3 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition">
+              <input type="radio" name="certification" value="Trailer" onchange="toggleCertSection('Trailer')" class="accent-[#ff6600]" /> Trailer
+            </label>
+          </div>
+        </div>
+
+        <!-- CERTIFICATION SPECIFIC SUB-SECTIONS -->
+        <!-- FLAG & TRAFFIC SECTION -->
+        <div id="section-flag" class="cert-section space-y-4 pt-4 border-t border-dot-border hidden">
+          <h4 class="text-xs font-bold text-dot-orange uppercase font-mono">Flag & Traffic Log Parameters</h4>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Incident Location (Postal/Crossroads): <span class="text-dot-orange">*</span></label>
+              <input type="text" id="flagLocation" placeholder="e.g., Olympic Freeway / Postal 402" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Primary Unit / Operator Assisted: <span class="text-dot-orange">*</span></label>
+              <input type="text" id="assistedUnit" placeholder="e.g., LSPD Officer Davis [402]" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Deployed Assist Vehicle Asset: <span class="text-dot-orange">*</span></label>
+            <select id="flagAsset" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange">
+              <option value="Chevy Tahoe (civtahoe)">Chevy Tahoe (civtahoe)</option>
+              <option value="Dodge Ram 3500 HD (civramdot1)">Dodge Ram 3500 HD (civramdot1)</option>
+              <option value="Ford F250 (civf250)">Ford F250 (civf250)</option>
+              <option value="Ford F550 Arrow Board Utility (civf550dot)">Ford F550 Arrow Board Utility (civf550dot)</option>
+              <option value="Dodge Ram 5500 Arrow Board Utility (civramdot2)">Dodge Ram 5500 Arrow Board Utility (civramdot2)</option>
+              <option value="Dodge Durango (civdurango)">Dodge Durango (civdurango)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Scene Cargo Classification:</label>
+              <select id="cargoClassification" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange">
+                <option value="Standard Highway Breakdown">Standard Highway Breakdown</option>
+                <option value="Oversized Load">Oversized Load (Exceeds standard single-lane bounds)</option>
+                <option value="Top-Heavy Load">Top-Heavy Load (Vulnerable to rolling or tipping)</option>
+                <option value="Dangerous Load">Dangerous Load (Highly unstable or structurally compromised)</option>
+              </select>
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Tactical Lane-Blocking Actions:</label>
+              <select id="laneBlocking" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange">
+                <option value="Deployed static lane blockage">Deployed static lane blockage to hold back oncoming traffic</option>
+                <option value="Deployed vehicle at a sharp angle">Deployed vehicle at a sharp angle for "Safety Corridor"</option>
+                <option value="Run active Amber Strobes in motion">Run active Amber Strobes in motion for convoy protection</option>
+              </select>
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Messaging Toggles Utilized:</label>
+              <select id="messagingToggles" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange">
+                <option value="Extra 3 [Accident Ahead]">Extra 3 [Accident Ahead]</option>
+                <option value="Extra 4 [Road Work Ahead]">Extra 4 [Road Work Ahead]</option>
+                <option value="Extra 5/6 [Directional Arrows]">Extra 5/6 [Directional Arrows]</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROLLBACK SECTION -->
+        <div id="section-rollback" class="cert-section space-y-4 pt-4 border-t border-dot-border hidden">
+          <h4 class="text-xs font-bold text-dot-orange uppercase font-mono">Rollback Asset Selection</h4>
+          <div>
+            <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Deployed Rollback Unit Asset:</label>
+            <select id="rollbackAsset" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange">
+              <option value="Ford F550 Rollback Cab 1.5 (f550rollback1)">Ford F550 Rollback Cab 1.5 (f550rollback1)</option>
+              <option value="Dodge Ram 5500 HD Rollback (ramrollback)">Dodge Ram 5500 HD Rollback (ramrollback)</option>
+              <option value="Ford F550 Rollback (f550rollback2)">Ford F550 Rollback (f550rollback2)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- HEAVY DUTY SECTION -->
+        <div id="section-hvy" class="cert-section space-y-4 pt-4 border-t border-dot-border hidden">
+          <h4 class="text-xs font-bold text-dot-orange uppercase font-mono">Heavy Duty Asset Selection</h4>
+          <div>
+            <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Deployed Heavy Duty Unit Asset:</label>
+            <select id="hvyAsset" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange">
+              <option value="Kenworth Wrecker (kenworthwrecker)">Kenworth Wrecker (kenworthwrecker)</option>
+              <option value="International Navistar Rollback (navistarrollback)">International Navistar Rollback (navistarrollback)</option>
+              <option value="Kenworth W900 (w900)">Kenworth W900 (w900)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TRAILER SECTION -->
+        <div id="section-trailer" class="cert-section space-y-4 pt-4 border-t border-dot-border hidden">
+          <h4 class="text-xs font-bold text-dot-orange uppercase font-mono">Trailer & Tow Configuration</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Deployed Departmental Trailer Asset:</label>
+              <select id="trailerAsset" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange">
+                <option value="Enclosed Car Trailer (cartrailer1)">Enclosed Car Trailer (cartrailer1)</option>
+                <option value="Tritoon Boat Trailer (ptrailer)">Tritoon Boat Trailer (ptrailer)</option>
+                <option value="Lowboy Heavy Transport Trailer (trlowboy)">Lowboy Heavy Transport Trailer (trlowboy)</option>
+              </select>
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Deployed Primary Towing Vehicle Asset:</label>
+              <select id="towVehicleAsset" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange">
+                <option value="Chevy Tahoe (civtahoe)">Chevy Tahoe (civtahoe)</option>
+                <option value="Dodge Ram 3500 HD (civramdot1)">Dodge Ram 3500 HD (civramdot1)</option>
+                <option value="Ford F250 (civf250)">Ford F250 (civf250)</option>
+                <option value="Kenworth W900 (w900)">Kenworth W900 (w900)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: LOGISTICAL SERVICE CATEGORY SELECTION -->
+        <div class="space-y-4 pt-4 border-t border-dot-border">
+          <div>
+            <h3 class="text-sm font-bold text-dot-orange uppercase tracking-wider">3. Logistical Service Category</h3>
+            <p class="text-slate-400 text-[11px]">Select primary action performed on scene.</p>
+          </div>
+
+          <div>
+            <select id="logisticalCategory" required onchange="toggleLogisticalCategory(this.value)" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-3 text-white focus:outline-none focus:border-dot-orange font-bold">
+              <option value="">-- Select Logistical Action Category --</option>
+              <option value="LEO Impound">LEO Impound (Forensic Hold / Seizure)</option>
+              <option value="Regular Impound">Regular Impound (Civil / Parking Violations)</option>
+              <option value="Accident Recovery">Accident Recovery (Property Damage / Disabling Collisions)</option>
+              <option value="Owner's Request">Owner's Request (Non-Emergency Motorist Assist)</option>
+              <option value="Relocation">Relocation Log (Logistical Fleet / Asset Transfer)</option>
+              <option value="Roadside Service">Roadside Service Logs (Tire, Fuel, Jumpstart, Repair)</option>
+            </select>
+          </div>
+
+          <!-- COMMON VEHICLE LOG FIELDS -->
+          <div id="vehicle-log-container" class="space-y-4 hidden bg-dot-surface p-4 rounded border border-dot-border">
+            <h4 class="text-xs font-bold text-dot-orange uppercase font-mono" id="category-title">Vehicle Telemetry & Data</h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col justify-between">
+                <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Incident Location (Postal/Crossroads): <span class="text-dot-orange">*</span></label>
+                <input type="text" id="logLocation" placeholder="e.g., Route 68 / Postal 1020" class="w-full bg-dot-black border border-dot-border rounded px-4 py-2 text-white focus:outline-none focus:border-dot-orange" />
+              </div>
+              <div class="flex flex-col justify-between">
+                <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Vehicle Class: <span class="text-dot-orange">*</span></label>
+                <select id="vehicleClass" class="w-full bg-dot-black border border-dot-border rounded px-4 py-2 text-white focus:outline-none focus:border-dot-orange">
+                  <option value="SEDAN">SEDAN</option>
+                  <option value="COUPE">COUPE</option>
+                  <option value="SUV">SUV</option>
+                  <option value="TRUCK">TRUCK</option>
+                  <option value="RECREATION">RECREATION</option>
+                  <option value="MOTORCYCLE">MOTORCYCLE</option>
+                  <option value="TRAILER">TRAILER</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col justify-between">
+                <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Vehicle Make, Model, Color, & License Plate: <span class="text-dot-orange">*</span></label>
+                <input type="text" id="vehicleDetails" placeholder="e.g., Declasse Sultan, Black, 43XYZ123" class="w-full bg-dot-black border border-dot-border rounded px-4 py-2 text-white focus:outline-none focus:border-dot-orange" />
+              </div>
+              <div class="flex flex-col justify-between">
+                <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Target Destination: <span class="text-dot-orange">*</span></label>
+                <input type="text" id="targetDestination" placeholder="e.g., Mission Row Impound Lot" class="w-full bg-dot-black border border-dot-border rounded px-4 py-2 text-white focus:outline-none focus:border-dot-orange" />
+              </div>
+            </div>
+
+            <!-- Vehicle Status Checkboxes -->
+            <div>
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-2">Physical Vehicle Status (Check all that apply):</label>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-2 font-mono text-[11px]">
+                <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="vStatus" value="Drivable" class="accent-[#ff6600]"> Drivable</label>
+                <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="vStatus" value="Totaled" class="accent-[#ff6600]"> Totaled</label>
+                <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="vStatus" value="Evidence Intact" class="accent-[#ff6600]"> Evidence Intact</label>
+                <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="vStatus" value="Biohazard" class="accent-[#ff6600]"> Biohazard</label>
+                <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="vStatus" value="Burned" class="accent-[#ff6600]"> Burned</label>
+                <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="vStatus" value="Mechanical Failure" class="accent-[#ff6600]"> Mechanical Failure</label>
+                <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="vStatus" value="Immobilized" class="accent-[#ff6600]"> Immobilized</label>
+                <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="vStatus" value="Abandoned" class="accent-[#ff6600]"> Abandoned</label>
+              </div>
+            </div>
+
+            <!-- Conditional Extra Details (Roadside Service or Relocation Reason) -->
+            <div id="extra-service-fields" class="space-y-3 pt-2 hidden">
+              <div>
+                <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Roadside Service Types (Check all that apply):</label>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 font-mono text-[11px]">
+                  <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="rsType" value="Fuel Delivery"> Fuel</label>
+                  <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="rsType" value="Tire Change"> Tire</label>
+                  <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="rsType" value="Battery Jumpstart"> Jumpstart</label>
+                  <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="rsType" value="Lockout Service"> Lockout</label>
+                  <label class="flex items-center gap-2 bg-dot-black p-2 rounded border border-dot-border"><input type="checkbox" name="rsType" value="On-Scene Repair"> Repair</label>
+                </div>
+              </div>
+              <div>
+                <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Materials Used / Specific Details:</label>
+                <input type="text" id="specificDetails" placeholder="e.g., 2 Gallons fuel, 1 tire replaced, or relocation reason..." class="w-full bg-dot-black border border-dot-border rounded px-4 py-2 text-white focus:outline-none focus:border-dot-orange" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW SECTION: CONSUMABLES & OPERATIONAL EXPENDITURES (GTA V MAP SCALE FUEL & ITEMS) -->
+        <div class="space-y-4 pt-4 border-t border-dot-border">
+          <div>
+            <h3 class="text-sm font-bold text-dot-orange uppercase tracking-wider">Consumables & Operational Expenditures</h3>
+            <p class="text-slate-400 text-[11px]">Track exact materials used, distance traveled in the state, fuel burned, and repair costs incurred during this operation.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-[11px]">
+            <div class="flex flex-col justify-between">
+              <label class="block text-slate-400 uppercase mb-1">Distance Traveled (Miles):</label>
+              <input type="number" step="0.1" id="itemDistance" value="0" placeholder="e.g., 8.5" class="w-full bg-dot-surface border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange" />
+              <span class="text-[9px] text-slate-500 mt-0.5 block">1 in-game mile ~ 1.6 km (Calculates fuel burn)</span>
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block text-slate-400 uppercase mb-1">Fuel Consumed (Gallons):</label>
+              <input type="number" step="0.1" id="itemFuel" value="0" placeholder="e.g., 3.5" class="w-full bg-dot-surface border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange" />
+              <span class="text-[9px] text-slate-500 mt-0.5 block">Auto-calculated from distance or manual entry</span>
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block text-slate-400 uppercase mb-1">Direct Repair Costs ($):</label>
+              <input type="number" step="1" id="itemRepairCost" value="0" placeholder="e.g., 450" class="w-full bg-dot-surface border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange" />
+              <span class="text-[9px] text-slate-500 mt-0.5 block">Parts & mechanical service outlays</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-[11px] pt-2">
+            <div class="flex flex-col justify-between">
+              <label class="block text-slate-400 uppercase mb-1">Tires Used (Units):</label>
+              <input type="number" min="0" id="itemTires" value="0" class="w-full bg-dot-surface border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block text-slate-400 uppercase mb-1">Lockout Kits Used:</label>
+              <input type="number" min="0" id="itemLockout" value="0" class="w-full bg-dot-surface border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block text-slate-400 uppercase mb-1">Plug / Repair Kits:</label>
+              <input type="number" min="0" id="itemPlugs" value="0" class="w-full bg-dot-surface border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block text-slate-400 uppercase mb-1">Flares / Cones Deployed:</label>
+              <input type="number" min="0" id="itemFlares" value="0" class="w-full bg-dot-surface border border-dot-border rounded px-3 py-2 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: AUTHORIZATION, WAIVERS, & LEGAL SIGN-OFF -->
+        <div class="space-y-4 pt-4 border-t border-dot-border">
+          <div>
+            <h3 class="text-sm font-bold text-dot-orange uppercase tracking-wider">4. Authorization, Waivers, & Legal Sign-Off</h3>
+            <p class="text-slate-400 text-[11px]">"I, the undersigned (Authorized Enforcement Officer or Registered Owner), hereby grant SADOT permission to handle, stabilize, or clear the specified asset."</p>
+          </div>
+
+          <!-- Perfectly Aligned 3-Column Grid with flex-col justify-between -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">On-Scene Commander / Civilian Name: <span class="text-dot-orange">*</span></label>
+              <input type="text" id="civilianName" required placeholder="e.g., Officer Miller" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Commander / Civilian Signature: <span class="text-dot-orange">*</span></label>
+              <input type="text" id="civilianSignature" required placeholder="Callsign or Name Sig" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+            <div class="flex flex-col justify-between">
+              <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Deployed SADOT Operator Signature: <span class="text-dot-orange">*</span></label>
+              <input type="text" id="operatorSignature" required placeholder="Operator Callsign Sig" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange" />
+            </div>
+          </div>
+        </div>
+
+        <div id="form-msg" class="font-mono text-xs hidden"></div>
+
+        <button type="submit" id="submit-btn" class="w-full bg-dot-orange hover:bg-dot-orangeHover text-white py-3.5 rounded font-bold uppercase tracking-wider transition shadow-lg shadow-orange-950/40">
+          Transmit Master Field Operations Log
+        </button>
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Dynamic Form Interaction & Submission Script -->
+  <script>
+    const API_BASE_URL = "/api";
+
+    document.getElementById('itemDistance').addEventListener('input', (e) => {
+      const dist = parseFloat(e.target.value) || 0;
+      const calculatedFuel = (dist / 15.0).toFixed(1);
+      document.getElementById('itemFuel').value = calculatedFuel;
+    });
+
+    function toggleCertSection(selectedCert) {
+      document.querySelectorAll('.cert-section').forEach(el => el.classList.add('hidden'));
+      if (selectedCert === 'Flag') document.getElementById('section-flag').classList.remove('hidden');
+      if (selectedCert === 'Rollback') document.getElementById('section-rollback').classList.remove('hidden');
+      if (selectedCert === 'HVY') document.getElementById('section-hvy').classList.remove('hidden');
+      if (selectedCert === 'Trailer') document.getElementById('section-trailer').classList.remove('hidden');
+    }
+
+    function toggleLogisticalCategory(category) {
+      const container = document.getElementById('vehicle-log-container');
+      const extraFields = document.getElementById('extra-service-fields');
+      const title = document.getElementById('category-title');
+
+      if (!category) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      title.innerText = `${category} — Vehicle Telemetry & Data`;
+
+      if (category === 'Roadside Service' || category === 'Relocation') {
+        extraFields.classList.remove('hidden');
+      } else {
+        extraFields.classList.add('hidden');
+      }
+    }
+
+    async function submitMFOLog(event) {
+      event.preventDefault();
+
+      const certEl = document.querySelector('input[name="certification"]:checked');
+      const certification = certEl ? certEl.value : "";
+
+      let deployedAsset = "";
+      if (certification === 'Flag') deployedAsset = document.getElementById('flagAsset').value;
+      if (certification === 'Rollback') deployedAsset = document.getElementById('rollbackAsset').value;
+      if (certification === 'HVY') deployedAsset = document.getElementById('hvyAsset').value;
+      if (certification === 'Trailer') deployedAsset = `${document.getElementById('trailerAsset').value} towed by ${document.getElementById('towVehicleAsset').value}`;
+
+      const logisticalCategory = document.getElementById('logisticalCategory').value;
+      const vehicleStatuses = Array.from(document.querySelectorAll('input[name="vStatus"]:checked')).map(cb => cb.value).join(', ') || "None";
+      const roadsideTypes = Array.from(document.querySelectorAll('input[name="rsType"]:checked')).map(cb => cb.value).join(', ');
+
+      const specificDetailsInput = document.getElementById('specificDetails').value;
+      const combinedDetails = roadsideTypes ? `Services: [${roadsideTypes}] | Notes: ${specificDetailsInput}` : specificDetailsInput;
+
+      const payload = {
+        operatorName: document.getElementById('operatorName').value,
+        operatorCallsign: document.getElementById('operatorCallsign').value,
+        logDate: document.getElementById('logDate').value,
+        logTime: document.getElementById('logTime').value,
+        certification: certification,
+        location: certification === 'Flag' ? document.getElementById('flagLocation').value : document.getElementById('logLocation').value,
+        assistedUnit: document.getElementById('assistedUnit') ? document.getElementById('assistedUnit').value : "None",
+        deployedAsset: deployedAsset,
+        cargoClassification: document.getElementById('cargoClassification') ? document.getElementById('cargoClassification').value : "N/A",
+        laneBlocking: document.getElementById('laneBlocking') ? document.getElementById('laneBlocking').value : "N/A",
+        messagingToggles: document.getElementById('messagingToggles') ? document.getElementById('messagingToggles').value : "N/A",
+        logisticalCategory: logisticalCategory,
+        vehicleClass: document.getElementById('vehicleClass') ? document.getElementById('vehicleClass').value : "N/A",
+        vehicleDetails: document.getElementById('vehicleDetails') ? document.getElementById('vehicleDetails').value : "N/A",
+        targetDestination: document.getElementById('targetDestination') ? document.getElementById('targetDestination').value : "N/A",
+        vehicleStatus: vehicleStatuses,
+        specificDetails: combinedDetails || "N/A",
+        distanceTraveled: parseFloat(document.getElementById('itemDistance').value) || 0,
+        fuelConsumedGallons: parseFloat(document.getElementById('itemFuel').value) || 0,
+        repairCost: parseFloat(document.getElementById('itemRepairCost').value) || 0,
+        tiresUsed: parseInt(document.getElementById('itemTires').value) || 0,
+        lockoutKitsUsed: parseInt(document.getElementById('itemLockout').value) || 0,
+        plugKitsUsed: parseInt(document.getElementById('itemPlugs').value) || 0,
+        flaresConesUsed: parseInt(document.getElementById('itemFlares').value) || 0,
+        civilianName: document.getElementById('civilianName').value,
+        civilianSignature: document.getElementById('civilianSignature').value,
+        operatorSignature: document.getElementById('operatorSignature').value
+      };
+
+      const msgBox = document.getElementById('form-msg');
+      const submitBtn = document.getElementById('submit-btn');
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Transmitting Master Log Packet...";
+      msgBox.classList.add('hidden');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/mfo-logs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error('Server response failed');
+
+        msgBox.className = "text-emerald-400 font-mono text-xs text-center p-3 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "✓ Master Field Operations Log & Consumables successfully recorded to server database!";
+        msgBox.classList.remove('hidden');
+        document.getElementById('mfo-form').reset();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (error) {
+        console.error("Submission error:", error);
+        msgBox.className = "text-red-400 font-mono text-xs text-center p-3 bg-dot-surface rounded border border-dot-border";
+        msgBox.innerText = "⚠️ Transmission failed. Please verify server connection.";
+        msgBox.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Transmit Master Field Operations Log";
+      }
+    }
+  </script>
+
+</body>
+</html>

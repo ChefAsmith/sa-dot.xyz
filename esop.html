@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Standard Operating Procedures</title>
+
+  <!-- Browser Tab Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              cardHover: "#1f2637",
+              border: "#232a3b",
+              borderActive: "#ff6600",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+  if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+    window.location.href = 'portal';
+  }
+  </script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #131722;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232a3b;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff6600;
+    }
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #232a3b #131722;
+    }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="text-dot-orange">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- SOP Main Container -->
+  <main class="max-w-7xl mx-auto px-6 py-10 flex-1 w-full">
+    
+    <!-- Title Bar & Filter -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-dot-border gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest mb-2">
+          Department Manual • Version 2.4 (Database Synchronized)
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Standard Operating Procedures</h1>
+        <p class="text-slate-400 text-xs mt-1">Official regulations, highway incident protocols, safety standards, and traffic management formulas loaded dynamically from server storage.</p>
+      </div>
+
+      <!-- Live Search Filter -->
+      <div class="flex items-center gap-3">
+        <input 
+          type="text" 
+          id="sopFilter" 
+          placeholder="Search directive number, keyword, or equipment..." 
+          class="bg-dot-card border border-dot-border rounded px-4 py-2.5 text-xs text-white focus:outline-none focus:border-dot-orange w-full md:w-80 shadow-inner"
+        />
+      </div>
+    </div>
+
+    <!-- Layout: Sticky Index + SOP Stream -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-8">
+      
+      <!-- Sticky Sidebar Navigation -->
+      <aside class="lg:col-span-1">
+        <div id="tocContainer" class="sticky top-24 bg-dot-card border border-dot-border rounded-lg p-4 space-y-1 shadow-lg max-h-[calc(100vh-7rem)] overflow-y-auto">
+            <p class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-2 pb-2 border-b border-dot-border">SADOT Manual Index</p>
+        </div>
+      </aside>
+
+      <!-- SOP Cards Stream -->
+      <section class="lg:col-span-3 space-y-6" id="sopList">
+        <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+          Synchronizing SOP directives from server database...
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Image Lightbox Modal -->
+  <div id="imageLightbox" class="fixed inset-0 z-[100] hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative max-w-5xl w-full bg-dot-card border border-dot-border rounded-lg overflow-hidden shadow-2xl">
+      <div class="p-4 border-b border-dot-border flex justify-between items-center bg-dot-surface">
+        <h3 id="lightboxTitle" class="text-sm font-bold text-white uppercase tracking-wide"></h3>
+        <button onclick="closeLightbox()" class="text-slate-400 hover:text-white text-lg font-bold px-2 py-0.5 rounded bg-dot-card hover:bg-dot-orange transition">✕</button>
+      </div>
+      <div class="p-3 bg-black flex justify-center items-center">
+        <img id="lightboxImg" src="" alt="Enlarged view" class="max-h-[75vh] w-auto object-contain rounded" />
+      </div>
+      <div class="p-3 bg-dot-surface border-t border-dot-border text-center text-[11px] text-slate-400 font-mono">
+        SADOT Technical Diagram Specification Document • Authorized Distribution Only
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Dynamic SOP Loader Script -->
+  <script>
+    const API_BASE_URL = "/api";
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSopsFromDatabase();
+    });
+
+    async function loadSopsFromDatabase() {
+      const container = document.getElementById('sopList');
+      const tocContainer = document.getElementById('tocContainer');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/sops`);
+        const sops = await response.json();
+
+        container.innerHTML = "";
+        tocContainer.innerHTML = `<p class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-2 pb-2 border-b border-dot-border">SADOT Manual Index</p>`;
+
+        if (!sops || sops.length === 0) {
+          container.innerHTML = `
+            <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+              No SOP directives found in database. Use the SOP Admin Console to import or create directives.
+            </div>
+          `;
+          return;
+        }
+
+        sops.forEach((sop, index) => {
+          const secId = `sec${index + 1}`;
+          const { title, category = "General", content = "" } = sop;
+
+          const tocLink = document.createElement('a');
+          tocLink.href = `#${secId}`;
+          tocLink.className = "toc-link block text-xs font-semibold text-slate-400 hover:text-white hover:bg-dot-surface px-2.5 py-1.5 rounded transition";
+          tocLink.innerText = `${index + 1}.0 ${title}`;
+          tocContainer.appendChild(tocLink);
+
+          const article = document.createElement('article');
+          article.id = secId;
+          article.className = "sop-card bg-dot-card border border-dot-border rounded-lg p-6 transition-all duration-300 hover:-translate-y-1 hover:border-dot-orange hover:shadow-2xl hover:shadow-orange-950/20 cursor-pointer scroll-mt-24";
+          article.innerHTML = `
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full bg-dot-orange"></span>
+                <span class="text-xs font-mono font-bold text-dot-orange tracking-widest uppercase">${category}</span>
+              </div>
+              <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2.5 py-0.5 rounded border border-dot-border font-bold">Directive #${index + 1}</span>
+            </div>
+            
+            <h2 class="text-xl font-black text-white uppercase tracking-wide">${title}</h2>
+            
+            <div class="text-slate-300 text-xs mt-3 leading-relaxed space-y-4">
+              ${content}
+            </div>
+          `;
+          container.appendChild(article);
+        });
+
+        setupInteractions();
+      } catch (error) {
+        console.error("Error loading SOPs:", error);
+        container.innerHTML = `
+          <div class="p-8 bg-red-950/30 border border-red-900/50 rounded text-red-400 text-xs font-mono">
+            ⚠️ Failed to load SOP directives from backend server. Ensure server.js is running.
+          </div>
+        `;
+      }
+    }
+
+    function setupInteractions() {
+      const filterInput = document.getElementById('sopFilter');
+      const cards = document.querySelectorAll('.sop-card');
+
+      if (filterInput) {
+        filterInput.addEventListener('input', (e) => {
+          const q = e.target.value.toLowerCase();
+          cards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            card.style.display = text.includes(q) ? 'block' : 'none';
+          });
+        });
+      }
+
+      cards.forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.group\\/img') || e.target.closest('img')) return;
+
+          const isFocused = card.classList.contains('ring-2');
+          cards.forEach(c => {
+            c.classList.remove('ring-2', 'ring-dot-orange', 'border-dot-orange', 'bg-dot-cardHover', 'scale-[1.01]');
+          });
+
+          if (!isFocused) {
+            card.classList.add('ring-2', 'ring-dot-orange', 'border-dot-orange', 'bg-dot-cardHover', 'scale-[1.01]');
+          }
+        });
+      });
+    }
+
+    const lightbox = document.getElementById('imageLightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxTitle = document.getElementById('lightboxTitle');
+
+    function openLightbox(src, title) {
+      lightboxImg.src = src;
+      lightboxTitle.innerText = title;
+      lightbox.classList.remove('hidden');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.add('hidden');
+      lightboxImg.src = '';
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+  </script>
+
+</body>
+</html>

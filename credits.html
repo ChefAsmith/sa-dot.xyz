@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Credits & Acknowledgments</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Official Department Portal
+  </div>
+  
+  <!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="index" class="hover:text-dot-orange transition">Home</a>
+        <a href="sop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="faq" class="hover:text-dot-orange transition">FAQ</a>
+        <a href="work-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="roster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="portal" class="hover:text-dot-orange transition">Employee Portal</a>
+        <a href="credits" class="text-dot-orange">Credits</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="apply" target="_blank" class="bg-dot-orange hover:bg-dot-orangeHover text-white px-3.5 py-1.5 rounded transition text-xs font-bold uppercase tracking-wider shadow-md">
+          Join SADOT ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto px-6 py-12 flex-1 w-full space-y-8">
+    
+    <!-- Title Header -->
+    <div class="pb-6 border-b border-dot-border space-y-2">
+      <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest">
+        Special Recognition
+      </div>
+      <h1 class="text-3xl font-black text-white uppercase tracking-tight">Credits & Acknowledgments</h1>
+      <p class="text-slate-400 text-xs">Recognizing the developers, designers, script authors, and leadership whose contributions power the San Andreas Department of Transportation portal.</p>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+      
+      <!-- Development & Architecture -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Portal Architecture</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">Web Development</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Engineering & Design</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Designed and built with modern web frameworks, Tailwind CSS styling, and custom interactive script integrations to deliver an immersive, professional-grade standard operating portal.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Web Development: <strong class="text-white">Logan W. [1919]</strong>
+        </div>
+      </div>
+
+      <!-- Document Creations -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Standard Operating Manuals</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">Documentation</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Document Creations</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Authoring, structuring, and maintaining comprehensive standard operating procedures, training curricula, and operational guidelines.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Document Creators: <strong class="text-white">Logan W. [1919], Brandon B. [1914], and Eric M. [32]</strong>
+        </div>
+      </div>
+
+      <!-- Executive Leadership & Management -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Executive Oversight</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">Command Staff</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Department Leadership</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Special thanks to the Transportation Commissioner, Deputy Commissioner, and Chief of Operations for establishing departmental policies, operational directives, and structural standards.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Office of the Commissioner • <strong class="text-dot-orange">State of San Andreas</strong>
+        </div>
+      </div>
+
+      <!-- Scripts & Systems -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Server Utilities</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">In-Game Frameworks</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Scripting & Tooling</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Acknowledging the creators of the traffic node manipulation scripts (<code class="text-slate-200 font-mono">/traffic</code>), and emergency warning systems that support daily field operations.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Framework Integration: <strong class="text-white">CSRP Devs and Script makers</strong>
+        </div>
+      </div>
+
+      <!-- Community & Allied Partners -->
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg space-y-3 hover:border-dot-orange transition md:col-span-2">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">Community & Mutual Aid</span>
+          <span class="text-[10px] uppercase font-mono text-slate-400 bg-dot-surface px-2 py-0.5 rounded border border-dot-border font-bold">Partnerships</span>
+        </div>
+        <h3 class="text-base font-bold text-white uppercase">Allied Agencies & Members</h3>
+        <p class="text-slate-400 leading-relaxed">
+          Recognizing the dedication of our allied partners and active department personnel for maintaining seamless Unified Command on scene.
+        </p>
+        <div class="pt-2 border-t border-dot-border text-slate-300 font-mono text-[11px]">
+          Credited Entities: <strong class="text-white">SAMPD, BCSO, SAFR, and those listed on our roster</strong>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+</body>
+</html>

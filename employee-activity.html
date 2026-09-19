@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Employee Activity & Production Tracker</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="text-dot-orange">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full space-y-12">
+    
+    <!-- Title Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between pb-6 border-b border-dot-border gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest mb-1">
+          Telemetry & Operational Analytics
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Employee Activity & Production Tracker</h1>
+        <p class="text-slate-400 text-xs mt-1">Review operator shift hours, completed MFO logs, yearly production trends, and performance leaderboards.</p>
+      </div>
+      <button onclick="loadActivityData()" class="bg-dot-card hover:bg-dot-border border border-dot-border text-dot-orange font-mono text-xs px-4 py-2.5 rounded font-bold uppercase transition flex items-center gap-2 whitespace-nowrap">
+        🔄 Refresh Telemetry
+      </button>
+    </div>
+
+    <!-- SECTION 1: TOP 10 LEADERBOARDS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Top 10 MFO Logs Leaderboard -->
+      <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-dot-border pb-3">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            🏆 Top 10 MFO Log Producers
+          </h3>
+          <span class="text-[10px] font-mono text-dot-orange uppercase font-bold bg-dot-orange/10 px-2 py-0.5 rounded border border-dot-orange/30">Field Volume</span>
+        </div>
+        <div id="top-mfo-list" class="space-y-2 font-mono text-xs">
+          <div class="text-slate-500 text-center py-4">Loading leaderboard...</div>
+        </div>
+      </div>
+
+      <!-- Top 10 Hourly Logs Leaderboard -->
+      <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-dot-border pb-3">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            ⭐ Top 10 Patrol Hour Loggers
+          </h3>
+          <span class="text-[10px] font-mono text-dot-orange uppercase font-bold bg-dot-orange/10 px-2 py-0.5 rounded border border-dot-orange/30">Shift Hours</span>
+        </div>
+        <div id="top-hours-list" class="space-y-2 font-mono text-xs">
+          <div class="text-slate-500 text-center py-4">Loading leaderboard...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECTION 2: YEARLY PRODUCTION GRAPH -->
+    <div class="bg-dot-card border border-dot-border rounded-lg p-6 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-dot-border pb-3">
+        <div>
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">📈 Yearly Department Production Trend</h3>
+          <p class="text-slate-400 text-[11px]">Aggregated monthly shift hours and MFO logs completed across the calendar year.</p>
+        </div>
+        <span id="current-year-label" class="font-mono text-xs text-dot-orange font-bold"></span>
+      </div>
+      <div class="h-80 w-full pt-4">
+        <canvas id="yearlyProductionChart"></canvas>
+      </div>
+    </div>
+
+    <!-- SECTION 3: PERSONNEL ACTIVITY DIRECTORY -->
+    <div class="space-y-6 pt-6 border-t border-dot-border">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-black text-white uppercase tracking-wide">Personnel Activity Registry</h2>
+          <p class="text-slate-400 text-xs">Individual breakdown of operator shift hours and completed logs.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <input 
+            type="text" 
+            id="activitySearch" 
+            placeholder="Search operator name or callsign..." 
+            class="bg-dot-card border border-dot-border rounded px-4 py-2 text-xs text-white focus:outline-none focus:border-dot-orange w-full md:w-72 font-mono"
+          />
+        </div>
+      </div>
+
+      <!-- Activity Directory Grid -->
+      <div id="activity-directory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="p-6 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono md:col-span-3">
+          Synchronizing operator telemetry records...
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Activity Calculation & Chart Script -->
+  <script>
+    const API_BASE_URL = "/api";
+    let productionChartInstance = null;
+    let cachedActivityData = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('current-year-label').innerText = `Year: ${new Date().getFullYear()}`;
+      loadActivityData();
+      setupSearch();
+    });
+
+    async function loadActivityData() {
+      try {
+        const [rosterRes, mfoRes, patrolRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/roster`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/mfo-logs`).then(r => r.json()),
+          fetch(`${API_BASE_URL}/patrol-logs`).then(r => r.json())
+        ]);
+
+        processAndRenderActivity(rosterRes || [], mfoRes || [], patrolRes || []);
+      } catch (error) {
+        console.error("Error fetching activity data:", error);
+        document.getElementById('activity-directory-grid').innerHTML = `
+          <div class="p-6 bg-red-950/30 border border-red-900/50 rounded text-red-400 text-xs font-mono md:col-span-3">
+            ⚠️ Failed to synchronize telemetry records from server. Ensure server.js is online.
+          </div>
+        `;
+      }
+    }
+
+    function parseHoursFromTotalTime(totalTimeStr) {
+      if (!totalTimeStr) return 0;
+      // Format example: "3:30:00 (3 hours, 30 minutes)"
+      const match = totalTimeStr.match(/(\d+)\s*hours?/i);
+      const minMatch = totalTimeStr.match(/(\d+)\s*minutes?/i);
+      const hrs = match ? parseFloat(match[1]) : 0;
+      const mins = minMatch ? parseFloat(minMatch[1]) / 60 : 0;
+      return hrs + mins;
+    }
+
+    function processAndRenderActivity(roster, mfoLogs, patrolLogs) {
+      const currentYear = new Date().getFullYear().toString();
+      const currentMonth = new Date().getMonth(); // 0 - 11
+
+      // Map operator stats
+      const operatorStats = {};
+
+      roster.forEach(emp => {
+        const key = emp.icName ? emp.icName.toLowerCase() : (emp.oocName ? emp.oocName.toLowerCase() : "");
+        if (!key) return;
+
+        operatorStats[key] = {
+          name: emp.icName || emp.oocName,
+          callsign: emp.callsign || "UNASSIGNED",
+          rank: emp.rank || "Cadet",
+          mfoTotal: 0,
+          monthHours: 0,
+          yearHours: 0
+        };
+      });
+
+      // Aggregate MFO Logs
+      mfoLogs.forEach(log => {
+        const opName = (log.operatorName || "").toLowerCase();
+        let matchedKey = Object.keys(operatorStats).find(k => k === opName || opName.includes(k));
+        
+        if (!matchedKey && log.operatorName) {
+          matchedKey = opName;
+          operatorStats[matchedKey] = {
+            name: log.operatorName,
+            callsign: log.operatorCallsign || "UNASSIGNED",
+            rank: "Operator",
+            mfoTotal: 0,
+            monthHours: 0,
+            yearHours: 0
+          };
+        }
+
+        if (matchedKey) {
+          const logDate = new Date(log.logDate || log.timestamp);
+          if (logDate.getFullYear().toString() === currentYear) {
+            operatorStats[matchedKey].mfoTotal += 1;
+          }
+        }
+      });
+
+      // Aggregate Patrol Logs & Hours
+      patrolLogs.forEach(log => {
+        const opName = (log.name || "").toLowerCase();
+        let matchedKey = Object.keys(operatorStats).find(k => k === opName || opName.includes(k));
+
+        if (!matchedKey && log.name) {
+          matchedKey = opName;
+          operatorStats[matchedKey] = {
+            name: log.name,
+            callsign: log.callsign || "UNASSIGNED",
+            rank: log.rank || "Operator",
+            mfoTotal: 0,
+            monthHours: 0,
+            yearHours: 0
+          };
+        }
+
+        if (matchedKey) {
+          const shiftDate = new Date(log.shiftDate || log.timestamp);
+          const hours = parseHoursFromTotalTime(log.totalTime);
+
+          if (shiftDate.getFullYear().toString() === currentYear) {
+            operatorStats[matchedKey].yearHours += hours;
+            if (shiftDate.getMonth() === currentMonth) {
+              operatorStats[matchedKey].monthHours += hours;
+            }
+          }
+        }
+      });
+
+      cachedActivityData = Object.values(operatorStats);
+
+      renderLeaderboards(cachedActivityData);
+      renderYearlyChart(patrolLogs, mfoLogs, currentYear);
+      renderDirectory(cachedActivityData);
+    }
+
+    function renderLeaderboards(data) {
+      const topMfoList = document.getElementById('top-mfo-list');
+      const topHoursList = document.getElementById('top-hours-list');
+
+      const sortedMfo = [...data].sort((a, b) => b.mfoTotal - a.mfoTotal).slice(0, 10);
+      const sortedHours = [...data].sort((a, b) => b.yearHours - a.yearHours).slice(0, 10);
+
+      topMfoList.innerHTML = sortedMfo.map((op, idx) => `
+        <div class="flex items-center justify-between p-2.5 bg-dot-surface rounded border border-dot-border">
+          <div class="flex items-center gap-3">
+            <span class="font-bold text-dot-orange">#${idx + 1}</span>
+            <div>
+              <span class="text-white font-bold uppercase">${op.name}</span>
+              <span class="text-slate-400 text-[10px] ml-1">(${op.callsign})</span>
+            </div>
+          </div>
+          <span class="bg-dot-card px-2.5 py-1 rounded border border-dot-border font-bold text-white">${op.mfoTotal} Logs</span>
+        </div>
+      `).join('') || '<div class="text-slate-500 text-center py-4">No MFO log records found.</div>';
+
+      topHoursList.innerHTML = sortedHours.map((op, idx) => `
+        <div class="flex items-center justify-between p-2.5 bg-dot-surface rounded border border-dot-border">
+          <div class="flex items-center gap-3">
+            <span class="font-bold text-dot-orange">#${idx + 1}</span>
+            <div>
+              <span class="text-white font-bold uppercase">${op.name}</span>
+              <span class="text-slate-400 text-[10px] ml-1">(${op.callsign})</span>
+            </div>
+          </div>
+          <span class="bg-dot-card px-2.5 py-1 rounded border border-dot-border font-bold text-white">${op.yearHours.toFixed(1)} Hrs</span>
+        </div>
+      `).join('') || '<div class="text-slate-500 text-center py-4">No patrol hour records found.</div>';
+    }
+
+    function renderYearlyChart(patrolLogs, mfoLogs, currentYear) {
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthlyHours = new Array(12).fill(0);
+      const monthlyMfo = new Array(12).fill(0);
+
+      patrolLogs.forEach(log => {
+        const d = new Date(log.shiftDate || log.timestamp);
+        if (d.getFullYear().toString() === currentYear) {
+          const m = d.getMonth();
+          monthlyHours[m] += parseHoursFromTotalTime(log.totalTime);
+        }
+      });
+
+      mfoLogs.forEach(log => {
+        const d = new Date(log.logDate || log.timestamp);
+        if (d.getFullYear().toString() === currentYear) {
+          const m = d.getMonth();
+          monthlyMfo[m] += 1;
+        }
+      });
+
+      const ctx = document.getElementById('yearlyProductionChart').getContext('2d');
+      if (productionChartInstance) productionChartInstance.destroy();
+
+      productionChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'Patrol Hours',
+              data: monthlyHours,
+              backgroundColor: '#ff6600',
+              borderRadius: 4,
+              yAxisID: 'y'
+            },
+            {
+              label: 'MFO Logs Completed',
+              data: monthlyMfo,
+              backgroundColor: '#232a3b',
+              borderColor: '#ff6600',
+              borderWidth: 1,
+              borderRadius: 4,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#cbd5e1', font: { family: 'monospace', size: 11 } } }
+          },
+          scales: {
+            x: { grid: { color: '#232a3b' }, ticks: { color: '#94a3b8', font: { family: 'monospace' } } },
+            y: { type: 'linear', position: 'left', grid: { color: '#232a3b' }, ticks: { color: '#94a3b8', font: { family: 'monospace' } }, title: { display: true, text: 'Hours', color: '#ff6600' } },
+            y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#94a3b8', font: { family: 'monospace' } }, title: { display: true, text: 'Logs', color: '#cbd5e1' } }
+          }
+        }
+      });
+    }
+
+    function renderDirectory(data) {
+      const grid = document.getElementById('activity-directory-grid');
+      
+      grid.innerHTML = data.map(op => `
+        <div class="activity-card bg-dot-card border border-dot-border rounded-lg p-5 space-y-3 hover:border-dot-orange transition">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-mono font-bold px-2 py-0.5 bg-dot-orange/15 text-dot-orange border border-dot-orange/30 rounded">${op.callsign}</span>
+              <h3 class="text-base font-black text-white uppercase tracking-wide mt-1.5">${op.name}</h3>
+              <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">${op.rank}</p>
+            </div>
+            <span class="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" title="Active"></span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 pt-2 border-t border-dot-border font-mono text-center">
+            <div class="bg-dot-surface p-2 rounded border border-dot-border">
+              <span class="text-[10px] text-slate-400 block uppercase">MFO Logs</span>
+              <span class="text-white font-bold text-sm">${op.mfoTotal}</span>
+            </div>
+            <div class="bg-dot-surface p-2 rounded border border-dot-border">
+              <span class="text-[10px] text-slate-400 block uppercase">Month Hrs</span>
+              <span class="text-dot-orange font-bold text-sm">${op.monthHours.toFixed(1)}</span>
+            </div>
+            <div class="bg-dot-surface p-2 rounded border border-dot-border">
+              <span class="text-[10px] text-slate-400 block uppercase">Year Hrs</span>
+              <span class="text-emerald-400 font-bold text-sm">${op.yearHours.toFixed(1)}</span>
+            </div>
+          </div>
+        </div>
+      `).join('') || '<div class="p-6 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono md:col-span-3">No personnel activity records found.</div>';
+    }
+
+    function setupSearch() {
+      const search = document.getElementById('activitySearch');
+      search.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.activity-card');
+        cards.forEach(card => {
+          const content = card.innerText.toLowerCase();
+          card.style.display = content.includes(val) ? 'block' : 'none';
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>

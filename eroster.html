@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Active Personnel Roster (Internal)</title>
+  
+  <!-- Browser Tab Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+<!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Restricted Internal Access
+  </div>
+  
+<!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="text-dot-orange">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Roster Content -->
+  <main class="max-w-7xl mx-auto px-6 py-12 flex-1 w-full">
+    
+    <!-- Title & Live Search Bar -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-dot-border gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orange/10 border border-dot-orange/30 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest mb-2">
+          Internal Personnel Registry
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Active Department Roster (Staff View)</h1>
+        <p class="text-slate-400 text-xs mt-1">Full operational directory displaying operator contact numbers and certifications.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <input 
+          type="text" 
+          id="rosterSearch" 
+          placeholder="Filter callsign, name, or rank..." 
+          class="bg-dot-card border border-dot-border rounded px-4 py-2 text-xs text-white focus:outline-none focus:border-dot-orange w-full md:w-72"
+        />
+      </div>
+    </div>
+
+    <!-- Roster Sections Container -->
+    <div class="mt-8 space-y-12" id="rosterContainer">
+      <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+        Synchronizing internal personnel roster from server...
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Script to Fetch, Group, and Render Employee Roster -->
+  <script>
+    const API_BASE_URL = "/api";
+
+    const tierStructure = [
+      {
+        title: "Command Staff",
+        color: "bg-dot-orange",
+        ranks: ["Transportation Commissioner", "Deputy Transportation Commissioner", "Chief of Operations", "Command Staff"]
+      },
+      {
+        title: "Supervisory Staff",
+        color: "bg-slate-400",
+        ranks: ["Manager", "Supervisor", "Supervisory Staff"]
+      },
+      {
+        title: "Field Operators",
+        color: "bg-emerald-500",
+        ranks: ["Senior Operator", "Operator II", "Operator I"]
+      },
+      {
+        title: "Probationary Operators",
+        color: "bg-dot-orangeMuted border border-dot-orange/40",
+        ranks: ["Probationary Operator (Cadet)", "Cadet"]
+      }
+    ];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadEmployeeRoster();
+    });
+
+    async function loadEmployeeRoster() {
+      const container = document.getElementById('rosterContainer');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/roster`);
+        const members = await response.json();
+
+        container.innerHTML = "";
+
+        const visibleMembers = (members || []).filter(m => !m.hiddenFromRoster && !m.isCivilianStaff && m.rank !== "Civilian Staff");
+
+        if (!visibleMembers || visibleMembers.length === 0) {
+          container.innerHTML = `
+            <div class="p-8 bg-dot-card border border-dot-border rounded text-center text-xs text-slate-400 font-mono">
+              No active personnel registered on roster.
+            </div>
+          `;
+          return;
+        }
+
+        tierStructure.forEach(tier => {
+          const tierMembers = visibleMembers.filter(m => tier.ranks.includes(m.rank));
+          if (tierMembers.length === 0) return;
+
+          const sectionDiv = document.createElement('div');
+          sectionDiv.className = "roster-section space-y-4";
+          sectionDiv.innerHTML = `
+            <div class="flex items-center gap-2 mb-4">
+              <div class="h-3 w-1.5 ${tier.color} rounded-sm"></div>
+              <h2 class="text-sm font-black text-white uppercase tracking-wider">${tier.title}</h2>
+            </div>
+          `;
+
+          const grid = document.createElement('div');
+          grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
+
+          tierMembers.forEach(member => {
+            const rank = member.rank || "Probationary Operator (Cadet)";
+            const callsign = member.callsign || "UNASSIGNED";
+            const name = member.icName || "Operator";
+            const phone = member.phone || "No Phone Logged";
+            const certs = Array.isArray(member.certifications) ? member.certifications : [member.certifications || "Probationary Certified"];
+
+            const card = document.createElement('div');
+            card.className = "roster-card bg-dot-card border border-dot-border rounded p-5 hover:border-dot-orange transition group space-y-3";
+            card.innerHTML = `
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] font-mono font-bold px-2 py-0.5 bg-dot-orange/15 text-dot-orange border border-dot-orange/30 rounded">${callsign}</span>
+                  <h3 class="text-base font-black text-white uppercase tracking-wide mt-1.5 group-hover:text-dot-orange transition">${name}</h3>
+                  <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">${rank}</p>
+                </div>
+                <span class="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" title="Active Duty"></span>
+              </div>
+
+              <div class="font-mono text-[11px] text-slate-300 bg-dot-surface p-2.5 rounded border border-dot-border flex items-center justify-between">
+                <span>IC Phone:</span>
+                <span class="text-white font-bold">${phone}</span>
+              </div>
+              
+              <div class="border-t border-dot-border pt-3 flex flex-wrap gap-1.5">
+                ${certs.map(c => `<span class="text-[9px] font-mono font-bold uppercase bg-dot-surface text-slate-300 border border-dot-border px-2 py-0.5 rounded">${c}</span>`).join('')}
+              </div>
+            `;
+            grid.appendChild(card);
+          });
+
+          sectionDiv.appendChild(grid);
+          container.appendChild(sectionDiv);
+        });
+
+        setupSearch();
+      } catch (error) {
+        console.error("Error loading roster:", error);
+        container.innerHTML = `
+          <div class="p-8 bg-red-950/30 border border-red-900/50 rounded text-red-400 text-xs font-mono">
+            ⚠️ Failed to synchronize internal roster from server.
+          </div>
+        `;
+      }
+    }
+
+    function setupSearch() {
+      const search = document.getElementById('rosterSearch');
+      const sections = document.querySelectorAll('.roster-section');
+
+      search.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        sections.forEach(section => {
+          let hasVisibleCards = false;
+          const cards = section.querySelectorAll('.roster-card');
+          
+          cards.forEach(card => {
+            const content = card.innerText.toLowerCase();
+            if (content.includes(val)) {
+              card.style.display = 'block';
+              hasVisibleCards = true;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+
+          section.style.display = hasVisibleCards ? 'block' : 'none';
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>
