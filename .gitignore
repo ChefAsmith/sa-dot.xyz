@@ -1,2 +1,7 @@
-.env
-node_modules/
+backend/.env
+backend/node_modules/
+backend/data/applications.json
+backend/data/roster.json
+backend/data/settings.json
+backend/data/work-orders-archive.json
+backend/data/work-orders.json
