@@ -146,7 +146,12 @@
           sessionStorage.setItem('sadot_authenticated', 'true');
           sessionStorage.setItem('sadot_rank', data.rank);
           sessionStorage.setItem('sadot_level', data.level);
+          sessionStorage.setItem('sadot_employee_name', data.employeeName || "");
           sessionStorage.setItem('sadot_certs', JSON.stringify(data.certifications || []));
+          
+          // Store subdivision clearances and interests
+          sessionStorage.setItem('sadot_subdivision_interests', JSON.stringify(data.subdivisionInterests || []));
+          sessionStorage.setItem('sadot_subdivision_access', JSON.stringify(data.subdivisionAccess || []));
           
           window.location.href = 'employee-portal';
         } else {

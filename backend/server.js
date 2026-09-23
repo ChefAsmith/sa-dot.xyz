@@ -23,8 +23,16 @@ function getFilePath(tableName) {
   return path.join(DATA_DIR, `${tableName}.json`);
 }
 
+const ALL_SUBDIVISIONS = [
+  "Highway Incident Management & Patrol",
+  "Towing & Recovery",
+  "Maintenance & Infrastructure",
+  "Traffic Control & Flagging",
+  "Heavy Machinery & Logistics"
+];
+
 // -----------------------------------------------------------------------------
-// AES-256-GCM Encryption Helper (For At-Rest Data Protection)
+// AES-256-GCM Encryption Helper
 // -----------------------------------------------------------------------------
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY
   ? Buffer.from(process.env.ENCRYPTION_KEY.padEnd(32, '0').slice(0, 32))
@@ -56,59 +64,79 @@ function decrypt(cipherText) {
 }
 
 // -----------------------------------------------------------------------------
-// Discord Notification Helper (Checks .env first, then settings.json)
+// Discord Webhook Helper (settings.json has FIRST priority over .env)
 // -----------------------------------------------------------------------------
 function getWebhookUrl(webhookKey) {
+  // 1. Primary: Read from settings.json (configured via webhooks.html)
+  const filePath = path.join(DATA_DIR, 'settings.json');
+  if (fs.existsSync(filePath)) {
+    try {
+      const settings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      if (settings.webhooks && settings.webhooks[webhookKey] && settings.webhooks[webhookKey].trim()) {
+        return settings.webhooks[webhookKey].trim();
+      }
+    } catch (e) {}
+  }
+
+  // 2. Secondary fallback: .env variables
   const envMap = {
     alertsWebhook: process.env.ALERTS_WEBHOOK_URL,
     applicationWebhook: process.env.APP_WEBHOOK_URL
   };
 
-  if (envMap[webhookKey]) return envMap[webhookKey];
-
-  const filePath = path.join(DATA_DIR, 'settings.json');
-  if (fs.existsSync(filePath)) {
-    try {
-      const settings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      return settings.webhooks && settings.webhooks[webhookKey];
-    } catch (e) {}
-  }
-  return null;
+  return envMap[webhookKey] ? envMap[webhookKey].trim() : null;
 }
 
 async function sendDiscordNotification(webhookKey, embedData, contentMessage = "") {
   const url = getWebhookUrl(webhookKey);
-  if (!url) return;
+  if (!url) {
+    console.warn(`[Discord Webhook] No active URL found for '${webhookKey}'. Check webhooks.html or settings.json`);
+    return false;
+  }
 
   try {
-    await fetch(url, {
+    const payload = {
+      embeds: [{
+        title: embedData.title,
+        description: embedData.description,
+        color: embedData.color || 16737792,
+        timestamp: new Date().toISOString(),
+        footer: { text: "San Andreas Department of Transportation • Dispatch CAD" }
+      }]
+    };
+
+    // Only attach content if text is actually present (Discord rejects empty string content)
+    if (contentMessage && contentMessage.trim()) {
+      payload.content = contentMessage.trim();
+    }
+
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        content: contentMessage,
-        embeds: [{
-          title: embedData.title,
-          description: embedData.description,
-          color: embedData.color || 16737792,
-          timestamp: new Date().toISOString(),
-          footer: { text: "San Andreas Department of Transportation • Dispatch CAD" }
-        }]
-      })
+      body: JSON.stringify(payload)
     });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`[Discord Webhook Error] (${webhookKey}) HTTP ${res.status}:`, errorText);
+      return false;
+    }
+
+    console.log(`[Discord Webhook Success] Dispatched message to '${webhookKey}'`);
+    return true;
   } catch (err) {
-    console.error(`Failed to send Discord notification (${webhookKey}):`, err.message);
+    console.error(`[Discord Webhook Error] Failed to send notification (${webhookKey}):`, err.message);
+    return false;
   }
 }
 
 // -----------------------------------------------------------------------------
-// WEBHOOK SETTINGS
+// WEBHOOK SETTINGS ROUTES (settings.json is primary)
 // -----------------------------------------------------------------------------
 app.get('/api/settings/webhooks', (req, res) => {
-  const alertsWebhook = process.env.ALERTS_WEBHOOK_URL || '';
-  const applicationWebhook = process.env.APP_WEBHOOK_URL || '';
-
   const filePath = path.join(DATA_DIR, 'settings.json');
   let fileWebhooks = { alertsWebhook: '', applicationWebhook: '' };
+  
   if (fs.existsSync(filePath)) {
     try {
       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -117,19 +145,22 @@ app.get('/api/settings/webhooks', (req, res) => {
   }
 
   res.json({
-    alertsWebhook: alertsWebhook || fileWebhooks.alertsWebhook,
-    applicationWebhook: applicationWebhook || fileWebhooks.applicationWebhook
+    alertsWebhook: fileWebhooks.alertsWebhook || process.env.ALERTS_WEBHOOK_URL || '',
+    applicationWebhook: fileWebhooks.applicationWebhook || process.env.APP_WEBHOOK_URL || ''
   });
 });
 
 app.put('/api/settings/webhooks', (req, res) => {
   const filePath = path.join(DATA_DIR, 'settings.json');
   let settings = fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : {};
+  
   settings.webhooks = {
-    alertsWebhook: req.body.alertsWebhook || '',
-    applicationWebhook: req.body.applicationWebhook || ''
+    alertsWebhook: req.body.alertsWebhook ? req.body.alertsWebhook.trim() : '',
+    applicationWebhook: req.body.applicationWebhook ? req.body.applicationWebhook.trim() : ''
   };
+
   fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
+  console.log('[Settings] Updated webhooks in settings.json:', settings.webhooks);
   res.json({ result: 'success', webhooks: settings.webhooks });
 });
 
@@ -137,30 +168,32 @@ app.post('/api/settings/test-webhook', async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: 'Webhook URL is required' });
   try {
-    const response = await fetch(url, {
+    const response = await fetch(url.trim(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         embeds: [{
           title: "⚡ SADOT Dispatch Webhook Test",
-          description: "Connection established successfully.",
+          description: "Connection established successfully with the SADOT CAD system.",
           color: 16737792,
           timestamp: new Date().toISOString()
         }]
       })
     });
     if (response.ok) res.json({ result: 'success' });
-    else res.status(400).json({ error: 'Discord rejected webhook URL' });
+    else {
+      const errText = await response.text();
+      res.status(400).json({ error: `Discord rejected webhook (${response.status}): ${errText}` });
+    }
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // -----------------------------------------------------------------------------
-// FETCH ALL RECORDS (With Data Sanitization)
+// FETCH ALL RECORDS
 // -----------------------------------------------------------------------------
 app.get('/api/:table', (req, res) => {
   const table = req.params.table;
 
-  // Block direct public dumps of server settings/webhooks
   if (table === 'settings') {
     return res.status(403).json({ error: 'Direct access to settings is forbidden' });
   }
@@ -171,7 +204,6 @@ app.get('/api/:table', (req, res) => {
   try {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-    // Strip out passwords when serving the roster
     if (table === 'roster') {
       const sanitizedRoster = data.map(member => {
         const { portalPassword, ...safeFields } = member;
@@ -187,7 +219,7 @@ app.get('/api/:table', (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// CREATE NEW RECORD (Signups, Applications, & Roster Accounts)
+// CREATE NEW RECORD
 // -----------------------------------------------------------------------------
 app.post('/api/:table', (req, res) => {
   const table = req.params.table;
@@ -195,7 +227,6 @@ app.post('/api/:table', (req, res) => {
   
   let records = fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : [];
 
-  // SECURITY CROSS-CHECK FOR ROSTER
   if (table === 'roster') {
     const appsPath = path.join(DATA_DIR, 'applications.json');
     let applications = fs.existsSync(appsPath) ? JSON.parse(fs.readFileSync(appsPath, 'utf8')) : [];
@@ -203,8 +234,9 @@ app.post('/api/:table', (req, res) => {
     const { icName, oocName, communityId, rank, isCivilianStaff, bypassAppCheck } = req.body;
     const isCivilian = isCivilianStaff || (rank && rank.toLowerCase().includes("civilian"));
 
+    let matchingApp = null;
     if (!bypassAppCheck && !isCivilian) {
-      const matchingApp = applications.find(app => 
+      matchingApp = applications.find(app => 
         app.icName?.trim().toLowerCase() === icName?.trim().toLowerCase() &&
         app.oocName?.trim().toLowerCase() === oocName?.trim().toLowerCase() &&
         app.communityId?.trim() === communityId?.trim()
@@ -218,10 +250,23 @@ app.post('/api/:table', (req, res) => {
         const reason = matchingApp.status === 'Denied' ? 'Your application was Denied.' : 'Your application is still Pending.';
         return res.status(403).json({ error: `Submission denied: ${reason}` });
       }
+    } else if (communityId) {
+      matchingApp = applications.find(app => app.communityId === communityId);
     }
     
     if (communityId && records.find(r => r.communityId === communityId)) {
       return res.status(400).json({ error: 'Submission denied: Community ID already registered on roster.' });
+    }
+
+    if (!req.body.subdivisionInterests || req.body.subdivisionInterests.length === 0) {
+      if (matchingApp && matchingApp.subdivisions) {
+        req.body.subdivisionInterests = matchingApp.subdivisions
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean);
+      } else {
+        req.body.subdivisionInterests = [];
+      }
     }
   }
 
@@ -236,7 +281,6 @@ app.post('/api/:table', (req, res) => {
   if (table === 'roster') {
     const isCivilian = newRecord.isCivilianStaff || (newRecord.rank && newRecord.rank.toLowerCase().includes("civilian"));
     
-    // Capture or generate plaintext password
     plainGeneratedPassword = newRecord.portalPassword ? newRecord.portalPassword.trim() : "";
     if (!plainGeneratedPassword) {
       const randomCode = Math.floor(1000 + Math.random() * 9000);
@@ -244,7 +288,6 @@ app.post('/api/:table', (req, res) => {
       plainGeneratedPassword = `${prefix}-${newRecord.communityId || '9999'}-${randomCode}!`;
     }
 
-    // Securely hash the password before disk storage
     newRecord.portalPassword = bcrypt.hashSync(plainGeneratedPassword, 10);
 
     if (isCivilian) {
@@ -253,19 +296,19 @@ app.post('/api/:table', (req, res) => {
       newRecord.hiddenFromRoster = true;
       newRecord.callsign = newRecord.callsign || "CIV-01";
       newRecord.certifications = newRecord.certifications && newRecord.certifications.length > 0 ? newRecord.certifications : [
-        "CDL",
-        "Flag Certified",
-        "Rollback Certified",
-        "Boom Wrecker Certified",
-        "Heavy Wrecker Certified",
-        "Heavy Transport Certified",
-        "Trailer Certified",
-        "Probationary Certified"
+        "CDL", "Flag Certified", "Rollback Certified", "Boom Wrecker Certified", 
+        "Heavy Wrecker Certified", "Heavy Transport Certified", "Trailer Certified", "Probationary Certified"
       ];
+      newRecord.subdivisionInterests = ALL_SUBDIVISIONS;
+      newRecord.subdivisionAccess = ALL_SUBDIVISIONS;
     } else {
       newRecord.rank = newRecord.rank || "Probationary Operator (Cadet)";
       newRecord.callsign = newRecord.callsign || "UNASSIGNED";
       newRecord.certifications = newRecord.certifications || ["Probationary Certified"];
+      newRecord.subdivisionInterests = Array.isArray(newRecord.subdivisionInterests) ? newRecord.subdivisionInterests : [];
+      newRecord.subdivisionAccess = Array.isArray(newRecord.subdivisionAccess) && newRecord.subdivisionAccess.length > 0 
+        ? newRecord.subdivisionAccess 
+        : ["Highway Incident Management & Patrol"];
     }
   } else if (table === 'applications') {
     sendDiscordNotification('alertsWebhook', {
@@ -282,7 +325,6 @@ app.post('/api/:table', (req, res) => {
   records.push(newRecord);
   fs.writeFileSync(filePath, JSON.stringify(records, null, 2));
 
-  // If a password was generated, return plaintext ONCE so roster-signup.html can show it to the user
   const responseRecord = { ...newRecord };
   if (plainGeneratedPassword) {
     responseRecord.portalPassword = plainGeneratedPassword;
@@ -294,9 +336,9 @@ app.post('/api/:table', (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// UPDATE RECORD (With Password Re-Hashing on Edit)
+// UPDATE RECORD (With Awaited Webhook Dispatch)
 // -----------------------------------------------------------------------------
-app.put('/api/:table/:id', (req, res) => {
+app.put('/api/:table/:id', async (req, res) => {
   const { table, id } = req.params;
   const filePath = getFilePath(table);
   if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Not found' });
@@ -312,6 +354,15 @@ app.put('/api/:table/:id', (req, res) => {
       if (updates.rank && (updates.rank.toLowerCase().includes("civilian") || updates.isCivilianStaff)) {
         updates.isCivilianStaff = true;
         updates.hiddenFromRoster = updates.hiddenFromRoster !== undefined ? updates.hiddenFromRoster : true;
+        updates.subdivisionInterests = ALL_SUBDIVISIONS;
+        updates.subdivisionAccess = ALL_SUBDIVISIONS;
+      }
+
+      if (updates.subdivisionInterests !== undefined) {
+        updates.subdivisionInterests = Array.isArray(updates.subdivisionInterests) ? updates.subdivisionInterests : [];
+      }
+      if (updates.subdivisionAccess !== undefined) {
+        updates.subdivisionAccess = Array.isArray(updates.subdivisionAccess) ? updates.subdivisionAccess : [];
       }
 
       if (updates.portalPassword !== undefined) {
@@ -335,71 +386,69 @@ app.put('/api/:table/:id', (req, res) => {
       return res.json({ result: 'success', archived: true });
     }
 
-    // Application Status Notifications
+    // Application Status Notifications (Awaited with Full Error Reporting)
+    let webhookSent = false;
     if (table === 'applications' && updates.status) {
       const appRecord = records[index];
       const isSameStatus = appRecord.status === updates.status;
 
       if (!isSameStatus && (updates.status === 'Approved' || updates.status === 'Denied')) {
         const isApproved = updates.status === 'Approved';
-        const discordPing = appRecord.discord ? `<@${appRecord.discord}>` : 'Applicant';
+        const discordPing = appRecord.discord ? `<@${appRecord.discord.trim()}>` : '';
         const reviewMsg = updates.reviewMessage || 'No specific notes provided.';
 
         let descriptionText = '';
 
         if (isApproved) {
-          descriptionText = `To: ${discordPing}
+          descriptionText = `To: ${discordPing || 'Applicant'}
 From: Department of Transportation Human Resources
 
 Thank you for your application. We have officially reviewed your files, and we are pleased to offer you employment with the San Andreas Department of Transportation (SADOT).
 
 Moving forward, your first priority is onboarding. 
 
-Please note that you will be positioned as a Probationary Operator (Cadet) for your initial window on the department roster. This probationary period allows command and supervisors to assess your field skills, navigation competency, and protocol compliance.
+Please note that you will be positioned as a Probationary Operator (Cadet) for your initial window on the department roster.
 
 **MANDATORY NEW-HIRE STEPS**
-To complete your entry prerequisites and secure active deployment status, you are strictly required to clear the following onboarding modules:
-
 1. **Complete the Roster Sign-up:**
-Fill out the official onboarding form below using your exact application details (OOC Name, In-Character Name, and Community ID). 
-
-⚠️ **WARNING:** Upon successful submission, the system will generate your unique **Employee Portal Password**. You must copy, save, and secure this password immediately! **If you lose this password, you will not be able to log into the Employee Portal.**
-
+Fill out the onboarding form below with your exact application details:
 [San Andreas Department of Transportation Roster Signup](https://sa-dot.xyz/roster-signup)
 
-2. **Create Your Uniform and Vehicles:**
-Set up your required department uniform and authorized vehicle configurations according to agency standards.
+⚠️ **WARNING:** Save your generated Employee Portal Password immediately!
 
-3. **Review the SOP Manual:**
-Read through the SOP Manual found within the portal to familiarize yourself with agency protocols.
+2. **Set Up Uniforms & Vehicles:**
+Consult the portal guides to configure authorized liveries and components.
+
+3. **Review the SOP & Training Academy:**
+Familiarize yourself with department directives and your subdivision field training manual.
 
 4. **Request Training:**
-After completing your signup and reviewing the manual, please request a Senior Operator or above to begin your training. *(Note: Please be aware that it may take some time for your training to be scheduled).*
+Contact a Senior Operator or Supervisor to schedule your initial ride-along.
 
-Welcome to the team. Let's keep San Andreas moving safely.
+Welcome to the team!
 
 Kind regards,
 Division of Human Resources & Standards
 San Andreas Department of Transportation`;
         } else {
-          descriptionText = `To: ${discordPing}
+          descriptionText = `To: ${discordPing || 'Applicant'}
 From: Department of Transportation Human Resources
 
 Thank you for submitting your application to the San Andreas Department of Transportation (SADOT). 
 
-After careful review by our human resources and management team, we regret to inform you that your application has not been accepted at this time. 
+After careful review by our management team, we regret to inform you that your application has not been accepted at this time. 
 
 **Reason / Reviewer Notes:**
 > ${reviewMsg}
 
-We appreciate the time and effort you put into your application packet. You are welcome to reapply after reviewing our departmental guidelines and standards.
+You are welcome to reapply after reviewing our departmental guidelines and standards.
 
 Kind regards,
 Division of Human Resources & Standards
 San Andreas Department of Transportation`;
         }
 
-        sendDiscordNotification('applicationWebhook', {
+        webhookSent = await sendDiscordNotification('applicationWebhook', {
           title: isApproved ? '✅ APPLICATION ACCEPTED' : '❌ APPLICATION DENIED',
           description: descriptionText,
           color: isApproved ? 3066993 : 15158332
@@ -408,7 +457,7 @@ San Andreas Department of Transportation`;
 
       records[index] = { ...records[index], ...updates };
       fs.writeFileSync(filePath, JSON.stringify(records, null, 2));
-      return res.json({ result: 'success', record: records[index], webhookSent: !isSameStatus });
+      return res.json({ result: 'success', record: records[index], webhookSent: webhookSent });
     }
 
     records[index] = { ...records[index], ...updates };
@@ -418,12 +467,13 @@ San Andreas Department of Transportation`;
     delete safeUpdated.portalPassword;
     res.json({ result: 'success', record: safeUpdated });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update' });
+    console.error("PUT Error:", error);
+    res.status(500).json({ error: error.message || 'Failed to update' });
   }
 });
 
 // -----------------------------------------------------------------------------
-// LOGIN & AUTH (Bcrypt Verification with Auto-Migration)
+// LOGIN & AUTH (Supervisors level >= 3 receive ALL_SUBDIVISIONS)
 // -----------------------------------------------------------------------------
 app.post('/api/auth/login', (req, res) => {
   const { password } = req.body;
@@ -440,17 +490,14 @@ app.post('/api/auth/login', (req, res) => {
   for (const emp of roster) {
     if (!emp.portalPassword) continue;
 
-    // Check if stored password is a bcrypt hash
     if (emp.portalPassword.startsWith('$2a$') || emp.portalPassword.startsWith('$2b$')) {
       if (bcrypt.compareSync(password, emp.portalPassword)) {
         matchedEmp = emp;
         break;
       }
     } else {
-      // Legacy plaintext password check
       if (emp.portalPassword === password) {
         matchedEmp = emp;
-        // Automatically upgrade stored plaintext password to bcrypt hash
         emp.portalPassword = bcrypt.hashSync(password, 10);
         fileNeedsUpdate = true;
         break;
@@ -458,7 +505,6 @@ app.post('/api/auth/login', (req, res) => {
     }
   }
 
-  // Persist upgraded password hash to roster.json if migrated
   if (fileNeedsUpdate) {
     fs.writeFileSync(rosterPath, JSON.stringify(roster, null, 2));
   }
@@ -482,24 +528,32 @@ app.post('/api/auth/login', (req, res) => {
     }
 
     const allCerts = [
-      "CDL",
-      "Flag Certified",
-      "Rollback Certified",
-      "Boom Wrecker Certified",
-      "Heavy Wrecker Certified",
-      "Heavy Transport Certified",
-      "Trailer Certified",
-      "Probationary Certified"
+      "CDL", "Flag Certified", "Rollback Certified", "Boom Wrecker Certified", 
+      "Heavy Wrecker Certified", "Heavy Transport Certified", "Trailer Certified", "Probationary Certified"
     ];
+
+    // Supervisory Staff (level >= 3), Command, and Civilian Staff get access to all training guides
+    const isLeadership = level >= 3 || mainRank === "Civilian Staff" || matchedEmp.isCivilianStaff;
+    const finalSubdivAccess = isLeadership
+      ? ALL_SUBDIVISIONS
+      : (Array.isArray(matchedEmp.subdivisionAccess) && matchedEmp.subdivisionAccess.length > 0 
+          ? matchedEmp.subdivisionAccess 
+          : ["Highway Incident Management & Patrol"]);
+
+    const finalSubdivInterests = isLeadership
+      ? ALL_SUBDIVISIONS
+      : (Array.isArray(matchedEmp.subdivisionInterests) ? matchedEmp.subdivisionInterests : []);
 
     res.json({ 
       success: true, 
       rank: mainRank, 
       level: level, 
       employeeName: matchedEmp.icName, 
-      certifications: (mainRank === "Civilian Staff" || matchedEmp.isCivilianStaff) 
+      certifications: isLeadership 
         ? (matchedEmp.certifications && matchedEmp.certifications.length > 0 ? matchedEmp.certifications : allCerts) 
-        : (matchedEmp.certifications || []) 
+        : (matchedEmp.certifications || []),
+      subdivisionInterests: finalSubdivInterests,
+      subdivisionAccess: finalSubdivAccess
     });
   } else {
     res.status(401).json({ success: false, error: 'Invalid password' });

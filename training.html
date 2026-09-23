@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SADOT | Subdivision Training Academy & Field Manual</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dot: {
+              black: "#0b0d11",
+              surface: "#131722",
+              card: "#181d2a",
+              border: "#232a3b",
+              orange: "#ff6600",
+              orangeHover: "#e55b00",
+              orangeMuted: "rgba(255, 102, 0, 0.12)"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #232a3b; border-radius: 4px; transition: background 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff6600; }
+    * { scrollbar-width: thin; scrollbar-color: #232a3b #131722; }
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
+
+  <!-- Top Agency Banner -->
+  <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
+    State of San Andreas • Employee Field Training &amp; Qualification Academy
+  </div>
+  
+  <!-- Navigation Header -->
+  <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="employee-portal" class="flex items-center space-x-3 group">
+        <img src="assets/logo.png" alt="SADOT Seal" class="h-10 w-10 object-contain drop-shadow" />
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-dot-orange block leading-none">San Andreas</span>
+          <span class="text-sm font-black tracking-wider text-white uppercase">Dept. of Transportation</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-5 text-xs uppercase font-bold tracking-wider">
+        <a href="employee-portal" class="hover:text-dot-orange transition">Portal</a>
+        <a href="eroster" class="hover:text-dot-orange transition">Roster</a>
+        <a href="esop" class="hover:text-dot-orange transition">SOP</a>
+        <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
+        <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
+        <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="training" class="text-dot-orange">Training</a>
+        <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
+        <a href="finances" class="hover:text-dot-orange transition">Finances</a>
+        <a href="management" class="hover:text-dot-orange transition">Management</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#" onclick="sessionStorage.clear(); window.location.href='portal'; return false;" class="text-red-400 hover:text-red-300 text-xs uppercase font-bold tracking-wider transition flex items-center gap-1 bg-dot-card px-3 py-1.5 rounded border border-dot-border">
+          Lock 🔒
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Quick-Jump Navigation Bar -->
+  <div class="sticky top-16 z-40 bg-dot-card/95 border-b border-dot-border backdrop-blur shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-between overflow-x-auto gap-3 text-xs font-mono">
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="text-dot-orange font-bold uppercase text-[11px]">Training Modules:</span>
+      </div>
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0" id="subdiv-nav-links">
+        <a href="#module-orientation" class="nav-tab px-3 py-1.5 rounded bg-dot-surface border border-dot-border hover:border-dot-orange text-white transition whitespace-nowrap flex items-center gap-1.5">
+          <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+          Core SADOT Orientation
+        </a>
+        <a href="#subdiv-patrol" class="nav-tab px-3 py-1.5 rounded bg-dot-surface border border-dot-border hover:border-dot-orange text-slate-300 hover:text-white transition whitespace-nowrap flex items-center gap-1.5">
+          <span class="status-indicator h-2 w-2 rounded-full bg-slate-600"></span>
+          01. Highway Incident Patrol
+        </a>
+        <a href="#subdiv-towing" class="nav-tab px-3 py-1.5 rounded bg-dot-surface border border-dot-border hover:border-dot-orange text-slate-300 hover:text-white transition whitespace-nowrap flex items-center gap-1.5">
+          <span class="status-indicator h-2 w-2 rounded-full bg-slate-600"></span>
+          02. Towing &amp; Recovery
+        </a>
+        <a href="#subdiv-maint" class="nav-tab px-3 py-1.5 rounded bg-dot-surface border border-dot-border hover:border-dot-orange text-slate-300 hover:text-white transition whitespace-nowrap flex items-center gap-1.5">
+          <span class="status-indicator h-2 w-2 rounded-full bg-slate-600"></span>
+          03. Maintenance &amp; Infra
+        </a>
+        <a href="#subdiv-traffic" class="nav-tab px-3 py-1.5 rounded bg-dot-surface border border-dot-border hover:border-dot-orange text-slate-300 hover:text-white transition whitespace-nowrap flex items-center gap-1.5">
+          <span class="status-indicator h-2 w-2 rounded-full bg-slate-600"></span>
+          04. Traffic Control &amp; Flagging
+        </a>
+        <a href="#subdiv-heavy" class="nav-tab px-3 py-1.5 rounded bg-dot-surface border border-dot-border hover:border-dot-orange text-slate-300 hover:text-white transition whitespace-nowrap flex items-center gap-1.5">
+          <span class="status-indicator h-2 w-2 rounded-full bg-slate-600"></span>
+          05. Heavy Machinery
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-6 py-10 flex-1 w-full space-y-12">
+    
+    <!-- Title Header -->
+    <div class="pb-6 border-b border-dot-border flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-dot-orangeMuted border border-dot-orange/40 rounded text-dot-orange text-[10px] font-mono font-bold uppercase tracking-widest mb-1">
+          Operational Field Training &amp; Academy Curriculum
+        </div>
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Department Training Academy</h1>
+        <p class="text-slate-400 text-xs mt-1">Official manual governing work zone geometries, vehicle positioning, lighting angles, digital node pathfinding, and subdivision qualifications.</p>
+      </div>
+
+      <!-- User Clearance Summary Badge -->
+      <div class="p-3 bg-dot-card border border-dot-border rounded-lg font-mono text-xs flex items-center gap-4">
+        <div>
+          <span class="text-slate-400 text-[10px] block uppercase">Operator Profile:</span>
+          <span id="user-name-display" class="font-bold text-white uppercase text-xs">Operator</span>
+        </div>
+        <div class="border-l border-dot-border pl-4">
+          <span class="text-slate-400 text-[10px] block uppercase">Clearance Status:</span>
+          <span id="user-clearance-count" class="font-bold text-dot-orange text-xs">Evaluating...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODULE 0: CORE SADOT DEPARTMENT ORIENTATION (UNLOCKED FOR ALL) -->
+    <!-- ========================================================================= -->
+    <section id="module-orientation" class="scroll-mt-36 space-y-6">
+      
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-emerald-500">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-emerald-950/60 border border-emerald-800 text-emerald-400 text-[10px] font-mono font-bold uppercase rounded">General Curriculum</span>
+            <span class="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800 text-emerald-400">✓ Unlocked for All Staff</span>
+          </div>
+          <h2 class="text-2xl font-black text-white uppercase tracking-wide mt-1">Core Department Orientation &amp; Operations</h2>
+          <p class="text-slate-400 text-xs mt-1">Headquarters facilities, primary staging yards, shift workflows, vehicle circle-checks, and radio telephony syntax.</p>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        
+        <!-- Depots & Facilities -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">District 1 • Urban Command</span>
+              <span class="font-mono text-[10px] bg-dot-surface px-2 py-0.5 rounded text-white border border-dot-border font-bold">Postal 796</span>
+            </div>
+            <h3 class="text-base font-bold text-white uppercase">Los Santos Metropolitan Headquarters</h3>
+            <p class="text-slate-300 font-mono text-[11.5px] text-dot-orange">796 Popular Street, East Los Santos</p>
+            <p class="text-slate-400 leading-relaxed">
+              Primary headquarters for city operations. Features an underground staff parking structure, command offices, fleet repair bays, heavy tractor staging, and immediate access to the Del Perro, Olympic, and La Puerta Freeways.
+            </p>
+            <div class="pt-2 border-t border-dot-border text-slate-400 font-mono text-[11px]">
+              <strong class="text-white block mb-0.5">Assigned Fleet Inventory:</strong>
+              Chevy Tahoes (<code class="text-slate-200">civtahoe</code>), Dodge Ram 3500 HDs (<code class="text-slate-200">civramdot1</code>), Ford F550 Rollbacks (<code class="text-slate-200">f550rollback1</code>), Arrow Boards, and heavy transport trailers.
+            </div>
+          </div>
+
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[10px] text-dot-orange font-bold uppercase">District 2 • County Depot</span>
+              <span class="font-mono text-[10px] bg-dot-surface px-2 py-0.5 rounded text-white border border-dot-border font-bold">Postal 228</span>
+            </div>
+            <h3 class="text-base font-bold text-white uppercase">Blaine County Regional Depot</h3>
+            <p class="text-slate-300 font-mono text-[11.5px] text-dot-orange">228 Joshua Road, Grand Senora Desert</p>
+            <p class="text-slate-400 leading-relaxed">
+              Main operations hub for northern county responses. Features large aggregate storage, salt/brine tanks, off-road recovery staging, and direct response corridors to Route 68, Senora Freeway, and Paleto Bay.
+            </p>
+            <div class="pt-2 border-t border-dot-border text-slate-400 font-mono text-[11px]">
+              <strong class="text-white block mb-0.5">Assigned Fleet Inventory:</strong>
+              Kenworth Wreckers (<code class="text-slate-200">kenworthwrecker</code>), Navistar Rollbacks, Bulldozers (<code class="text-slate-200">dozer</code>), Dump Trucks (<code class="text-slate-200">tiptruck2</code>), Salt Spreaders, and boat trailers.
+            </div>
+          </div>
+        </div>
+
+        <!-- Shift Lifecycle & Vehicle Check Workflow -->
+        <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-4 text-xs">
+          <div class="flex items-center justify-between border-b border-dot-border pb-3">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Standard Shift Lifecycle (10-41 to 10-42)</h3>
+            <span class="text-[10px] font-mono text-dot-orange uppercase font-bold">Operational Workflow</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-slate-300 font-mono text-[11px]">
+            <div class="p-3 bg-dot-surface rounded border border-dot-border space-y-1">
+              <strong class="text-dot-orange block">1. CLOCK IN (10-41)</strong>
+              <p class="text-slate-400 text-[10.5px]">Join the SADOT in-game radio channel. Announce 10-41 on duty with callsign and assigned depot.</p>
+            </div>
+            <div class="p-3 bg-dot-surface rounded border border-dot-border space-y-1">
+              <strong class="text-dot-orange block">2. CIRCLE-CHECK</strong>
+              <p class="text-slate-400 text-[10.5px]">Spawn your rank-authorized rig. Confirm orange livery (Color 24), SA DOT plate, and lightbar extras.</p>
+            </div>
+            <div class="p-3 bg-dot-surface rounded border border-dot-border space-y-1">
+              <strong class="text-dot-orange block">3. DISPATCH (10-8)</strong>
+              <p class="text-slate-400 text-[10.5px]">Check active work orders on the CAD. Monitor in-game <code class="text-white">/services</code> chat for citizen and LEO callouts.</p>
+            </div>
+            <div class="p-3 bg-dot-surface rounded border border-dot-border space-y-1">
+              <strong class="text-dot-orange block">4. CLOCK OUT (10-42)</strong>
+              <p class="text-slate-400 text-[10.5px]">Return rig nose-out with >1/4 fuel. Submit your Patrol Log and MFO logs before marking 10-7.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comprehensive Radio Telephony Cheat Sheet -->
+        <div class="p-5 bg-dot-surface border border-dot-border rounded-lg space-y-3 text-xs">
+          <div class="flex items-center justify-between border-b border-dot-border pb-2">
+            <h3 class="text-xs font-bold text-white uppercase font-mono tracking-wider">📻 Radio Telephony &amp; Voice Callout Standards</h3>
+            <span class="text-[10px] font-mono text-slate-400">Strict Brevity Mandate</span>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono text-slate-300">
+            <div class="space-y-1.5">
+              <strong class="text-dot-orange block uppercase text-[10.5px]">Routine Radio Transmissions:</strong>
+              <div class="p-2 bg-dot-black/60 rounded border border-dot-border">
+                <span class="text-white font-bold">Clocking On:</span> "Dispatch, DOT-102 is 10-41, 10-8 from Popular St Depot."
+              </div>
+              <div class="p-2 bg-dot-black/60 rounded border border-dot-border">
+                <span class="text-white font-bold">Responding to Call:</span> "Dispatch, DOT-102 is 10-76 to Postal 812 on Del Perro Fwy."
+              </div>
+              <div class="p-2 bg-dot-black/60 rounded border border-dot-border">
+                <span class="text-white font-bold">Arrival on Scene:</span> "Dispatch, DOT-102 is 10-23 at Del Perro Postal 812, staging lane 1 block."
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <strong class="text-dot-orange block uppercase text-[10.5px]">Special Incident Callouts:</strong>
+              <div class="p-2 bg-dot-black/60 rounded border border-dot-border">
+                <span class="text-white font-bold">Scene Cleared:</span> "Dispatch, DOT-102 is 10-33 from Postal 812, all lanes reopened, 10-8."
+              </div>
+              <div class="p-2 bg-dot-black/60 rounded border border-dot-border">
+                <span class="text-white font-bold">Standby / Busy:</span> "DOT-102 is 10-6 winching casualty onto flatbed, stand by on queries."
+              </div>
+              <div class="p-2 bg-dot-black/60 rounded border border-red-800/60 bg-red-950/30">
+                <span class="text-red-400 font-bold">Emergency Threat (10-99):</span> "10-99! DOT-102 taking active gunfire at Postal 402, disengaging to Station 1!"
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORIENTATION SCENARIOS -->
+        <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-4 text-xs">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">General Department Scenarios</h3>
+            <p class="text-slate-400 text-xs">Realistic operational situations demonstrating everyday procedural compliance.</p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario A: Pre-Trip Inspection &amp; Radio Sign-On</strong>
+                <span class="text-dot-orange font-mono text-[10px] font-bold">Shift Start</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                You spawn into District 1 (796 Popular St). You retrieve your uniform from the locker room matching your rank texture index. You spawn your assigned rig (<code class="text-slate-200">civtahoe</code>), walk around the vehicle, verify livery is official SADOT Orange (Color 24), check plate reads <code class="text-dot-orange">SA DOT</code>, and verify vMenu Extras 1, 2, 3, 4, 6, 7, 11, 12 are enabled. You hop in, check fuel is at 100%, tune your radio to SADOT Primary, and broadcast: <em>"Dispatch, DOT-105 is 10-41, 10-8 from Popular Street."</em>
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario B: Hostile Civilian Encounter &amp; 10-99 Evacuation</strong>
+                <span class="text-red-400 font-mono text-[10px] font-bold">Emergency Disengagement</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                While inspecting a pothole on Innocence Blvd, a civilian altercation erupts on the sidewalk and a firearm is drawn. <strong>Protocol:</strong> Cease work instantly. Do not attempt to de-escalate with physical force or draw less-lethal gear. Drop your shovel, retreat to your state vehicle, lock doors, accelerate away to the nearest police station (Davis), and key your radio: <em>"10-99, 10-99! Shots fired near Innocence Postal 714, DOT-105 disengaging, request SAMPD assistance."</em>
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SUBDIVISION 1: HIGHWAY INCIDENT MANAGEMENT & PATROL -->
+    <!-- ========================================================================= -->
+    <section id="subdiv-patrol" class="training-module scroll-mt-36 space-y-6 pt-6 border-t border-dot-border" data-subdiv="Highway Incident Management & Patrol">
+      
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-dot-orange">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-dot-orange/15 text-dot-orange text-[10px] font-mono font-bold uppercase rounded border border-dot-orange/30">Subdivision 01</span>
+            <span class="access-badge font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded">Checking Access...</span>
+          </div>
+          <h2 class="text-2xl font-black text-white uppercase tracking-wide mt-1">Highway Incident Management &amp; Patrol</h2>
+          <p class="text-slate-400 text-xs mt-1">Defensive safety corridor establishment, live-lane push-offs, roadside diagnostics, and multi-agency collision staging.</p>
+        </div>
+        <div class="interest-badge-container font-mono text-xs"></div>
+      </div>
+
+      <div class="locked-container hidden p-8 bg-dot-card border border-red-900/50 rounded-lg text-center space-y-3">
+        <div class="h-12 w-12 mx-auto rounded-full bg-red-950/60 border border-red-800 flex items-center justify-center text-red-400 text-xl font-bold">🔒</div>
+        <h3 class="text-lg font-bold text-white uppercase">Clearance Required</h3>
+        <p class="text-slate-400 text-xs max-w-lg mx-auto">
+          You currently do not hold verified operational access to the <strong class="text-white">Highway Incident Management &amp; Patrol</strong> subdivision. Complete your probationary period and request an evaluation with a Supervisor.
+        </p>
+        <div class="interest-prompt font-mono text-xs pt-2"></div>
+      </div>
+
+      <div class="unlocked-content space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs">
+          
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <div class="flex items-center gap-2 text-dot-orange font-bold uppercase font-mono text-[11px]">
+              <span>Section 1.1</span> • <span>Staging Geometry</span>
+            </div>
+            <h4 class="text-sm font-bold text-white uppercase">The 45-Degree Defensive Staging Rule</h4>
+            <p class="text-slate-400 leading-relaxed">
+              When responding to a disabled vehicle on a freeway shoulder (Del Perro, Senora Fwy, Olympic):
+            </p>
+            <ul class="text-slate-300 space-y-2 list-disc list-inside">
+              <li>Stage your utility truck <strong class="text-white">25 to 50 feet</strong> upstream of the target vehicle.</li>
+              <li>Park at a <strong class="text-white">45-degree angle toward the outer guardrail or wall</strong>. If a vehicle rear-ends you, the truck deflects into the wall rather than into you and the motorist.</li>
+              <li>Turn your front wheels completely away from the live travel lanes.</li>
+              <li>Activate roof amber strobes and deploy rear directional arrow boards facing incoming traffic.</li>
+            </ul>
+          </div>
+
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <div class="flex items-center gap-2 text-dot-orange font-bold uppercase font-mono text-[11px]">
+              <span>Section 1.2</span> • <span>Roadside Assistance</span>
+            </div>
+            <h4 class="text-sm font-bold text-white uppercase">Rapid Roadside Resolution</h4>
+            <p class="text-slate-400 leading-relaxed">
+              Aim to resolve roadside disablements safely within 5 minutes:
+            </p>
+            <ul class="text-slate-300 space-y-2 list-disc list-inside">
+              <li><strong class="text-white">Emergency Fuel:</strong> Roleplay retrieving the red 2-gallon OSHA gas can from the bed. Only dispense 1–2 gallons so the motorist can reach the nearest service station.</li>
+              <li><strong class="text-white">Tire Replacement:</strong> Place wheel chocks on the opposite axle, place the hydraulic jack on solid frame points, loosen lugs in a star pattern, and torque to spec.</li>
+              <li><strong class="text-white">Push-Bumper Clearance:</strong> If stalled in a live lane, align your heavy rubber push-bumper (<code class="text-slate-200 font-mono">civtahoe/civramdot1</code>), brief the driver to stay in neutral, and push at &lt;5 MPH onto the shoulder.</li>
+            </ul>
+          </div>
+
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <div class="flex items-center gap-2 text-dot-orange font-bold uppercase font-mono text-[11px]">
+              <span>Section 1.3</span> • <span>Scene Coordination</span>
+            </div>
+            <h4 class="text-sm font-bold text-white uppercase">LEO / SAFR Crash Scene Support</h4>
+            <p class="text-slate-400 leading-relaxed">
+              When supporting police and fire departments at multi-car pileups:
+            </p>
+            <ul class="text-slate-300 space-y-2 list-disc list-inside">
+              <li><strong class="text-white">Police Contact Pocket:</strong> Park your truck behind the rearmost police cruiser, using arrow boards to deflect traffic away from the officer contact pocket.</li>
+              <li><strong class="text-white">Tactical Flood Lighting:</strong> At night, angle utility scene lights across the medical triage or extrication zone without blinding oncoming drivers.</li>
+              <li><strong class="text-white">Glass &amp; Debris Sweeping:</strong> Once police release evidence, sweep loose glass and body parts into the shoulder buffer before reopening lanes.</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- DETAILED PATROL SCENARIOS -->
+        <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-4 text-xs">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Practical Patrol Scenarios &amp; Transcripts</h3>
+            <p class="text-slate-400 text-xs">Step-by-step roleplay execution for highway incident management operators.</p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 1: High-Speed Shoulder Flat Tire on Del Perro Fwy</strong>
+                <span class="text-dot-orange font-mono text-[10px] font-bold">Standard Roadside Assist</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Dispatch:</strong> <em>"Unit 102, report of a stranded black sedan on Del Perro Freeway eastbound, narrow left shoulder near Postal 804."</em><br>
+                <strong>Execution:</strong> Approach with amber beacons on. Position your Dodge Ram 3500 HD 35 feet behind the sedan angled at 45 degrees towards the center concrete divider. Toggle rear arrow board to sweep traffic right into Lane 2. Exit vehicle curbside (driver door facing divider, away from live traffic). Introduce yourself: <em>"DOT-005 Operator Ramsay Wolfe, stay inside your vehicle with your seatbelt on while I set up our safety buffer."</em> Retrieve trolley jack and impact wrench from your side tool compartment. Roleplay loosening lugs, jacking the chassis, swapping the spare, tightening in a cross-star pattern, and lowering. Have driver sign Section 14 waiver on your tablet. Clear scene and call 10-33.
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 2: Disabled Vehicle Stalled in Live Travel Lane 1 (Olympic Fwy)</strong>
+                <span class="text-red-400 font-mono text-[10px] font-bold">Critical Push-Off</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Situation:</strong> Stalled Emperor sedan dead in Lane 1 with traffic swerving at 75 MPH.<br>
+                <strong>Execution:</strong> Rigging a flatbed winch in a live lane poses lethal danger. Approach in your heavy utility rig with rubber push-bumper (<code class="text-slate-200">civramdot1</code>). Slow traffic behind you using flashing ambers. Pull flush against the rear bumper of the stalled vehicle. Instruct driver via PA speaker: <em>"Driver, put your vehicle in NEUTRAL and keep both hands on the wheel to steer."</em> Gently apply throttle, pushing the vehicle forward at 3–5 MPH until you cross lanes onto the wide right shoulder. Disengage, establish your 45-degree angled buffer, and begin roadside diagnostics or request a flatbed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-5 bg-dot-surface border border-dot-border rounded-lg space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-white uppercase font-mono tracking-wider">📋 Practical FTO Evaluation Rubric</h4>
+            <span class="text-[10px] font-mono text-emerald-400 uppercase bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800 font-bold">Sign-off Requirement</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-300">
+            <div class="p-3 bg-dot-black/60 rounded border border-dot-border">
+              <strong class="text-white block mb-1">1. 45° Staging Test:</strong>
+              Candidate parks 25–50 ft back at a 45° angle with wheels turned to the wall and arrow board active.
+            </div>
+            <div class="p-3 bg-dot-black/60 rounded border border-dot-border">
+              <strong class="text-white block mb-1">2. Roleplay Execution:</strong>
+              Candidate walks to toolboxes and roleplays physical tool weights rather than using instant menu repairs.
+            </div>
+            <div class="p-3 bg-dot-black/60 rounded border border-dot-border">
+              <strong class="text-white block mb-1">3. MFO Form Log:</strong>
+              Candidate correctly submits Section 13 (Roadside Service) with gallons dispensed and motorist sign-off.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SUBDIVISION 2: TOWING & RECOVERY -->
+    <!-- ========================================================================= -->
+    <section id="subdiv-towing" class="training-module scroll-mt-36 space-y-6 pt-6 border-t border-dot-border" data-subdiv="Towing & Recovery">
+      
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-dot-orange">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-dot-orange/15 text-dot-orange text-[10px] font-mono font-bold uppercase rounded border border-dot-orange/30">Subdivision 02</span>
+            <span class="access-badge font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded">Checking Access...</span>
+          </div>
+          <h2 class="text-2xl font-black text-white uppercase tracking-wide mt-1">Towing &amp; Recovery</h2>
+          <p class="text-slate-400 text-xs mt-1">Hydraulic rollback bed operations, heavy boom winching, dual snatch-block rollover uprighting, and impound chain-of-custody.</p>
+        </div>
+        <div class="interest-badge-container font-mono text-xs"></div>
+      </div>
+
+      <div class="locked-container hidden p-8 bg-dot-card border border-red-900/50 rounded-lg text-center space-y-3">
+        <div class="h-12 w-12 mx-auto rounded-full bg-red-950/60 border border-red-800 flex items-center justify-center text-red-400 text-xl font-bold">🔒</div>
+        <h3 class="text-lg font-bold text-white uppercase">Clearance Required</h3>
+        <p class="text-slate-400 text-xs max-w-lg mx-auto">
+          You currently do not hold verified operational access to the <strong class="text-white">Towing &amp; Recovery</strong> subdivision. Hold a valid CDL endorsement and complete the Rollback / Boom practical evaluation.
+        </p>
+        <div class="interest-prompt font-mono text-xs pt-2"></div>
+      </div>
+
+      <div class="unlocked-content space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
+          
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <h4 class="text-sm font-bold text-white uppercase flex items-center justify-between">
+              <span>Flatbed / Rollback Mechanics</span>
+              <span class="font-mono text-dot-orange text-[10px]">f550rollback / ramrollback</span>
+            </h4>
+            <div class="p-3 bg-red-950/40 border border-red-500/40 rounded text-slate-200 text-[11px]">
+              <strong class="text-red-400 block uppercase font-bold text-[10px] mb-0.5">⚠️ Cabin Clearance Mandate</strong>
+              Never operate the hydraulic bed slider or tension a winch line while an occupant or player is seated inside. Confirm cabin 100% empty.
+            </div>
+            <div class="space-y-2 font-mono text-[11px] text-slate-300">
+              <div class="p-2.5 bg-dot-surface rounded border border-dot-border space-y-1">
+                <span class="text-white font-bold block text-[10.5px]">Standard FiveM Keybindings:</span>
+                <div><code class="text-dot-orange font-bold">[Down Arrow]</code> : Slide bed backwards &amp; tilt apron flush to pavement</div>
+                <div><code class="text-dot-orange font-bold">[Up Arrow]</code> : Slide bed forward &amp; lock into travel transport mode</div>
+                <div><code class="text-dot-orange font-bold">[Right Arrow]</code> : Free-spool/unwind winch cable hook</div>
+                <div><code class="text-dot-orange font-bold">[Left Arrow]</code> : Winch target vehicle smoothly up onto bed</div>
+                <div><code class="text-dot-orange font-bold">[E]</code> : Fasten high-strength wheel tie-down straps</div>
+                <div><code class="text-dot-orange font-bold">[G]</code> : Detach winch cable from front tow bridle</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <h4 class="text-sm font-bold text-white uppercase flex items-center justify-between">
+              <span>Heavy Wrecker Rollover Physics</span>
+              <span class="font-mono text-dot-orange text-[10px]">kenworthwrecker</span>
+            </h4>
+            <p class="text-slate-400 leading-relaxed">
+              When recovering overturned semi-trucks, cement mixers, or vehicles in ravines:
+            </p>
+            <ul class="text-slate-300 space-y-2 list-disc list-inside">
+              <li><strong class="text-white">Deploy Outriggers:</strong> Toggle <code class="text-dot-orange font-mono">Extra 5</code> in vMenu before winching to plant hydraulic stabilizer feet into firm pavement.</li>
+              <li><strong class="text-white">Dual Snatch-Block Rigging:</strong> Wrap heavy Grade-80 transport chains around the structural A/B pillars or chassis frame. Never hook to suspension rods or cosmetic bumpers.</li>
+              <li><strong class="text-white">Controlled Uprighting:</strong> Slowly tension dual cables to roll the casualty back onto all four wheels without flopping it over onto its other side.</li>
+              <li><strong class="text-white">Wheel-Lift Stinger:</strong> Lower stinger (<code class="text-dot-orange font-mono">Extra 10</code>), cradle drive tires with L-arms, insert safety pins, and attach magnetic tow lights.</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- DETAILED TOWING SCENARIOS -->
+        <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-4 text-xs">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Practical Towing &amp; Recovery Scenarios</h3>
+            <p class="text-slate-400 text-xs">Detailed field operations covering vehicle winching, rollover recoveries, and impound disputes.</p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 1: Police Impound / Evidentiary Hold at Sandy Shores 24/7</strong>
+                <span class="text-dot-orange font-mono text-[10px] font-bold">LEO Chain of Custody</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Call:</strong> BCSO Deputy requests a flatbed for a stolen sports car seized during a felony stop. Upon arrival (10-23), introduce yourself to the deputy. <em>Verify Deputy Badge and ID</em>. Conduct a 360-degree walkaround recording pre-existing damage (broken rear glass, scraped rims). Lower flatbed bed (<code class="text-white font-bold">[Down Arrow]</code>). Attach nylon bridle straps to factory tow recovery points. Winch car onto deck (<code class="text-white font-bold">[Left Arrow]</code>). Secure 4-point tire harnesses (<code class="text-white font-bold">[E]</code>). Raise and slide bed forward into travel lock (<code class="text-white font-bold">[Up Arrow]</code>). Obtain Deputy signature on Section 14 of the MFO Form. Transport directly to the Paleto Bay municipal impound lot.
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2.5">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 2: Overturned Commercial Semi-Truck on Route 68</strong>
+                <span class="text-red-400 font-mono text-[10px] font-bold">Heavy Boom Recovery</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed text-[11px]">
+                <strong>Situation:</strong> Articulated semi-truck tipped on its side blocking Route 68. SAFR has extricated the driver and police released the scene to SADOT.<br>
+                <strong class="text-white">Mechanical Limitation &amp; Mandatory Secondary Rig:</strong> Due to FiveM vehicle physics and script limitations, <strong>the Kenworth wrecker cannot physically winch an overturned vehicle upright on its own</strong>. Therefore, a secondary apparatus equipped with an operational front-bumper winch (such as the Ford F550 Rollback <code class="text-slate-200">f550rollback2</code> with <span class="text-dot-orange">Extra 4</span> push bar/winch or a winch-equipped utility rig) is <strong>strictly mandatory</strong> for any callout involving stuck, rolled, or tipped vehicles.
+              </p>
+
+              <!-- Dedicated Winch Keybinds Box -->
+              <div class="p-2.5 bg-dot-black/60 rounded border border-dot-border space-y-1.5 font-mono text-[10.5px]">
+                <span class="text-dot-orange font-bold uppercase block tracking-wider text-[10px]">Winch Script Controls:</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-slate-300">
+                  <div><code class="text-dot-orange font-bold">[E]</code> : Take the hook from the rig</div>
+                  <div><code class="text-dot-orange font-bold">[H]</code> : Drop the hook</div>
+                  <div><code class="text-dot-orange font-bold">[E]</code> : Attach hook to target vehicle</div>
+                  <div><code class="text-dot-orange font-bold">Hold [Page Up] / [Page Down]</code> : Wind winch in / out</div>
+                  <div><code class="text-dot-orange font-bold">[H]</code> : Take hook from target vehicle</div>
+                  <div><code class="text-dot-orange font-bold">[E]</code> : Reattach hook to original vehicle</div>
+                </div>
+              </div>
+
+              <p class="text-slate-400 leading-relaxed text-[11px]">
+                <strong>Execution Workflow:</strong><br>
+                1. Stage your Kenworth Wrecker (<code class="text-slate-200">kenworthwrecker</code>) 20 feet opposite the pivot side with stabilizer outriggers planted (<span class="text-dot-orange">Extra 5</span>) and rear amber beacons flashing.<br>
+                2. Position the secondary front-winch vehicle directly aligned with the casualty's roll vector.<br>
+                3. Visually confirm the casualty's cabin is 100% clear of occupants.<br>
+                4. Walk to the front bumper of the secondary rig, press <code class="text-white font-bold font-mono">[E]</code> to take the hook, walk to the top-side chassis frame rail of the tipped semi-truck, and press <code class="text-white font-bold font-mono">[E]</code> to secure it.<br>
+                5. Hold <code class="text-white font-bold font-mono">[Page Up]</code> to slowly wind the winch in under power, pulling the center of mass over until the tractor chassis rolls smoothly back onto its tires.<br>
+                6. Walk to the casualty, press <code class="text-white font-bold font-mono">[H]</code> to take the hook, return to your secondary truck, and press <code class="text-white font-bold font-mono">[E]</code> to reattach it to the bumper.<br>
+                7. Back the Kenworth up, lower the rear stinger wheel-lift (<span class="text-dot-orange">Extra 10</span>), cradle the semi-truck's drive axle, pin safety chains, attach magnetic tail lights, and tow back to District 2 depot.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-5 bg-dot-surface border border-dot-border rounded-lg space-y-2 text-xs">
+          <h4 class="font-bold text-white uppercase font-mono tracking-wider text-xs">Mandatory Impound Chain-of-Custody</h4>
+          <p class="text-slate-400 leading-relaxed">
+            Every impounded vehicle must have an associated Master Field Operations (MFO) Form. When executing police impounds for SAMPD or BCSO, record the requesting officer's name, badge number, and legal authority (e.g., Evidentiary Hold, Vehicle Seizure, Driver Arrested). Transport the vehicle directly to the designated municipal impound lot.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SUBDIVISION 3: MAINTENANCE & INFRASTRUCTURE (INCLUDES FIG 3.1 ILLUMINATION) -->
+    <!-- ========================================================================= -->
+    <section id="subdiv-maint" class="training-module scroll-mt-36 space-y-6 pt-6 border-t border-dot-border" data-subdiv="Maintenance & Infrastructure">
+      
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-dot-orange">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-dot-orange/15 text-dot-orange text-[10px] font-mono font-bold uppercase rounded border border-dot-orange/30">Subdivision 03</span>
+            <span class="access-badge font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded">Checking Access...</span>
+          </div>
+          <h2 class="text-2xl font-black text-white uppercase tracking-wide mt-1">Maintenance &amp; Infrastructure</h2>
+          <p class="text-slate-400 text-xs mt-1">Pothole patching, guardrail and barrier restoration, culvert clearing, storm drainage, and tactical work zone illumination.</p>
+        </div>
+        <div class="interest-badge-container font-mono text-xs"></div>
+      </div>
+
+      <div class="locked-container hidden p-8 bg-dot-card border border-red-900/50 rounded-lg text-center space-y-3">
+        <div class="h-12 w-12 mx-auto rounded-full bg-red-950/60 border border-red-800 flex items-center justify-center text-red-400 text-xl font-bold">🔒</div>
+        <h3 class="text-lg font-bold text-white uppercase">Clearance Required</h3>
+        <p class="text-slate-400 text-xs max-w-lg mx-auto">
+          You currently do not hold verified operational access to the <strong class="text-white">Maintenance &amp; Infrastructure</strong> subdivision. Complete basic field operator requirements to request qualification.
+        </p>
+        <div class="interest-prompt font-mono text-xs pt-2"></div>
+      </div>
+
+      <div class="unlocked-content space-y-8">
+        
+        <!-- FIG 3.1: WORK ZONE ILLUMINATION & BARRIER ENCLOSURE (IMAGE4) -->
+        <div class="space-y-4">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-base font-bold text-white uppercase tracking-wider font-mono">1. Night Operations &amp; Work Zone Illumination Standards</h3>
+            <p class="text-slate-400 text-xs">Mandatory safety enclosure lighting and floodlight orientation to preserve night worker safety.</p>
+          </div>
+
+          <!-- IMAGE4 EMBED -->
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded-lg">
+            <div class="relative group/img overflow-hidden rounded cursor-zoom-in" onclick="openLightbox('assets/image4.png', 'FIG 3.1: Nighttime Work Zone Illumination &amp; Striped Barrier Enclosure')">
+              <img src="assets/image4.png" alt="Nighttime Work Zone Illumination Setup" class="w-full h-64 md:h-80 object-cover object-center rounded transition duration-300 group-hover/img:scale-[1.01]">
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition">
+                <span class="px-4 py-2 bg-dot-orange text-white text-xs font-bold uppercase rounded tracking-wider shadow-lg">
+                  🔍 View Night Work Zone Lighting (FIG 3.1)
+                </span>
+              </div>
+            </div>
+            <div class="mt-2.5 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span>FIG 3.1: Enclosed Work Zone Pocket with Dual Floodlights &amp; Striped Barricades</span>
+              <span class="text-dot-orange font-bold">Illumination Profile</span>
+            </div>
+          </div>
+
+          <!-- Lighting Rules Card -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 bg-dot-card border border-dot-border rounded space-y-2">
+              <strong class="text-white uppercase font-mono block text-[11px]">The Non-Glare Lighting Rule</strong>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Work zones must be illuminated using portable floodlight stands or truck-mounted light masts. Floodlights must be <strong class="text-white">angled strictly downwards into the active excavation cavity or repair zone</strong>. Under no circumstances should high-intensity lights face oncoming traffic, as blinding drivers causes high-speed collisions.
+              </p>
+            </div>
+            <div class="p-4 bg-dot-card border border-dot-border rounded space-y-2">
+              <strong class="text-white uppercase font-mono block text-[11px]">Perimeter Striped Barrier Box</strong>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                As demonstrated in <strong>FIG 3.1</strong>, the actual work area must be enclosed on all three exposed sides by red-and-white striped crash barriers, backed by advance cones. This creates a solid physical pocket preventing technicians from accidentally stepping into live adjacent lanes.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAILED INFRASTRUCTURE SCENARIOS -->
+        <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-4 text-xs">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Practical Maintenance Scenarios</h3>
+            <p class="text-slate-400 text-xs">Realistic procedures covering asphalt restoration, guardrail repair, and storm drainage.</p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 1: Nighttime Emergency Pothole Repair (Great Ocean Hwy)</strong>
+                <span class="text-dot-orange font-mono text-[10px] font-bold">Surface Restoration</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Situation:</strong> Severe 6-inch pavement collapse causing tire blowouts at night on Great Ocean Highway.<br>
+                <strong>Execution:</strong> Stage arrow truck 250 ft upstream. Close Lane 1 with a 50-ft cone taper. Deploy perimeter striped barriers around the pothole (as shown in <strong>FIG 3.1</strong>). Deploy dual generator floodlights angled 45 degrees downward into the cavity to illuminate the work zone without blinding southbound traffic. Use compressed air wand to blow out dust and moisture. Spray asphalt tack coat emulsion. Shovel hot asphalt patch mix in 2-inch lifts. Run the walk-behind vibratory plate compactor until flush with road grade (1/4 inch tolerance). Apply joint sealant, pack tools, pick up barriers, and clear.
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 2: Damaged Guardrail Replacement (Palomino Freeway)</strong>
+                <span class="text-dot-orange font-mono text-[10px] font-bold">Barrier Restoration</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Situation:</strong> A high-speed crash sheared 30 feet of W-beam guardrail off Palomino Freeway.<br>
+                <strong>Execution:</strong> Establish shoulder closure with warning triangles. Unbolt crushed galvanized steel panels. Use hydraulic extraction jack to pull snapped wooden posts. Drive new steel I-beam posts into ground. Mount replacement 12-gauge W-beam panels, ensuring splices overlap <em>away</em> from oncoming traffic flow so errant vehicles cannot spear the edge. Torque all splice bolts to 75 ft-lbs.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs pt-2">
+          
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <h4 class="text-sm font-bold text-white uppercase">Pothole &amp; Pavement Restoration</h4>
+            <p class="text-slate-400 leading-relaxed">
+              Damaged road surfaces cause tire blowouts and swerving collisions. Standard repair sequence:
+            </p>
+            <ol class="text-slate-300 space-y-1.5 list-decimal list-inside">
+              <li><strong class="text-white">Isolate the Work Area:</strong> Stage arrow truck upstream with a 50-foot cone taper.</li>
+              <li><strong class="text-white">Clean the Cavity:</strong> Roleplay sweeping loose gravel and water out using compressed air or hand brooms.</li>
+              <li><strong class="text-white">Tack Coat Application:</strong> Spray liquid asphalt emulsion binder across all edges of the pothole.</li>
+              <li><strong class="text-white">Hot/Cold-Mix Fill:</strong> Shovel fresh asphalt mix into the hole in 2-inch lifts.</li>
+              <li><strong class="text-white">Mechanical Compaction:</strong> Run a vibratory plate compactor until flush (1/4 inch tolerance above grade).</li>
+            </ol>
+          </div>
+
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <h4 class="text-sm font-bold text-white uppercase">Guardrail &amp; Jersey Barrier Reset</h4>
+            <p class="text-slate-400 leading-relaxed">
+              Restoring highway retention systems after collisions:
+            </p>
+            <ul class="text-slate-300 space-y-2 list-disc list-inside">
+              <li><strong class="text-white">W-Beam Panel Extraction:</strong> Unbolt crushed galvanized steel sections. Extract sheared wooden or I-beam support posts.</li>
+              <li><strong class="text-white">Post Driving:</strong> Drive replacement posts flush into the road embankment. Re-bolt new panels with splices overlapping away from oncoming traffic.</li>
+              <li><strong class="text-white">Concrete Jersey Barriers:</strong> For displaced 4,000-lb barriers, rig a heavy wrecker or front loader to hoist and re-align barriers flush with the road line.</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SUBDIVISION 4: TRAFFIC CONTROL & FLAGGING (INCLUDES FIG 1, 2, 3) -->
+    <!-- ========================================================================= -->
+    <section id="subdiv-traffic" class="training-module scroll-mt-36 space-y-6 pt-6 border-t border-dot-border" data-subdiv="Traffic Control & Flagging">
+      
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-dot-orange">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-dot-orange/15 text-dot-orange text-[10px] font-mono font-bold uppercase rounded border border-dot-orange/30">Subdivision 04</span>
+            <span class="access-badge font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded">Checking Access...</span>
+          </div>
+          <h2 class="text-2xl font-black text-white uppercase tracking-wide mt-1">Traffic Control &amp; Flagging</h2>
+          <p class="text-slate-400 text-xs mt-1">Work zone geometric tapers, multi-vehicle shadow truck staging, digital node manipulation (/traffic), and single-lane alternating flagging.</p>
+        </div>
+        <div class="interest-badge-container font-mono text-xs"></div>
+      </div>
+
+      <div class="locked-container hidden p-8 bg-dot-card border border-red-900/50 rounded-lg text-center space-y-3">
+        <div class="h-12 w-12 mx-auto rounded-full bg-red-950/60 border border-red-800 flex items-center justify-center text-red-400 text-xl font-bold">🔒</div>
+        <h3 class="text-lg font-bold text-white uppercase">Clearance Required</h3>
+        <p class="text-slate-400 text-xs max-w-lg mx-auto">
+          You currently do not hold verified operational access to the <strong class="text-white">Traffic Control &amp; Flagging</strong> subdivision. Complete the Flagging certification practical to unlock this manual.
+        </p>
+        <div class="interest-prompt font-mono text-xs pt-2"></div>
+      </div>
+
+      <div class="unlocked-content space-y-10">
+        
+        <!-- PART 1: PHYSICAL WORK ZONE TAPERS (IMAGE1) -->
+        <div class="space-y-4">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-base font-bold text-white uppercase tracking-wider font-mono">1. Geometric Highway Tapers &amp; Barrier Pacing</h3>
+            <p class="text-slate-400 text-xs">Standard MUTCD geometry for high-speed freeway closures and merge tapers.</p>
+          </div>
+
+          <!-- IMAGE1 EMBED -->
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded-lg">
+            <div class="relative group/img overflow-hidden rounded cursor-zoom-in" onclick="openLightbox('assets/image_1.png', 'FIG 4.1: High-Speed Highway Taper &amp; Work Zone Cone Configuration')">
+              <img src="assets/image_1.png" alt="Freeway Work Zone Taper Setup" class="w-full h-64 md:h-80 object-cover object-center rounded transition duration-300 group-hover/img:scale-[1.01]">
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition">
+                <span class="px-4 py-2 bg-dot-orange text-white text-xs font-bold uppercase rounded tracking-wider shadow-lg">
+                  🔍 View Full Screen Taper Diagram (FIG 4.1)
+                </span>
+              </div>
+            </div>
+            <div class="mt-2.5 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span>FIG 4.1: High-Speed Highway Taper &amp; Cone Transition Profile</span>
+              <span class="text-dot-orange font-bold">Standard Work Zone Profile</span>
+            </div>
+          </div>
+
+          <!-- Pacing & Math Rules -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 bg-dot-card border border-dot-border rounded space-y-2">
+              <strong class="text-white uppercase font-mono block text-[11px]">Highway Taper Calculation (45+ MPH)</strong>
+              <p class="text-slate-400 text-[11px] font-mono leading-relaxed">
+                Formula: <strong class="text-dot-orange">L = W × S</strong><br>
+                • <strong>L</strong> = Taper Length (Feet)<br>
+                • <strong>W</strong> = Lane Width (Standard 12 Feet)<br>
+                • <strong>S</strong> = Speed Limit (MPH)<br>
+                <em>Example:</em> 12 ft × 65 MPH = <span class="text-dot-orange font-bold">780 Feet</span> (approx. 20–25 car lengths in FiveM).
+              </p>
+            </div>
+            <div class="p-4 bg-dot-card border border-dot-border rounded space-y-2">
+              <strong class="text-white uppercase font-mono block text-[11px]">The Strict 5-Foot Spacing Rule</strong>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                GTA V vehicle collisions create physics voids between props. Cones, pylons, and barricades must be spaced at strict <strong class="text-white">5-foot intervals</strong> (one walking stride). Placing cones further than 5 feet apart allows AI and civilian vehicles to clip straight through your perimeter into the work zone.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PART 2: VEHICLE PLACEMENT FOR WORK ZONES (IMAGE3) -->
+        <div class="space-y-4 pt-4 border-t border-dot-border">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-base font-bold text-white uppercase tracking-wider font-mono">2. Work Zone Vehicle Placement &amp; Shadow Truck Hierarchy</h3>
+            <p class="text-slate-400 text-xs">Multi-vehicle staging setup showing how state apparatus must be positioned to shield workers.</p>
+          </div>
+
+          <!-- IMAGE3 EMBED -->
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded-lg">
+            <div class="relative group/img overflow-hidden rounded cursor-zoom-in" onclick="openLightbox('assets/image3.png', 'FIG 4.2: Work Zone Vehicle Placement &amp; Attenuator Staging')">
+              <img src="assets/image3.png" alt="Work Zone Vehicle Staging and Shadow Trucks" class="w-full h-64 md:h-80 object-cover object-center rounded transition duration-300 group-hover/img:scale-[1.01]">
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition">
+                <span class="px-4 py-2 bg-dot-orange text-white text-xs font-bold uppercase rounded tracking-wider shadow-lg">
+                  🔍 View Vehicle Placement Diagram (FIG 4.2)
+                </span>
+              </div>
+            </div>
+            <div class="mt-2.5 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span>FIG 4.2: Aerial Layout of Advance Warning Truck, Shadow Truck, Buffer Space &amp; Repair Zone</span>
+              <span class="text-dot-orange font-bold">Apparatus Staging Matrix</span>
+            </div>
+          </div>
+
+          <!-- Vehicle Placement Walkthrough -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+            <div class="p-4 bg-dot-card border border-dot-border rounded space-y-1.5">
+              <strong class="text-dot-orange block uppercase text-sm">1. Advance VMS Truck</strong>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Staged on the far right shoulder 500–1000 ft upstream of the closure displaying <code class="text-white">ROAD WORK AHEAD!</code> to warn incoming high-speed traffic early.
+              </p>
+            </div>
+            <div class="p-4 bg-dot-card border border-dot-border rounded space-y-1.5">
+              <strong class="text-dot-orange block uppercase text-sm">2. Shadow Buffer Truck</strong>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Positioned inside the closed lane with rear arrow board actively directing traffic into open lanes. Acts as a heavy physical buffer against errant drivers.
+              </p>
+            </div>
+            <div class="p-4 bg-dot-card border border-dot-border rounded space-y-1.5">
+              <strong class="text-dot-orange block uppercase text-sm">3. Protected Work Space</strong>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Maintains a 50–100 ft buffer space between the shadow truck and the enclosed barricade box, ensuring workers have complete room to operate machinery safely.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PART 3: DIGITAL TRAFFIC NODES (/traffic) (IMAGE2) -->
+        <div class="space-y-4 pt-4 border-t border-dot-border">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-base font-bold text-white uppercase tracking-wider font-mono">3. Digital Traffic Node Manipulation (/traffic)</h3>
+            <p class="text-slate-400 text-xs">Governing Local AI pathfinding to detour computer-driven traffic around active closures.</p>
+          </div>
+
+          <!-- IMAGE2 EMBED -->
+          <div class="p-3.5 bg-dot-surface border border-dot-border rounded-lg">
+            <div class="relative group/img overflow-hidden rounded cursor-zoom-in" onclick="openLightbox('assets/image2.png', 'FIG 4.3: Divided Intersection Node Control &amp; Waypoint Routing')">
+              <img src="assets/image2.png" alt="Intersection Node Control &amp; Lane Channelization" class="w-full h-72 md:h-96 object-cover object-center rounded transition duration-300 group-hover/img:scale-[1.01]">
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition">
+                <span class="px-4 py-2 bg-dot-orange text-white text-xs font-bold uppercase rounded tracking-wider shadow-lg">
+                  🔍 View Full Screen Intersection Grid (FIG 4.3)
+                </span>
+              </div>
+            </div>
+            <div class="mt-2.5 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span>FIG 4.3: Divided Highway Intersection Channelization &amp; Node Grid (Route 68 &amp; Senora Fwy)</span>
+              <span class="text-dot-orange font-bold">Waypoint Pathfinding Matrix</span>
+            </div>
+          </div>
+
+          <!-- Node Logic Matrix -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+            <div class="p-4 bg-dot-card border border-emerald-500/40 rounded space-y-1.5">
+              <span class="text-emerald-400 font-bold block text-sm">🟢 GREEN NODES (Active Thoroughfare)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Open paths. Local AI traffic will navigate through Green nodes REGARDLESS of whether physical cones or barricades are sitting on top of them. Always disable nodes under your physical work perimeter!
+              </p>
+            </div>
+            <div class="p-4 bg-dot-card border border-red-500/40 rounded space-y-1.5">
+              <span class="text-red-400 font-bold block text-sm">🔴 RED NODES (Restricted Path)</span>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Closed paths. Standard Local vehicles avoid Red nodes. <em>Note:</em> Off-road vehicle classes (4x4s, SUVs, dirtbikes) may occasionally ignore Red nodes-maintain physical shadow trucks!
+              </p>
+            </div>
+          </div>
+
+          <!-- Detour Continuity & Restoration Rules -->
+          <div class="p-4 bg-dot-surface border border-dot-border rounded space-y-2 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-dot-orange"></span>
+              <strong class="text-white uppercase font-mono text-[11px]">The Detour Continuity Mandate</strong>
+            </div>
+            <p class="text-slate-400 leading-relaxed text-[11.5px]">
+              As illustrated in <strong>FIG 4.3</strong>, the straight through-lanes are toggled RED (disabled), while the turning lane nodes onto the cross street remain GREEN. If an operator disables straight nodes without leaving valid Green turning paths, Local AI pathfinding completely fails, causing drivers to panic, disregard closures, and plow directly through barricades.
+            </p>
+            <div class="pt-2 border-t border-dot-border text-dot-orange font-mono text-[11px] font-bold">
+              ⚠️ MANDATORY RESET: Before picking up cones or departing any scene, open /traffic and toggle all modified nodes back to GREEN. Leaving disabled nodes causes permanent phantom gridlock across the server!
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAILED TRAFFIC CONTROL SCENARIOS -->
+        <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-4 text-xs">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Practical Traffic Control Scenarios</h3>
+            <p class="text-slate-400 text-xs">Comprehensive staging breakdowns for complex intersections and lane closures.</p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 1: Setting up Full Highway Work Zone (Senora Fwy Northbound)</strong>
+                <span class="text-dot-orange font-mono text-[10px] font-bold">Multi-Vehicle Layout</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Execution (Matching FIG 4.1 &amp; FIG 4.2):</strong><br>
+                1. <em>Advance Warning:</em> Operator 1 stages Advance Warning Truck (<code class="text-slate-200">civf150/civf550dot</code>) on far right shoulder 800 ft upstream, VMS board flashing: <code class="text-dot-orange">ROAD WORK AHEAD!</code><br>
+                2. <em>Taper Construction:</em> Pacing at strict 5-foot intervals, lay a 20-cone transition taper directing traffic from Lane 1 into Lane 2.<br>
+                3. <em>Shadow Truck:</em> Operator 2 positions Ford F550 Arrow Truck (<code class="text-slate-200">civf550dot</code>) inside the closed lane, amber arrow board pointing left.<br>
+                4. <em>Buffer Space:</em> Maintain an open 75-foot buffer zone between the shadow truck and the workers.<br>
+                5. <em>Work Area Enclosure:</em> Construct striped barricade box around the construction pit as seen in <strong>FIG 3.1</strong>.
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 2: Divided Intersection Node Rerouting (Route 68 &amp; Joshua Rd)</strong>
+                <span class="text-emerald-400 font-mono text-[10px] font-bold">Node Logic Execution</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Execution (Matching FIG 4.3):</strong> A downed power pole requires full closure of westbound Route 68. Stand safely on the sidewalk and open <code class="text-dot-orange">/traffic</code>. Aim at westbound through-lane nodes (Node 15991574, 16712470, 19202838) and press <code class="text-white font-bold">[E]</code> to toggle to <strong class="text-red-400">RED</strong>. Verify turning nodes leading north into Joshua Road (Node 16843542, 17040150) remain <strong class="text-emerald-400">GREEN</strong>. Press <code class="text-white font-bold">[X]</code> to confirm. Watch AI traffic: vehicles smoothly execute right turns into the detour without piling up against your barricades. Upon job completion, reopen <code class="text-dot-orange">/traffic</code>, toggle all Red nodes back to Green, and confirm before clocking 10-8.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PART 4: MANUAL FLAGGING -->
+        <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3 text-xs">
+          <div class="flex items-center justify-between border-b border-dot-border pb-2">
+            <h4 class="font-bold text-white uppercase font-mono text-xs">4. Single-Lane Alternating Flagging (/flagman)</h4>
+            <span class="text-[10px] font-mono text-dot-orange">Manual Traffic Control</span>
+          </div>
+          <p class="text-slate-400 leading-relaxed">
+            When one lane of a two-lane rural road (Route 68, Senora Fwy, Tongva Valley) is closed for repairs:
+          </p>
+          <ul class="text-slate-300 space-y-1.5 list-disc list-inside">
+            <li>Type <code class="text-dot-orange font-mono font-bold">/flagman</code> in chat to equip the official state STOP/SLOW paddle. Press <code class="text-white font-mono font-bold">[Delete]</code> when finished.</li>
+            <li>Stand on the outer paved shoulder, never stand in the center of the active travel lane.</li>
+            <li>Coordinate with the opposite flagger via department radio: Flagger 1 displays STOP and holds queue while Flagger 2 displays SLOW and releases queued traffic.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SUBDIVISION 5: HEAVY MACHINERY & LOGISTICS -->
+    <!-- ========================================================================= -->
+    <section id="subdiv-heavy" class="training-module scroll-mt-36 space-y-6 pt-6 border-t border-dot-border" data-subdiv="Heavy Machinery & Logistics">
+      
+      <div class="p-6 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-dot-orange">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-dot-orange/15 text-dot-orange text-[10px] font-mono font-bold uppercase rounded border border-dot-orange/30">Subdivision 05</span>
+            <span class="access-badge font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded">Checking Access...</span>
+          </div>
+          <h2 class="text-2xl font-black text-white uppercase tracking-wide mt-1">Heavy Machinery &amp; Logistics</h2>
+          <p class="text-slate-400 text-xs mt-1">Dump trucks (tiptruck2/rubble), bulldozers (dozer), forklifts (fork), and lowboy multi-axle transport (trlowboy).</p>
+        </div>
+        <div class="interest-badge-container font-mono text-xs"></div>
+      </div>
+
+      <div class="locked-container hidden p-8 bg-dot-card border border-red-900/50 rounded-lg text-center space-y-3">
+        <div class="h-12 w-12 mx-auto rounded-full bg-red-950/60 border border-red-800 flex items-center justify-center text-red-400 text-xl font-bold">🔒</div>
+        <h3 class="text-lg font-bold text-white uppercase">Clearance Required</h3>
+        <p class="text-slate-400 text-xs max-w-lg mx-auto">
+          You currently do not hold verified operational access to the <strong class="text-white">Heavy Machinery &amp; Logistics</strong> subdivision. Requires CDL + Heavy Equipment (HVY) certification and Supervisor sign-off.
+        </p>
+        <div class="interest-prompt font-mono text-xs pt-2"></div>
+      </div>
+
+      <div class="unlocked-content space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
+          
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <h4 class="text-sm font-bold text-white uppercase flex items-center justify-between">
+              <span>Lowboy Trailer Loading (trlowboy)</span>
+              <span class="font-mono text-dot-orange text-[10px]">w900 + trlowboy</span>
+            </h4>
+            <p class="text-slate-400 leading-relaxed">
+              Transporting tracked equipment across state highways:
+            </p>
+            <ol class="text-slate-300 space-y-2 list-decimal list-inside">
+              <li><strong class="text-white">Unhitch Neck:</strong> Disconnect tractor with <code class="text-dot-orange font-mono">[H]</code>. Toggle <span class="text-dot-orange font-bold">Extra 1 OFF</span> and <span class="text-dot-orange font-bold">Extra 3 ON</span> in vMenu to drop ramps flat to the ground.</li>
+              <li><strong class="text-white">Load Equipment:</strong> Drive the dozer or heavy plant up the neck onto the trailer deck.</li>
+              <li><strong class="text-white">Cargo Securing (/attach):</strong> Execute <code class="text-dot-orange font-mono">/attach</code> in chat. Aim at the trailer bed, press Enter, then aim at the dozer and press Enter. Adjust translation with Numpad keys and press Numpad Enter to lock entities.</li>
+              <li><strong class="text-white">Re-Couple Neck:</strong> Toggle Extra 3 OFF and Extra 1 ON. Back tractor up and hitch with <code class="text-dot-orange font-mono">[J]</code>.</li>
+            </ol>
+          </div>
+
+          <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-3">
+            <h4 class="text-sm font-bold text-white uppercase">Earthmoving &amp; Dump Operations</h4>
+            <p class="text-slate-400 leading-relaxed">
+              Handling large aggregate volumes, rockslides, and roadbed collapses:
+            </p>
+            <ul class="text-slate-300 space-y-2 list-disc list-inside">
+              <li><strong class="text-white">Spotter Mandate:</strong> Operators running bulldozers or backing large dump trucks must always have a ground spotter with high-vis gear directing traffic around blind spots.</li>
+              <li><strong class="text-white">Bulldozer Transit Speed:</strong> Keep blades low (12–18 inches above ground) during transport. Avoid sharp pivot turns on open asphalt to avoid tearing up fresh road surfaces.</li>
+              <li><strong class="text-white">Forklift Balance:</strong> Insert tines completely under the load pallet. Tilt the mast backward slightly and carry cargo 4–6 inches above ground grade.</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- DETAILED HEAVY LOGISTICS SCENARIOS -->
+        <div class="p-5 bg-dot-card border border-dot-border rounded-lg space-y-4 text-xs">
+          <div class="border-b border-dot-border pb-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Practical Heavy Logistics Scenarios</h3>
+            <p class="text-slate-400 text-xs">Detailed mobilization and earthmoving operations across state highways.</p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 1: Lowboy Mobilization of Tracked Bulldozer to Landslide Collapse</strong>
+                <span class="text-dot-orange font-mono text-[10px] font-bold">Equipment Transport</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Mission:</strong> Heavy rain caused a 30-ton mudslide across Tongva Valley Road. You are assigned to transport the tracked bulldozer (<code class="text-slate-200">dozer</code>) from District 2 Depot using the Kenworth W900 (<code class="text-slate-200">w900</code>) and Lowboy (<code class="text-slate-200">trlowboy</code>).<br>
+                <strong>Execution:</strong> In the yard, unhitch the prime mover (<code class="text-white font-bold">[H]</code>). In vMenu, toggle <span class="text-dot-orange">Extra 1 OFF</span> and <span class="text-dot-orange">Extra 3 ON</span> to lower the neck flat to the ground. Drive the dozer up the front ramp onto the center well of the trailer deck. Type <code class="text-dot-orange font-mono">/attach</code> in chat, select the lowboy deck, select the dozer, and lock with Numpad Enter. Toggle Extra 3 OFF and Extra 1 ON. Reverse W900 tractor and hitch (<code class="text-white font-bold">[J]</code>). Verify <span class="text-dot-orange">Oversize Load 1 (Option 2)</span> is enabled. Transport at max 45 MPH with hazard flashers on to the slide site.
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-dot-surface rounded border border-dot-border space-y-2">
+              <div class="flex items-center justify-between">
+                <strong class="text-white font-mono text-[11px] uppercase">Scenario 2: Heavy Earthmoving &amp; Dump Truck Aggregate Distribution</strong>
+                <span class="text-dot-orange font-mono text-[10px] font-bold">Clearing &amp; Spreading</span>
+              </div>
+              <p class="text-slate-400 leading-relaxed">
+                <strong>Execution:</strong> Arrive at the Tongva slide site. Dedicated ground spotter in hi-vis vest holds civilian traffic. Unload the dozer. Lower blade to 2 inches above pavement. Grade the fallen rock and soil into a consolidated stockpile along the outer shoulder. Operator 2 backs the Tipper Dump Truck (<code class="text-slate-200">tiptruck2</code>) flush against the berm with tailgate unpinned. Load aggregate into bed. Transport debris to the county aggregate depot, engage PTO lever, raise dump bed, and unload.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Full Screen Image Lightbox Modal -->
+  <div id="imageLightbox" class="fixed inset-0 z-[100] hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative max-w-5xl w-full bg-dot-card border border-dot-border rounded-lg overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
+      <div class="p-4 border-b border-dot-border flex justify-between items-center bg-dot-surface">
+        <h3 id="lightboxTitle" class="text-sm font-bold text-white uppercase tracking-wide font-mono"></h3>
+        <button onclick="closeLightbox()" class="text-slate-400 hover:text-white text-lg font-bold px-3 py-1 rounded bg-dot-black border border-dot-border hover:border-dot-orange transition">✕</button>
+      </div>
+      <div class="p-4 bg-black flex justify-center items-center overflow-auto flex-1">
+        <img id="lightboxImg" src="" alt="Enlarged technical view" class="max-h-[75vh] w-auto object-contain rounded border border-dot-border shadow-md" />
+      </div>
+      <div class="p-3 bg-dot-surface border-t border-dot-border text-center text-[11px] text-slate-400 font-mono">
+        San Andreas Department of Transportation • Engineering Specification Delineation
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-dot-border bg-dot-surface py-6 px-6 text-center text-xs text-slate-500 uppercase tracking-wider font-semibold">
+    San Andreas Department of Transportation • Division of Highway Safety & Operations
+  </footer>
+
+  <!-- Access Control & Interactive Tab Script -->
+  <script>
+    const SUBDIVISIONS = [
+      "Highway Incident Management & Patrol",
+      "Towing & Recovery",
+      "Maintenance & Infrastructure",
+      "Traffic Control & Flagging",
+      "Heavy Machinery & Logistics"
+    ];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      evaluateClearances();
+    });
+
+    function evaluateClearances() {
+      const userRank = sessionStorage.getItem('sadot_rank') || "";
+      const userLevel = parseInt(sessionStorage.getItem('sadot_level') || '1', 10);
+      
+      // Supervisors (level 3), Command (level 4), and Civilian Staff have full access
+      const isPrivileged = userLevel >= 3 || 
+                           userRank === "Civilian Staff" || 
+                           userRank.toLowerCase().includes("civilian") || 
+                           userRank.toLowerCase().includes("supervisor") ||
+                           userRank.toLowerCase().includes("command");
+
+      let userAccess = [];
+      let userInterests = [];
+
+      try {
+        userAccess = JSON.parse(sessionStorage.getItem('sadot_subdivision_access') || '[]');
+        userInterests = JSON.parse(sessionStorage.getItem('sadot_subdivision_interests') || '[]');
+      } catch (e) {
+        userAccess = [];
+        userInterests = [];
+      }
+
+      if (isPrivileged || userAccess.length === 0 && userLevel >= 3) {
+        userAccess = [...SUBDIVISIONS];
+        userInterests = [...SUBDIVISIONS];
+      }
+
+      // Update header badges
+      document.getElementById('user-name-display').innerText = sessionStorage.getItem('sadot_employee_name') || userRank || "Operator";
+      document.getElementById('user-clearance-count').innerText = isPrivileged ? "All Access (Supervisor/Command)" : `${userAccess.length} of ${SUBDIVISIONS.length} Active`;
+
+      // Configure each subdivision section
+      const modules = document.querySelectorAll('.training-module');
+      modules.forEach(mod => {
+        const subdivName = mod.getAttribute('data-subdiv');
+        const hasAccess = isPrivileged || userAccess.includes(subdivName);
+        const hasInterest = userInterests.includes(subdivName);
+
+        const badge = mod.querySelector('.access-badge');
+        const interestContainer = mod.querySelector('.interest-badge-container');
+        const lockedContainer = mod.querySelector('.locked-container');
+        const unlockedContent = mod.querySelector('.unlocked-content');
+        const interestPrompt = mod.querySelector('.interest-prompt');
+
+        if (interestContainer) {
+          if (hasInterest) {
+            interestContainer.innerHTML = `<span class="px-2.5 py-1 bg-amber-500/10 border border-amber-500/40 text-amber-400 rounded-full font-bold">⭐ Marked as Interested</span>`;
+          } else {
+            interestContainer.innerHTML = `<span class="px-2.5 py-1 bg-dot-surface border border-dot-border text-slate-500 rounded-full">Not Marked Interested</span>`;
+          }
+        }
+
+        if (hasAccess) {
+          badge.className = "access-badge font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800 text-emerald-400";
+          badge.innerText = "✓ Cleared Access";
+          lockedContainer.classList.add('hidden');
+          unlockedContent.classList.remove('hidden');
+        } else {
+          badge.className = "access-badge font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-950/60 border border-red-800 text-red-400";
+          badge.innerText = "🔒 Locked";
+          lockedContainer.classList.remove('hidden');
+          unlockedContent.classList.add('hidden');
+
+          if (interestPrompt) {
+            interestPrompt.innerHTML = hasInterest
+              ? `<span class="text-amber-400 font-bold">You are already on the interest list for this subdivision. Contact an on-duty Supervisor for evaluation.</span>`
+              : `<span class="text-slate-400">Want to pursue this subdivision? Contact Command or request your interest be marked on the Roster Admin Console.</span>`;
+          }
+        }
+      });
+
+      // Update Top Nav Status Dots (starting from index 1, since index 0 is Orientation)
+      const navTabs = document.querySelectorAll('#subdiv-nav-links .nav-tab');
+      navTabs.forEach((tab, idx) => {
+        if (idx === 0) return; // Skip orientation tab
+        const subdivName = SUBDIVISIONS[idx - 1];
+        const dot = tab.querySelector('.status-indicator');
+        const hasAccess = isPrivileged || userAccess.includes(subdivName);
+        if (dot) {
+          dot.className = `status-indicator h-2 w-2 rounded-full ${hasAccess ? 'bg-emerald-400 ring-2 ring-emerald-500/30' : 'bg-red-500 ring-2 ring-red-500/30'}`;
+        }
+      });
+    }
+
+    // Lightbox modal functionality
+    const lightbox = document.getElementById('imageLightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxTitle = document.getElementById('lightboxTitle');
+
+    function openLightbox(src, title) {
+      lightboxImg.src = src;
+      lightboxTitle.innerText = title;
+      lightbox.classList.remove('hidden');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.add('hidden');
+      lightboxImg.src = '';
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+  </script>
+
+</body>
+</html>

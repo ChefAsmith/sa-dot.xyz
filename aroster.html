@@ -26,17 +26,17 @@
     }
   </script>
   <script>
-  if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
-    window.location.href = 'portal';
-  }
+    if (sessionStorage.getItem('sadot_authenticated') !== 'true') {
+      window.location.href = 'portal';
+    }
 
-  const userLevel = parseInt(sessionStorage.getItem('sadot_level') || '1', 10);
+    const userLevel = parseInt(sessionStorage.getItem('sadot_level') || '1', 10);
 
-  if (userLevel < 3) {
-    alert("Access Denied: Supervisory or Command clearance required.");
-    window.location.href = 'employee-portal';
-  }
-</script>
+    if (userLevel < 3) {
+      alert("Access Denied: Supervisory or Command clearance required.");
+      window.location.href = 'employee-portal';
+    }
+  </script>
   <style>
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #131722; border-radius: 4px; }
@@ -47,12 +47,12 @@
 </head>
 <body class="bg-dot-black text-slate-200 font-sans antialiased selection:bg-dot-orange selection:text-white flex flex-col min-h-screen">
 
-<!-- Top Agency Banner -->
+  <!-- Top Agency Banner -->
   <div class="bg-dot-orange text-black font-extrabold text-[11px] tracking-widest uppercase py-1 text-center">
     State of San Andreas • Restricted Internal Access
   </div>
   
-<!-- Navigation Header -->
+  <!-- Navigation Header -->
   <header class="border-b border-dot-border bg-dot-surface/95 sticky top-0 z-50 backdrop-blur">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
       <a href="employee-portal" class="flex items-center space-x-3 group">
@@ -69,6 +69,7 @@
         <a href="ework-orders" class="hover:text-dot-orange transition">Work Orders</a>
         <a href="vehicles" class="hover:text-dot-orange transition">Vehicles</a>
         <a href="uniforms" class="hover:text-dot-orange transition">Uniforms</a>
+        <a href="training" class="hover:text-dot-orange transition">Training</a>
         <a href="employee-activity" class="hover:text-dot-orange transition">Activity</a>
         <a href="finances" class="hover:text-dot-orange transition">Finances</a>
         <a href="management" class="hover:text-dot-orange transition">Management</a>
@@ -90,15 +91,15 @@
           Personnel Management Console
         </div>
         <h1 class="text-2xl font-black text-white uppercase tracking-tight">Roster Administration</h1>
-        <p class="text-slate-400 text-xs mt-1">Assign callsigns, adjust ranks, create civilian staff accounts, and manage clearances.</p>
+        <p class="text-slate-400 text-xs mt-1">Assign callsigns, adjust ranks, manage subdivision access/interests, and configure certificates.</p>
       </div>
 
       <div class="flex items-center gap-3 flex-wrap">
         <input 
           type="text" 
           id="rosterSearch" 
-          placeholder="Filter callsign, name, or rank..." 
-          class="bg-dot-card border border-dot-border rounded px-4 py-2 text-xs text-white focus:outline-none focus:border-dot-orange w-full md:w-60"
+          placeholder="Filter callsign, name, rank, or subdivision..." 
+          class="bg-dot-card border border-dot-border rounded px-4 py-2 text-xs text-white focus:outline-none focus:border-dot-orange w-full md:w-64 font-mono"
         />
         <button onclick="openCreateModal()" class="bg-dot-orange hover:bg-dot-orangeHover text-white font-mono text-xs px-4 py-2 rounded font-bold uppercase transition whitespace-nowrap shadow-lg">
           ＋ Create Account
@@ -120,19 +121,19 @@
 
   <!-- Create Personnel Modal -->
   <div id="create-modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-dot-card border border-dot-border rounded-xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden">
+    <div class="bg-dot-card border border-dot-border rounded-xl w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
       <div class="p-6 bg-dot-surface border-b border-dot-border flex items-center justify-between">
         <div>
           <span class="px-2.5 py-0.5 rounded font-mono text-[10px] uppercase font-bold bg-purple-950/60 text-purple-400 border border-purple-800">New Account Creation</span>
-          <h2 class="text-xl font-black text-white uppercase tracking-wide mt-1">Create Personnel / Civilian Staff</h2>
+          <h2 class="text-xl font-black text-white uppercase tracking-wide mt-1">Create Personnel / Staff Account</h2>
         </div>
         <button onclick="closeCreateModal()" class="text-slate-400 hover:text-white font-mono text-sm bg-dot-black px-3 py-1.5 rounded border border-dot-border">
           ✕ Close [ESC]
         </button>
       </div>
 
-      <form id="create-roster-form" onsubmit="createPersonnelAccount(event)" class="flex flex-col">
-        <div class="p-6 space-y-6 text-xs overflow-y-auto max-h-[70vh]">
+      <form id="create-roster-form" onsubmit="createPersonnelAccount(event)" class="flex flex-col flex-1 overflow-hidden">
+        <div class="p-6 space-y-6 text-xs overflow-y-auto flex-1">
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -152,11 +153,11 @@
             </div>
             <div>
               <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Callsign: <span class="text-dot-orange">*</span></label>
-              <input type="text" id="create-callsign" required placeholder="e.g., CIV-01 or DOT-005" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono font-bold" />
+              <input type="text" id="create-callsign" required placeholder="e.g., DOT-005 or CIV-01" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono font-bold" />
             </div>
             <div>
               <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Portal Password: <span class="text-dot-orange">*</span></label>
-              <input type="text" id="create-password" required placeholder="e.g., CIV-STAFF-2026!" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-dot-orange focus:outline-none focus:border-dot-orange font-mono font-bold" />
+              <input type="text" id="create-password" required placeholder="e.g., DOT-1919-9309!" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-dot-orange focus:outline-none focus:border-dot-orange font-mono font-bold" />
             </div>
           </div>
 
@@ -164,7 +165,7 @@
             <label class="block font-mono text-slate-400 uppercase tracking-wider mb-1">Assigned Rank: <span class="text-dot-orange">*</span></label>
             <select id="create-rank" onchange="handleRankSelectionChange(this.value, 'create')" class="w-full bg-dot-surface border border-dot-border rounded px-4 py-2.5 text-white focus:outline-none focus:border-dot-orange font-mono">
               <optgroup label="Civilian & Special Roles">
-                <option value="Civilian Staff" selected>Civilian Staff (Hidden from Roster, Full Access)</option>
+                <option value="Civilian Staff">Civilian Staff (Hidden from Roster, Full Access)</option>
               </optgroup>
               <optgroup label="Command Staff">
                 <option value="Transportation Commissioner">Transportation Commissioner</option>
@@ -181,7 +182,7 @@
                 <option value="Operator I">Operator I</option>
               </optgroup>
               <optgroup label="Probationary Operators">
-                <option value="Probationary Operator (Cadet)">Probationary Operator (Cadet)</option>
+                <option value="Probationary Operator (Cadet)" selected>Probationary Operator (Cadet)</option>
               </optgroup>
             </select>
           </div>
@@ -192,21 +193,50 @@
               <strong class="text-white block font-mono text-xs">Hide Account From Roster</strong>
               <span class="text-slate-400 text-[10px]">Prevents this account from showing up on both public and staff rosters.</span>
             </div>
-            <input type="checkbox" id="create-hiddenFromRoster" checked class="accent-[#ff6600] h-4 w-4" />
+            <input type="checkbox" id="create-hiddenFromRoster" class="accent-[#ff6600] h-4 w-4" />
+          </div>
+
+          <!-- SUBDIVISION CLEARANCES & INTERESTS -->
+          <div class="space-y-4 pt-2 border-t border-dot-border">
+            <div>
+              <label class="block font-mono text-slate-300 uppercase tracking-wider font-bold mb-1">
+                ⭐ Subdivision Interests (Candidate Aspirations):
+              </label>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 font-mono text-[11px]">
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-interest" value="Highway Incident Management & Patrol" checked class="accent-[#ff6600]"> Highway Incident Management & Patrol</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-interest" value="Towing & Recovery" class="accent-[#ff6600]"> Towing & Recovery</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-interest" value="Maintenance & Infrastructure" class="accent-[#ff6600]"> Maintenance & Infrastructure</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-interest" value="Traffic Control & Flagging" class="accent-[#ff6600]"> Traffic Control & Flagging</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-interest" value="Heavy Machinery & Logistics" class="accent-[#ff6600]"> Heavy Machinery & Logistics</label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-mono text-dot-orange uppercase tracking-wider font-bold mb-1">
+                🔓 Subdivision Training Access Clearances (Authorizations):
+              </label>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 font-mono text-[11px]">
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-access" value="Highway Incident Management & Patrol" checked class="accent-[#ff6600]"> Highway Incident Management & Patrol</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-access" value="Towing & Recovery" class="accent-[#ff6600]"> Towing & Recovery</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-access" value="Maintenance & Infrastructure" class="accent-[#ff6600]"> Maintenance & Infrastructure</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-access" value="Traffic Control & Flagging" class="accent-[#ff6600]"> Traffic Control & Flagging</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="create-subdiv-access" value="Heavy Machinery & Logistics" class="accent-[#ff6600]"> Heavy Machinery & Logistics</label>
+              </div>
+            </div>
           </div>
 
           <!-- Certifications Section -->
-          <div>
+          <div class="pt-2 border-t border-dot-border">
             <label class="block font-mono text-slate-400 uppercase tracking-wider mb-2">Operational Certifications:</label>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 font-mono text-[11px]" id="create-cert-container">
               <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Probationary Certified" checked class="accent-[#ff6600]" /> Probationary Certified</label>
-              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="CDL" checked class="accent-[#ff6600]" /> CDL</label>
-              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Flag Certified" checked class="accent-[#ff6600]" /> Flag Certified</label>
-              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Rollback Certified" checked class="accent-[#ff6600]" /> Rollback Certified</label>
-              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Boom Wrecker Certified" checked class="accent-[#ff6600]" /> Boom Wrecker Certified</label>
-              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Heavy Wrecker Certified" checked class="accent-[#ff6600]" /> Heavy Wrecker Certified</label>
-              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Heavy Transport Certified" checked class="accent-[#ff6600]" /> Heavy Transport Certified</label>
-              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Trailer Certified" checked class="accent-[#ff6600]" /> Trailer Certified</label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="CDL" class="accent-[#ff6600]" /> CDL</label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Flag Certified" class="accent-[#ff6600]" /> Flag Certified</label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Rollback Certified" class="accent-[#ff6600]" /> Rollback Certified</label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Boom Wrecker Certified" class="accent-[#ff6600]" /> Boom Wrecker Certified</label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Heavy Wrecker Certified" class="accent-[#ff6600]" /> Heavy Wrecker Certified</label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Heavy Transport Certified" class="accent-[#ff6600]" /> Heavy Transport Certified</label>
+              <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="create-cert" value="Trailer Certified" class="accent-[#ff6600]" /> Trailer Certified</label>
             </div>
           </div>
           
@@ -227,7 +257,7 @@
 
   <!-- Edit Personnel Modal -->
   <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-dot-card border border-dot-border rounded-xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden">
+    <div class="bg-dot-card border border-dot-border rounded-xl w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
       
       <!-- Modal Header -->
       <div class="p-6 bg-dot-surface border-b border-dot-border flex items-center justify-between">
@@ -241,8 +271,8 @@
       </div>
 
       <!-- Modal Body -->
-      <form id="edit-roster-form" onsubmit="savePersonnelChanges(event)" class="flex flex-col">
-        <div class="p-6 space-y-6 text-xs overflow-y-auto max-h-[70vh]">
+      <form id="edit-roster-form" onsubmit="savePersonnelChanges(event)" class="flex flex-col flex-1 overflow-hidden">
+        <div class="p-6 space-y-6 text-xs overflow-y-auto flex-1">
           <input type="hidden" id="edit-id" />
 
           <!-- Callsign & Password Row -->
@@ -293,8 +323,37 @@
             <input type="checkbox" id="edit-hiddenFromRoster" class="accent-[#ff6600] h-4 w-4" />
           </div>
 
+          <!-- SUBDIVISION CLEARANCES & INTERESTS -->
+          <div class="space-y-4 pt-2 border-t border-dot-border">
+            <div>
+              <label class="block font-mono text-slate-300 uppercase tracking-wider font-bold mb-1">
+                ⭐ Subdivision Interests (Candidate Aspirations):
+              </label>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 font-mono text-[11px]" id="edit-subdiv-interests">
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-interest" value="Highway Incident Management & Patrol" class="accent-[#ff6600]"> Highway Incident Management & Patrol</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-interest" value="Towing & Recovery" class="accent-[#ff6600]"> Towing & Recovery</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-interest" value="Maintenance & Infrastructure" class="accent-[#ff6600]"> Maintenance & Infrastructure</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-interest" value="Traffic Control & Flagging" class="accent-[#ff6600]"> Traffic Control & Flagging</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-interest" value="Heavy Machinery & Logistics" class="accent-[#ff6600]"> Heavy Machinery & Logistics</label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-mono text-dot-orange uppercase tracking-wider font-bold mb-1">
+                🔓 Subdivision Training Access Clearances (Authorizations):
+              </label>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 font-mono text-[11px]" id="edit-subdiv-access">
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-access" value="Highway Incident Management & Patrol" class="accent-[#ff6600]"> Highway Incident Management & Patrol</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-access" value="Towing & Recovery" class="accent-[#ff6600]"> Towing & Recovery</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-access" value="Maintenance & Infrastructure" class="accent-[#ff6600]"> Maintenance & Infrastructure</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-access" value="Traffic Control & Flagging" class="accent-[#ff6600]"> Traffic Control & Flagging</label>
+                <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border"><input type="checkbox" name="edit-subdiv-access" value="Heavy Machinery & Logistics" class="accent-[#ff6600]"> Heavy Machinery & Logistics</label>
+              </div>
+            </div>
+          </div>
+
           <!-- Certifications Section -->
-          <div>
+          <div class="pt-2 border-t border-dot-border">
             <label class="block font-mono text-slate-400 uppercase tracking-wider mb-2">Operational Certifications:</label>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 font-mono text-[11px]" id="certifications-checkbox-container">
               <label class="flex items-center gap-2 bg-dot-surface p-2.5 rounded border border-dot-border cursor-pointer hover:border-dot-orange transition"><input type="checkbox" name="edit-cert" value="Probationary Certified" class="accent-[#ff6600]" /> Probationary Certified</label>
@@ -340,6 +399,14 @@
   <script>
     const API_BASE_URL = "/api";
     let cachedRoster = [];
+
+    const ALL_SUBDIVISIONS = [
+      "Highway Incident Management & Patrol",
+      "Towing & Recovery",
+      "Maintenance & Infrastructure",
+      "Traffic Control & Flagging",
+      "Heavy Machinery & Logistics"
+    ];
 
     const tierStructure = [
       { title: "Civilian Staff & Special Accounts (Hidden from Rosters)", color: "bg-purple-500", ranks: ["Civilian Staff"] },
@@ -390,14 +457,17 @@
 
           tierMembers.forEach(member => {
             const originalIndex = cachedRoster.findIndex(r => r.id === member.id);
-            const { icName, oocName, callsign, rank, certifications, hiddenFromRoster, isCivilianStaff } = member;
+            const { icName, oocName, callsign, rank, certifications, hiddenFromRoster, isCivilianStaff, subdivisionAccess, subdivisionInterests } = member;
             const certString = Array.isArray(certifications) ? certifications.join(', ') : 'None';
             const isHidden = hiddenFromRoster || isCivilianStaff || rank === "Civilian Staff";
+
+            const clearedSubdivs = Array.isArray(subdivisionAccess) && subdivisionAccess.length > 0 ? subdivisionAccess : ["Highway Incident Management & Patrol"];
+            const interestedSubdivs = Array.isArray(subdivisionInterests) ? subdivisionInterests : [];
 
             const card = document.createElement('div');
             card.className = "roster-card p-5 bg-dot-card border border-dot-border rounded-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-dot-orange transition shadow-md";
             card.innerHTML = `
-              <div class="space-y-1 flex-1">
+              <div class="space-y-1.5 flex-1">
                 <div class="flex items-center gap-3">
                   <span class="px-2.5 py-0.5 border rounded font-mono text-[10px] uppercase font-bold bg-dot-orange/10 border-dot-orange text-dot-orange">${callsign || 'UNASSIGNED'}</span>
                   <span class="font-mono text-[11px] text-slate-400">OOC: ${oocName || 'N/A'}</span>
@@ -405,11 +475,20 @@
                 </div>
                 <h3 class="text-base font-bold text-white uppercase mt-1">${icName} <span class="text-xs text-dot-orange font-mono font-normal">(${rank})</span></h3>
                 
-                <p class="text-slate-400 text-[10px] font-mono mt-1">
-                  PORTAL PASS: <span class="bg-dot-black px-2 py-0.5 rounded text-dot-orange select-none mx-1 border border-dot-border">ENCRYPTED 🔒</span>
-                </p>
+                <!-- Subdivision Clearances & Interests Tags -->
+                <div class="pt-1 flex flex-wrap gap-1">
+                  <span class="text-[9px] font-mono font-bold text-slate-400 uppercase py-0.5 mr-1">Cleared:</span>
+                  ${clearedSubdivs.map(s => `<span class="px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-800 text-emerald-400 text-[9px] font-mono font-bold uppercase">${s}</span>`).join('')}
+                </div>
 
-                <p class="text-slate-500 text-[10px] font-mono">Certs: ${certString}</p>
+                ${interestedSubdivs.length > 0 ? `
+                  <div class="flex flex-wrap gap-1">
+                    <span class="text-[9px] font-mono font-bold text-slate-400 uppercase py-0.5 mr-1">Interests:</span>
+                    ${interestedSubdivs.map(s => `<span class="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[9px] font-mono font-bold uppercase">${s}</span>`).join('')}
+                  </div>
+                ` : ''}
+
+                <p class="text-slate-500 text-[10px] font-mono pt-1">Certs: ${certString}</p>
               </div>
               <button onclick="openEditModal(${originalIndex})" class="w-full md:w-auto bg-dot-orange hover:bg-dot-orangeHover text-white px-5 py-2.5 rounded font-bold uppercase transition font-mono whitespace-nowrap">
                 Edit Assignments ↗
@@ -435,9 +514,15 @@
         if (isCivilian) {
           document.getElementById('create-callsign').value = "CIV-01";
           document.querySelectorAll('input[name="create-cert"]').forEach(cb => cb.checked = true);
+          document.querySelectorAll('input[name="create-subdiv-access"]').forEach(cb => cb.checked = true);
+          document.querySelectorAll('input[name="create-subdiv-interest"]').forEach(cb => cb.checked = true);
         }
       } else {
         document.getElementById('edit-hiddenFromRoster').checked = isCivilian;
+        if (isCivilian) {
+          document.querySelectorAll('input[name="edit-subdiv-access"]').forEach(cb => cb.checked = true);
+          document.querySelectorAll('input[name="edit-subdiv-interest"]').forEach(cb => cb.checked = true);
+        }
       }
     }
 
@@ -446,11 +531,15 @@
       document.getElementById('create-icname').value = "";
       document.getElementById('create-oocname').value = "";
       document.getElementById('create-communityid').value = "";
-      document.getElementById('create-callsign').value = "CIV-01";
-      document.getElementById('create-password').value = `CIV-STAFF-${randomCode}!`;
-      document.getElementById('create-rank').value = "Civilian Staff";
-      document.getElementById('create-hiddenFromRoster').checked = true;
-      document.querySelectorAll('input[name="create-cert"]').forEach(cb => cb.checked = true);
+      document.getElementById('create-callsign').value = "DOT-";
+      document.getElementById('create-password').value = `DOT-${randomCode}!`;
+      document.getElementById('create-rank').value = "Probationary Operator (Cadet)";
+      document.getElementById('create-hiddenFromRoster').checked = false;
+      
+      document.querySelectorAll('input[name="create-cert"]').forEach(cb => cb.checked = cb.value === "Probationary Certified");
+      document.querySelectorAll('input[name="create-subdiv-access"]').forEach(cb => cb.checked = cb.value === "Highway Incident Management & Patrol");
+      document.querySelectorAll('input[name="create-subdiv-interest"]').forEach(cb => cb.checked = cb.value === "Highway Incident Management & Patrol");
+
       document.getElementById('create-modal-action-msg').classList.add('hidden');
       document.getElementById('create-modal-backdrop').classList.remove('hidden');
     }
@@ -471,6 +560,8 @@
       const hiddenFromRoster = document.getElementById('create-hiddenFromRoster').checked;
       const isCivilianStaff = rank === "Civilian Staff";
       const certifications = Array.from(document.querySelectorAll('input[name="create-cert"]:checked')).map(cb => cb.value);
+      const subdivisionInterests = Array.from(document.querySelectorAll('input[name="create-subdiv-interest"]:checked')).map(cb => cb.value);
+      const subdivisionAccess = Array.from(document.querySelectorAll('input[name="create-subdiv-access"]:checked')).map(cb => cb.value);
 
       const msgBox = document.getElementById('create-modal-action-msg');
       const saveBtn = document.getElementById('create-save-btn');
@@ -492,6 +583,8 @@
             hiddenFromRoster,
             isCivilianStaff,
             certifications,
+            subdivisionInterests,
+            subdivisionAccess,
             bypassAppCheck: true
           })
         });
@@ -536,6 +629,17 @@
         cb.checked = memberCerts.includes(cb.value);
       });
 
+      const memberInterests = Array.isArray(member.subdivisionInterests) ? member.subdivisionInterests : [];
+      const memberAccess = Array.isArray(member.subdivisionAccess) ? member.subdivisionAccess : [];
+
+      document.querySelectorAll('input[name="edit-subdiv-interest"]').forEach(cb => {
+        cb.checked = memberInterests.includes(cb.value);
+      });
+
+      document.querySelectorAll('input[name="edit-subdiv-access"]').forEach(cb => {
+        cb.checked = memberAccess.includes(cb.value);
+      });
+
       document.getElementById('modal-title').innerText = `Editing — ${member.icName}`;
       document.getElementById('modal-action-msg').classList.add('hidden');
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -555,6 +659,8 @@
       const hiddenFromRoster = document.getElementById('edit-hiddenFromRoster').checked;
       const isCivilianStaff = rank === "Civilian Staff";
       const certifications = Array.from(document.querySelectorAll('input[name="edit-cert"]:checked')).map(cb => cb.value);
+      const subdivisionInterests = Array.from(document.querySelectorAll('input[name="edit-subdiv-interest"]:checked')).map(cb => cb.value);
+      const subdivisionAccess = Array.from(document.querySelectorAll('input[name="edit-subdiv-access"]:checked')).map(cb => cb.value);
 
       const msgBox = document.getElementById('modal-action-msg');
       const saveBtn = document.getElementById('save-btn');
@@ -562,7 +668,16 @@
       saveBtn.disabled = true;
       saveBtn.innerText = "Saving Changes...";
 
-      const payload = { callsign, rank, certifications, hiddenFromRoster, isCivilianStaff };
+      const payload = { 
+        callsign, 
+        rank, 
+        certifications, 
+        hiddenFromRoster, 
+        isCivilianStaff,
+        subdivisionInterests,
+        subdivisionAccess
+      };
+
       if (newPassword) {
         payload.portalPassword = newPassword;
       }
